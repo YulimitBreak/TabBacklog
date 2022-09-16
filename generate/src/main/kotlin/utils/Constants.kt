@@ -11,5 +11,5 @@ object Constants {
         ignoreUnknownKeys = true
     }
 
-    val outputDir = File("./../base/src/main/kotlin/")
+    val outputDir = File("./../base/src/jsMain/kotlin/")
 }

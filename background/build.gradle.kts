@@ -1,7 +1,7 @@
 import buildsrc.Lib
 
 plugins {
-    kotlin("js")
+    kotlin("multiplatform")
 }
 
 repositories {
@@ -11,15 +11,8 @@ repositories {
     gradlePluginPortal()
 }
 
-dependencies {
-    implementation(kotlin("stdlib-js"))
-    implementation(Lib.Kotlin.COROUTINES_CORE_JS)
-    implementation(Lib.Kotlin.COROUTINES_CORE)
-    implementation(project(":base"))
-}
-
 kotlin {
-    js(LEGACY) {
+    js(IR) {
         binaries.executable()
         useCommonJs()
         browser {
@@ -30,6 +23,16 @@ kotlin {
             }
             distribution {
                 directory = File("$projectDir/../build/distributions/")
+            }
+        }
+    }
+    sourceSets {
+        val jsMain by getting {
+            dependencies {
+                implementation(Lib.Kotlin.COROUTINES_CORE_JS)
+                implementation(Lib.Kotlin.COROUTINES_CORE)
+                implementation(project(":base"))
+                implementation(kotlin("stdlib-js"))
             }
         }
     }

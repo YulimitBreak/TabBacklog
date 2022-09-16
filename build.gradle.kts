@@ -2,10 +2,11 @@ import org.jetbrains.kotlin.gradle.targets.js.yarn.YarnPlugin
 import org.jetbrains.kotlin.gradle.targets.js.yarn.YarnRootExtension
 
 plugins {
-    kotlin("js") version "1.7.10"
+    kotlin("multiplatform") version "1.7.10"
+    id("org.jetbrains.compose") version "1.1.1"
 }
 
-group = "dev.datlag.kromex"
+group = "com.gmail.ivkhegay.tablibrary"
 version = "0.1.0"
 
 allprojects {
@@ -24,22 +25,25 @@ repositories {
     gradlePluginPortal()
 }
 
-dependencies {
-    implementation(kotlin("stdlib-js"))
-
-    runtimeOnly(npm("webextension-polyfill", "0.10.0"))
-    implementation(devNpm("webpack-bundle-analyzer", "4.6.1"))
-
-    compileOnly(project(":background"))
-    compileOnly(project(":content"))
-    compileOnly(project(":popup"))
-}
-
 kotlin {
-    js(LEGACY) {
+    js(IR) {
         browser {
             commonWebpackConfig {
                 cssSupport.enabled = true
+            }
+        }
+    }
+    sourceSets {
+        val jsMain by getting {
+            dependencies {
+                implementation(kotlin("stdlib-js"))
+
+                runtimeOnly(npm("webextension-polyfill", "0.10.0"))
+                implementation(devNpm("webpack-bundle-analyzer", "4.6.1"))
+
+                compileOnly(project(":background"))
+                compileOnly(project(":content"))
+                compileOnly(project(":popup"))
             }
         }
     }
@@ -52,6 +56,13 @@ rootProject.plugins.withType<YarnPlugin> {
 tasks {
     val extensionFolder = "build/extension"
     val copyBundleFile = register<Copy>("copyBundleFile") {
+        subprojects.forEach { prj ->
+            try {
+                dependsOn(prj.tasks.getByName("jsBrowserDistribution"))
+            } catch (_: UnknownTaskException) {
+                // skip
+            }
+        }
         from("build/distributions") {
             include("*.js")
         }

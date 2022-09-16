@@ -28,7 +28,7 @@ dependencies {
 }
 
 tasks.register<Delete>("cleanDirectory") {
-    delete = setOf(File("./../base/src/main/kotlin/browser"))
+    delete = setOf(File("./../base/src/jsMain/kotlin/browser"))
 }
 
 tasks.getByName("clean") {
