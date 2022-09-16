@@ -1,13 +1,9 @@
 {
   "manifest_version": 3,
 
-  "name": "Kromex",
-  "description": "Kromex is an extension template written in Kotlin, mainly made for Chrome",
-  "version": "0.1.0",
-
-  "options_ui": {
-    "page": "options.html"
-  },
+  "name": "Tab Library",
+  "description": "Tab Library is a tab and bookmark manager that turns tab hoard into organized, tagged and tracked library for future use, with different ways to handle `Read later` pages",
+  "version": "0.0.1",
 
   "action": {
     "default_icon": "icon.png",

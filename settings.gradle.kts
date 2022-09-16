@@ -1,4 +1,4 @@
-rootProject.name = "Kromex"
+rootProject.name = "TabLibrary"
 
 include("base")
 include("background")
