@@ -5,6 +5,7 @@ package browser.accessibilityPrivate
 
 import browser.events.Event
 import kotlin.js.Promise
+import org.w3c.dom.BinaryType
 
 /**
  * Property to indicate whether event source should default to touch.
@@ -230,6 +231,19 @@ public external fun getLocalizedDomKeyStringForKeyCode(keyCode: Int): Promise<St
  * @param properties Properties for the updated Dictation bubble UI.
  */
 public external fun updateDictationBubble(properties: DictationBubbleProperties): Nothing
+
+/**
+ * Cancels the current and queued speech from ChromeVox.
+ */
+public external fun silenceSpokenFeedback(): Nothing
+
+/**
+ * Returns the contents of a DLC.
+ *
+ * @param dlc The DLC of interest.
+ * @return A callback that is run when the contents are returned.
+ */
+public external fun getDlcContents(dlc: DlcType): Promise<BinaryType>
 
 /**
  * Fired whenever ChromeVox should output introduction.

@@ -20,9 +20,6 @@ import utils.Constants
 
 fun main(vararg args: String) {
 
-    println(Constants.KROMEX)
-    println(Constants.DESCRIPTION)
-
     println()
     println()
     println("Generating browser JS-Kotlin code".color(ConsoleColors.BLUE_BOLD_BRIGHT))

@@ -27,8 +27,8 @@ repositories {
 dependencies {
     implementation(kotlin("stdlib-js"))
 
-    runtimeOnly(npm("webextension-polyfill", "0.9.0"))
-    implementation(devNpm("webpack-bundle-analyzer", "4.5.0"))
+    runtimeOnly(npm("webextension-polyfill", "0.10.0"))
+    implementation(devNpm("webpack-bundle-analyzer", "4.6.1"))
 
     compileOnly(project(":background"))
     compileOnly(project(":content"))

@@ -93,11 +93,3 @@ public external fun getReferrerChain(): Promise<String>
  */
 public external fun getExtensionStatus(id: String, manifest: String? = definedExternally):
     Promise<ExtensionInstallStatus>
-
-/**
- * Ask Chrome to send the extension request to the Admin Console.
- *
- * @param id The id of the extension to be requested. The webstore should call this after a call to
- * getExtensionStatus
- */
-public external fun requestExtension(id: String): Promise<ExtensionInstallStatus>

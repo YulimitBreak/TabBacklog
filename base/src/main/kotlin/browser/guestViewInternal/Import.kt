@@ -7,8 +7,6 @@ import kotlin.js.Promise
 
 public external fun createGuest(viewType: String, createParams: Any): Promise<Any>
 
-public external fun destroyGuest(instanceId: Int): Promise<Nothing>?
-
 /**
  * @param instanceId The instance ID of the guest &lt;webview&gt; process. This not exposed to
  * developers through the API.

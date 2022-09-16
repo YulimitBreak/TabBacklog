@@ -15,4 +15,17 @@ public external interface ChooseDesktopMediaOptions {
    * href="https://w3c.github.io/mediacapture-screen-share/#dom-displaymediastreamconstraints-systemaudio">systemAudio</a>.
    */
   public var systemAudio: SystemAudioPreferenceEnum?
+
+  /**
+   * Mirrors <a
+   * href="https://w3c.github.io/mediacapture-screen-share/#dom-displaymediastreamconstraints-selfbrowsersurface">selfBrowserSurface</a>.
+   */
+  public var selfBrowserSurface: SelfCapturePreferenceEnum?
+
+  /**
+   * Indicates that the caller intends to perform local audio suppression, and that the media picker
+   * shown to the user should therefore reflect that with the appropriate warnings, as it does when
+   * getDisplayMedia() is invoked.
+   */
+  public var suppressLocalAudioPlaybackIntended: Boolean?
 }

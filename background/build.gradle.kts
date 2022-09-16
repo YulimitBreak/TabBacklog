@@ -1,3 +1,5 @@
+import buildsrc.Lib
+
 plugins {
     kotlin("js")
 }
@@ -11,8 +13,8 @@ repositories {
 
 dependencies {
     implementation(kotlin("stdlib-js"))
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-js:1.6.3")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.3")
+    implementation(Lib.Kotlin.COROUTINES_CORE_JS)
+    implementation(Lib.Kotlin.COROUTINES_CORE)
     implementation(project(":base"))
 }
 

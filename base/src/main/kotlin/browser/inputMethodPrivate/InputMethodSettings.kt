@@ -44,6 +44,11 @@ public external interface InputMethodSettings {
   public var physicalKeyboardEnableCapitalization: Boolean?
 
   /**
+   * Whether to enable diacritics on longpress for physical keyboard.
+   */
+  public var physicalKeyboardEnableDiacriticsOnLongpress: Boolean?
+
+  /**
    * The level of auto correction for virtual keyboard (0: Off, 1: Modest, 2: Aggressive).
    */
   public var virtualKeyboardAutoCorrectionLevel: Int?

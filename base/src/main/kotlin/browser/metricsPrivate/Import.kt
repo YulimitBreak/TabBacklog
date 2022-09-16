@@ -73,12 +73,6 @@ public external fun recordLongTime(metricName: String, `value`: Int): Nothing
 
 /**
  * Increments the count associated with the hash of |value| in the sparse histogram defined by the
- * |metricName| using base::PersistentHash(value). Prefer recordSparseValueWithPersistentHash.
- */
-public external fun recordSparseHashable(metricName: String, `value`: String): Nothing
-
-/**
- * Increments the count associated with the hash of |value| in the sparse histogram defined by the
  * |metricName| using base::HashMetricName(value).
  */
 public external fun recordSparseValueWithHashMetricName(metricName: String, `value`: String):
