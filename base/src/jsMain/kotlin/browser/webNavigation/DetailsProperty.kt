@@ -3,9 +3,6 @@
 
 package browser.webNavigation
 
-import browser.extensionTypes.DocumentLifecycle
-import browser.extensionTypes.FrameType
-
 public external interface DetailsProperty {
   /**
    * The ID of the tab in which the navigation occurs.
@@ -58,10 +55,10 @@ public external interface DetailsProperty {
   /**
    * The lifecycle the document is in.
    */
-  public var documentLifecycle: DocumentLifecycle
+  public var documentLifecycle: String
 
   /**
    * The type of frame the navigation occurred in.
    */
-  public var frameType: FrameType
+  public var frameType: String
 }

@@ -5,7 +5,6 @@ import androidx.compose.runtime.setValue
 import browser.action.SetBadgeTextDetails
 import browser.tabs.QueryQueryInfo
 import browser.tabs.Tab
-import common.collect
 import kotlinx.browser.document
 import kotlinx.browser.window
 import kotlinx.coroutines.await

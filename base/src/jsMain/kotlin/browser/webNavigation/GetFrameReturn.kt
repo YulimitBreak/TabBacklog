@@ -3,9 +3,6 @@
 
 package browser.webNavigation
 
-import browser.extensionTypes.DocumentLifecycle
-import browser.extensionTypes.FrameType
-
 /**
  * Information about the requested frame, null if the specified frame ID and/or tab ID are invalid.
  */
@@ -41,10 +38,10 @@ public external interface GetFrameReturn {
   /**
    * The lifecycle the document is in.
    */
-  public var documentLifecycle: DocumentLifecycle
+  public var documentLifecycle: String
 
-  /**
-   * The type of frame the navigation occurred in.
-   */
-  public var frameType: FrameType
+    /**
+     * The type of frame the navigation occurred in.
+     */
+    public var frameType: String
 }
