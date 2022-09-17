@@ -1,7 +1,5 @@
 package common
 
-import kotlin.js.Promise
-
 fun Any?.isNullOrEmpty(): Boolean = when (this) {
     null -> true
     is Collection<*> -> this.isNullOrEmpty()
@@ -11,5 +9,3 @@ fun Any?.isNullOrEmpty(): Boolean = when (this) {
             .isEmpty() || this.toString().isBlank()))
     }
 }
-
-fun <T> Promise<T>?.collect(listener: (T) -> Unit) = this?.then(listener)

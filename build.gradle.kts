@@ -44,6 +44,7 @@ kotlin {
                 compileOnly(project(":background"))
                 compileOnly(project(":content"))
                 compileOnly(project(":popup"))
+                compileOnly(project(":manager"))
             }
         }
     }

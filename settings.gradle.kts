@@ -17,5 +17,6 @@ pluginManagement {
 include("base")
 include("background")
 include("popup")
+include("manager")
 include("content")
 include("generate")
