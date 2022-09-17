@@ -2,20 +2,37 @@ import androidx.compose.runtime.*
 import browser.tabs.CreateCreateProperties
 import browser.tabs.QueryQueryInfo
 import browser.tabs.Tab
+import di.ExternalModuleImplementation
+import di.ExternalModuleImplementation2
+import di.TestModule
 import kotlinx.coroutines.await
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.web.css.padding
 import org.jetbrains.compose.web.css.px
 import org.jetbrains.compose.web.css.width
-import org.jetbrains.compose.web.dom.Button
-import org.jetbrains.compose.web.dom.Div
-import org.jetbrains.compose.web.dom.Span
-import org.jetbrains.compose.web.dom.Text
+import org.jetbrains.compose.web.dom.*
 import org.jetbrains.compose.web.renderComposable
 
 fun main() {
 
     renderComposable(rootElementId = "root") {
+
+        val module1 = remember {
+            TestModule(ExternalModuleImplementation())
+        }
+
+        val module2 = remember {
+            TestModule(ExternalModuleImplementation2())
+        }
+
+        Text("Module1 Target: " + module1.provideTarget().source.number.toString())
+        Br()
+        Text("Module1 Source: " + module1.provideSource().number.toString())
+        Br()
+        Text("Module2 Target: " + module2.provideTarget().source.number.toString())
+        Br()
+        Text("Module2 Source: " + module2.provideSource().number.toString())
+        Br()
 
         var count: Int by remember { mutableStateOf(0) }
         var tabs by remember { mutableStateOf(emptyList<Tab>()) }

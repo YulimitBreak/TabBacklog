@@ -1,5 +1,6 @@
 plugins {
     kotlin("multiplatform")
+    id("io.github.sergeshustoff.dikt")
 }
 
 repositories {

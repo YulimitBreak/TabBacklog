@@ -4,6 +4,7 @@ import org.jetbrains.kotlin.gradle.targets.js.yarn.YarnRootExtension
 plugins {
     kotlin("multiplatform") version "1.7.10"
     id("org.jetbrains.compose") version "1.2.0-beta01"
+    id("io.github.sergeshustoff.dikt") version "1.0.2"
 }
 
 group = "com.gmail.ivkhegay.tablibrary"
