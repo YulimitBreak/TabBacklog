@@ -12,7 +12,7 @@ sealed class BookmarkType {
     ) : BookmarkType()
 
     data class Backlog(
-        val highPriority: Boolean,
+        val priority: Int,
     ) : BookmarkType()
 
     data class Reminder(
