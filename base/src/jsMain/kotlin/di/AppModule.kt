@@ -4,12 +4,21 @@ import data.BookmarkRepository
 import data.TabRepository
 import dev.shustoff.dikt.Create
 
+@Suppress("unused")
 class AppModule {
 
-    fun provideBookmarkRepository(): BookmarkRepository {
-        return BookmarkRepository()
+    // Doing it like this because @CreateSingle causes compilation issues
+    val bookmarkRepository by lazy {
+        provideBookmarkRepository()
     }
 
     @Create
-    fun provideTabsRepository(): TabRepository
+    private fun provideBookmarkRepository(): BookmarkRepository
+
+    val tabRepository by lazy {
+        provideTabsRepository()
+    }
+
+    @Create
+    private fun provideTabsRepository(): TabRepository
 }

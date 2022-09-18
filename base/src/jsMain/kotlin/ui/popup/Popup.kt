@@ -11,7 +11,7 @@ import ui.common.TextButton
 fun Popup(appModule: AppModule) {
     val scope = rememberCoroutineScope()
     val module = remember { PopupModule(appModule, scope) }
-    val model = remember { module.provideModel() }
+    val model = module.model
 
     TextButton("Open manager") {
         model.openManager()
