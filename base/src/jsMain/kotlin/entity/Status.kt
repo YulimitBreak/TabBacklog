@@ -11,9 +11,7 @@ sealed class BookmarkType {
         val deadline: LocalDate?,
     ) : BookmarkType()
 
-    data class Backlog(
-        val priority: Int,
-    ) : BookmarkType()
+    object Backlog : BookmarkType()
 
     data class Reminder(
         val remindDate: LocalDate,

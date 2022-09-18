@@ -1,5 +1,6 @@
 package entity
 
+import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 
 data class Bookmark(
@@ -8,6 +9,7 @@ data class Bookmark(
     val favicon: String?,
     val type: BookmarkType,
     val creationDate: LocalDateTime?,
+    val expirationDate: LocalDate? = null,
     val tags: Set<Tag> = emptySet(),
     val comment: String = "",
 ) {

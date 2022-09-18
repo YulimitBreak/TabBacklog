@@ -20,14 +20,14 @@ class BookmarkRepository {
             url = tab.url ?: throw UnsupportedTabException(),
             title = tab.title ?: "",
             favicon = tab.favIconUrl,
-            type = BookmarkType.Backlog(priority = 0),
+            type = BookmarkType.Backlog,
             creationDate = null
         )
     }
 
     suspend fun loadBookmark(tab: Tab): Bookmark? {
         // TODO load from DB
-        delay(100)
+        delay(4000)
         return null
     }
 }

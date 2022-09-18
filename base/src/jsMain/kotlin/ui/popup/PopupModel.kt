@@ -6,6 +6,7 @@ import androidx.compose.runtime.setValue
 import data.BookmarkRepository
 import data.TabRepository
 import entity.Bookmark
+import entity.Loadable
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -16,15 +17,22 @@ class PopupModel(
 ) {
     private var state by mutableStateOf(
         PopupState(
-            bookmark = null
+            bookmark = Loadable.Loading()
         )
     )
 
-    init {
-
-    }
-
     val uiState get() = state.toUiState()
+
+    init {
+        scope.launch {
+            state = try {
+                val result = bookmarkRepository.loadBookmarkForActiveTab()
+                state.copy(bookmark = Loadable.Success(result))
+            } catch (e: Exception) {
+                state.copy(bookmark = Loadable.Error(e))
+            }
+        }
+    }
 
     fun openManager() {
         scope.launch {
@@ -33,24 +41,12 @@ class PopupModel(
     }
 }
 
-private class PopupState(
-    val bookmark: Bookmark?,
+private data class PopupState(
+    val bookmark: Loadable<Bookmark>,
 ) {
-
-    fun toUiState(): PopupUiState =
-        PopupUiState(
-            bookmarkState = if (bookmark != null) {
-                BookmarkState.Result(bookmark)
-            } else BookmarkState.Loading
-        )
+    fun toUiState() = PopupUiState(bookmark)
 }
 
 data class PopupUiState(
-    val bookmarkState: BookmarkState
+    val bookmark: Loadable<Bookmark>
 )
-
-sealed interface BookmarkState {
-    object Loading : BookmarkState
-
-    data class Result(val bookmark: Bookmark) : BookmarkState
-}
