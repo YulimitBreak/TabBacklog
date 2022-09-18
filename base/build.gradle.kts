@@ -1,6 +1,7 @@
 plugins {
     kotlin("multiplatform")
     id("io.github.sergeshustoff.dikt")
+    id("org.jetbrains.compose")
 }
 
 repositories {
@@ -28,9 +29,12 @@ kotlin {
     sourceSets {
         val jsMain by getting {
             dependencies {
+                implementation(kotlin("stdlib-js"))
                 implementation(buildsrc.Lib.Kotlin.COROUTINES_CORE_JS)
                 implementation(buildsrc.Lib.Kotlin.COROUTINES_CORE)
-                implementation(kotlin("stdlib-js"))
+                implementation(buildsrc.Lib.TIME)
+                implementation(compose.web.core)
+                implementation(compose.runtime)
             }
         }
     }
