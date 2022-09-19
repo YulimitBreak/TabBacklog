@@ -8,9 +8,7 @@ import org.jetbrains.compose.web.attributes.InputType
 import org.jetbrains.compose.web.attributes.max
 import org.jetbrains.compose.web.attributes.min
 import org.jetbrains.compose.web.css.*
-import org.jetbrains.compose.web.dom.Div
-import org.jetbrains.compose.web.dom.Input
-import org.jetbrains.compose.web.dom.Text
+import org.jetbrains.compose.web.dom.*
 import org.w3c.dom.HTMLDivElement
 
 @Composable
@@ -22,16 +20,94 @@ fun BookmarkEditor(bookmark: EditedBookmark, onBookmarkChange: (EditedBookmark) 
                 display(DisplayStyle.Flex)
                 flexDirection(FlexDirection.Column)
                 alignItems(AlignItems.Center)
+                marginTop(16.px)
+                marginBottom(16.px)
             }
         }
     ) {
+        BookmarkTitleEdit(
+            bookmark.title, bookmark.base.favicon, bookmark.base.url,
+            attrs = {
+                style { width(100.percent) }
+            },
+            onTitleChanged = { onBookmarkChange(bookmark.copy(title = it)) }
+        )
         BookmarkTypeSelector(
             bookmark.isNew, bookmark.currentType, attrs = {
-                style { width(100.percent) }
+                style {
+                    width(100.percent)
+                    marginTop(8.px)
+                }
             }, onChange = { onBookmarkChange(bookmark.copy(currentType = it)) }
         )
 
         Text(bookmark.currentType.toString())
+    }
+}
+
+@Composable
+fun BookmarkTitleEdit(
+    title: String,
+    favicon: String?,
+    url: String,
+    attrs: (AttrsScope<HTMLDivElement>.() -> Unit)?,
+    onTitleChanged: (String) -> Unit
+) {
+    Div(attrs = {
+        attrs?.invoke(this)
+        style {
+            display(DisplayStyle.Flex)
+            flexDirection(FlexDirection.Row)
+            alignItems(AlignItems.Center)
+            justifyContent(JustifyContent.Start)
+        }
+    }) {
+        if (favicon != null) {
+            Img(src = favicon, attrs = {
+                style {
+                    width(32.px)
+                    height(32.px)
+                    marginRight(16.px)
+                }
+            })
+        }
+
+        Div(attrs = {
+            style {
+                flexShrink(1)
+                width(100.percent)
+                display(DisplayStyle.Flex)
+                flexDirection(FlexDirection.Column)
+                justifyContent(JustifyContent.Center)
+                alignItems(AlignItems.Start)
+            }
+        }) {
+
+            TextArea {
+                title(title)
+                value(title)
+                onInput { onTitleChanged(it.value) }
+                style {
+                    property("resize", "none")
+                    border(1.px)
+                    width(100.percent)
+                }
+            }
+            Div(attrs = {
+                title(url)
+                style {
+                    property("text-overflow", "ellipsis")
+                    property("overflow-wrap", "anywhere")
+                    whiteSpace("nowrap")
+                    overflow("hidden")
+                    color(Color.gray)
+                    fontSize(10.px)
+                    width(200.px)
+                }
+            }) {
+                Text(url)
+            }
+        }
     }
 }
 

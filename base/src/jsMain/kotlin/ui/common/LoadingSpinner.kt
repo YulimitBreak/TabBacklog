@@ -6,8 +6,8 @@ import org.jetbrains.compose.web.dom.AttrBuilderContext
 import org.jetbrains.compose.web.dom.Div
 import org.w3c.dom.HTMLDivElement
 
-object LoaderStyle : StyleSheet() {
-    val keyframes by keyframes {
+object LoadingSpinner : StyleSheet() {
+    private val keyframes by keyframes {
         from {
             property("transform", "rotate(0deg)")
         }
@@ -33,10 +33,10 @@ object LoaderStyle : StyleSheet() {
 
 @Composable
 fun Loader(attrs: AttrBuilderContext<HTMLDivElement>? = null) {
-    Style(LoaderStyle)
+    Style(LoadingSpinner)
     Div(
         attrs = {
-            classes(LoaderStyle.loader)
+            classes(LoadingSpinner.loader)
             attrs?.invoke(this)
         }
     )

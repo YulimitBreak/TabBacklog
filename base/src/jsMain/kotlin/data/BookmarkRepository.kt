@@ -6,7 +6,6 @@ import entity.Bookmark
 import entity.BookmarkStatus
 import entity.error.UnsupportedTabException
 import kotlinx.coroutines.await
-import kotlinx.coroutines.delay
 
 class BookmarkRepository {
 
@@ -26,7 +25,6 @@ class BookmarkRepository {
 
     suspend fun loadBookmark(tab: Tab): Bookmark? {
         // TODO load from DB
-        delay(1000)
         return null
     }
 }
