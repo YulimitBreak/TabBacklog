@@ -3,7 +3,7 @@ package data
 import browser.tabs.QueryQueryInfo
 import browser.tabs.Tab
 import entity.Bookmark
-import entity.BookmarkType
+import entity.BookmarkStatus
 import entity.error.UnsupportedTabException
 import kotlinx.coroutines.await
 import kotlinx.coroutines.delay
@@ -11,7 +11,6 @@ import kotlinx.coroutines.delay
 class BookmarkRepository {
 
     suspend fun loadBookmarkForActiveTab(): Bookmark {
-
         val tab = browser.tabs.query(QueryQueryInfo {
             active = true
             currentWindow = true
@@ -20,14 +19,14 @@ class BookmarkRepository {
             url = tab.url ?: throw UnsupportedTabException(),
             title = tab.title ?: "",
             favicon = tab.favIconUrl,
-            type = BookmarkType.Backlog,
+            status = BookmarkStatus.Backlog,
             creationDate = null
         )
     }
 
     suspend fun loadBookmark(tab: Tab): Bookmark? {
         // TODO load from DB
-        delay(4000)
+        delay(1000)
         return null
     }
 }

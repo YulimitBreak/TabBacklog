@@ -9,3 +9,7 @@ fun Any?.isNullOrEmpty(): Boolean = when (this) {
             .isEmpty() || this.toString().isBlank()))
     }
 }
+
+inline fun <reified T> Any.cast(): T = this as T
+
+inline fun <reified T> Any.safeCast(): T? = this as? T

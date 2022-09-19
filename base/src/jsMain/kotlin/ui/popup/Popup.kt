@@ -5,11 +5,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import di.AppModule
 import di.PopupModule
-import org.jetbrains.compose.web.css.px
+import org.jetbrains.compose.web.css.height
+import org.jetbrains.compose.web.css.percent
 import org.jetbrains.compose.web.css.width
-import org.jetbrains.compose.web.dom.P
+import org.jetbrains.compose.web.dom.Button
+import org.jetbrains.compose.web.dom.Main
 import org.jetbrains.compose.web.dom.Text
-import ui.common.TextButton
+import ui.common.BookmarkContent
 
 @Composable
 fun Popup(appModule: AppModule) {
@@ -17,15 +19,29 @@ fun Popup(appModule: AppModule) {
     val module = remember { PopupModule(appModule, scope) }
     val model = module.model
 
-    TextButton("Open manager") {
-        model.openManager()
-    }
-
-    P(attrs = {
-        style {
-            width(300.px)
+    Main(
+        attrs = {
+            style {
+                height(100.percent)
+                width(100.percent)
+            }
         }
-    }) {
-        Text(model.uiState.bookmark.toString())
+    ) {
+        Button(
+            attrs = {
+                style {
+                    width(50.percent)
+                }
+                onClick {
+                    model.openManager()
+                }
+            }
+        ) {
+            Text("Open manager")
+        }
+
+        BookmarkContent(model.uiState.bookmark) {
+            model.updateBookmark(it)
+        }
     }
 }

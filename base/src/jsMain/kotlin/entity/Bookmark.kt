@@ -7,7 +7,7 @@ data class Bookmark(
     val url: String,
     val title: String,
     val favicon: String?,
-    val type: BookmarkType,
+    val status: BookmarkStatus,
     val creationDate: LocalDateTime?,
     val expirationDate: LocalDate? = null,
     val tags: Set<Tag> = emptySet(),
