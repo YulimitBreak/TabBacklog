@@ -3,7 +3,7 @@ package data
 import browser.tabs.QueryQueryInfo
 import browser.tabs.Tab
 import entity.Bookmark
-import entity.BookmarkStatus
+import entity.BookmarkType
 import entity.error.UnsupportedTabException
 import kotlinx.coroutines.await
 
@@ -18,7 +18,7 @@ class BookmarkRepository {
             url = tab.url ?: throw UnsupportedTabException(),
             title = tab.title ?: "",
             favicon = tab.favIconUrl,
-            status = BookmarkStatus.Backlog,
+            type = BookmarkType.BACKLOG,
             creationDate = null
         )
     }
