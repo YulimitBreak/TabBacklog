@@ -7,6 +7,7 @@ import org.jetbrains.compose.web.attributes.AttrsScope
 import org.jetbrains.compose.web.css.*
 import org.jetbrains.compose.web.dom.*
 import org.w3c.dom.HTMLDivElement
+import ui.common.basecomponent.RelativeDatePicker
 import ui.common.basecomponent.SwitchToggle
 
 @Composable
@@ -37,6 +38,14 @@ fun BookmarkEditor(
                 marginTop(16.px)
             }
         }, onTypeChanged = { onBookmarkChange(bookmark.copy(currentType = it)) })
+
+        RelativeDatePicker(bookmark.taskDeadline, attrs = {
+            style { width(100.percent) }
+        }, onDatePicked = {
+            onBookmarkChange(bookmark.copy(taskDeadline = it))
+        })
+
+        Text(bookmark.taskDeadline.toString())
 
         Div(attrs = {
             style {

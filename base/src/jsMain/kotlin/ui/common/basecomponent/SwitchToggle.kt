@@ -59,9 +59,11 @@ fun SwitchToggle(
             style {
                 width(50.percent)
                 if (leftOptionSelected) {
+                    cursor("default")
                     backgroundPosition("100% 0")
                     color(Color.white)
                 } else {
+                    cursor("pointer")
                     backgroundPosition("0% 0")
                     color(color)
                 }
@@ -77,9 +79,11 @@ fun SwitchToggle(
             style {
                 width(50.percent)
                 if (!leftOptionSelected) {
+                    cursor("default")
                     backgroundPosition("0% 0")
                     color(Color.white)
                 } else {
+                    cursor("pointer")
                     backgroundPosition("100% 0")
                     color(color)
                 }

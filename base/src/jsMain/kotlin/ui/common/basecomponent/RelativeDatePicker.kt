@@ -1,0 +1,189 @@
+package ui.common.basecomponent
+
+import androidx.compose.runtime.*
+import common.DateUtils
+import common.coerceIn
+import kotlinx.datetime.DateTimeUnit
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.plus
+import org.jetbrains.compose.web.attributes.InputType
+import org.jetbrains.compose.web.attributes.max
+import org.jetbrains.compose.web.attributes.min
+import org.jetbrains.compose.web.attributes.pattern
+import org.jetbrains.compose.web.css.*
+import org.jetbrains.compose.web.dom.*
+import org.w3c.dom.HTMLDivElement
+
+@Composable
+fun RelativeDatePicker(
+    initialDate: LocalDate?,
+    attrs: AttrBuilderContext<HTMLDivElement>? = null,
+    onDatePicked: (LocalDate?) -> Unit
+) {
+    var state by remember {
+        mutableStateOf(
+            RelativeDatePickerState(
+                if (initialDate == null) RelativeDatePickerState.Mode.NONE else RelativeDatePickerState.Mode.SET,
+                initialDate,
+                1
+            )
+        )
+    }
+
+
+    fun updateSource() {
+        val today = DateUtils.today
+        when (state.mode) {
+            RelativeDatePickerState.Mode.NONE -> null
+            RelativeDatePickerState.Mode.SET -> state.rememberedDate
+            RelativeDatePickerState.Mode.DAYS -> today.plus(state.rememberedPeriod, DateTimeUnit.DAY)
+            RelativeDatePickerState.Mode.WEEKS -> today.plus(state.rememberedPeriod, DateTimeUnit.WEEK)
+            RelativeDatePickerState.Mode.MONTHS -> today.plus(state.rememberedPeriod, DateTimeUnit.MONTH)
+            RelativeDatePickerState.Mode.YEARS -> today.plus(state.rememberedPeriod, DateTimeUnit.YEAR)
+        }.let(onDatePicked)
+    }
+
+    Div(attrs = {
+        attrs?.invoke(this)
+        style {
+            display(DisplayStyle.Flex)
+            flexDirection(FlexDirection.Column)
+            alignItems(AlignItems.Center)
+            justifyContent(JustifyContent.Center)
+        }
+    }) {
+
+        when (state.mode) {
+            RelativeDatePickerState.Mode.NONE -> Div(attrs = {
+                style {
+                    height(24.px)
+                    display(DisplayStyle.Flex)
+                    flexDirection(FlexDirection.Column)
+                    justifyContent(JustifyContent.Center)
+                    alignItems(AlignItems.Center)
+                }
+            }) {
+                Text("None")
+            }
+
+            RelativeDatePickerState.Mode.SET -> Input(InputType.Date) {
+                min(DateUtils.today.toString())
+                value(state.rememberedDate?.toString() ?: "")
+                onInput { event ->
+                    state =
+                        state.copy(rememberedDate = event.value.takeIf { it.isNotBlank() }?.let(LocalDate::parse))
+                    updateSource()
+                }
+                style {
+                    border(0.px)
+                    height(24.px)
+                }
+            }
+
+
+            else -> RelativeDateCounter(state.rememberedPeriod, state.mode) {
+                state = state.copy(rememberedPeriod = it)
+                updateSource()
+            }
+        }
+
+        Input(InputType.Range) {
+            min("0")
+            max(RelativeDatePickerState.Mode.values().size.minus(1).toString())
+            style {
+                width(200.px)
+                property("transform", "scale(0.8)")
+            }
+            value(state.mode.ordinal)
+            onInput {
+                state = state.copy(mode = RelativeDatePickerState.Mode.values()[it.value?.toInt() ?: 0])
+                updateSource()
+            }
+        }
+    }
+
+}
+
+@Composable
+private fun RelativeDateCounter(
+    rememberedPeriod: Int,
+    mode: RelativeDatePickerState.Mode,
+    onNumberChange: (Int) -> Unit
+) {
+
+    fun choosePlural(singular: String, plural: String) = if (rememberedPeriod == 1) singular else plural
+
+    Div(
+        attrs = {
+            style {
+                height(24.px)
+                flexDirection(FlexDirection.Row)
+                alignItems(AlignItems.Center)
+                justifyContent(JustifyContent.Center)
+                display(DisplayStyle.Flex)
+            }
+        }
+    ) {
+        Button(attrs = {
+            style {
+                height(22.px)
+                width(22.px)
+            }
+            onClick { onNumberChange((rememberedPeriod - 1).coerceIn(min = 1, max = 99)) }
+        }) {
+            Text("-")
+        }
+        TextInput(rememberedPeriod.toString()) {
+            pattern("[0-9]")
+            style {
+                width(20.px)
+                border(0.px)
+                fontSize(15.px)
+                textAlign("right")
+            }
+            onInput {
+                onNumberChange((it.value.toIntOrNull() ?: rememberedPeriod).coerceIn(min = 1))
+            }
+        }
+        Div(attrs = {
+            style {
+                width(48.px)
+                textAlign("left")
+                paddingLeft(4.px)
+                paddingTop(2.px)
+            }
+        }) {
+            when (mode) {
+                RelativeDatePickerState.Mode.DAYS -> Text(choosePlural("day", "days"))
+                RelativeDatePickerState.Mode.WEEKS -> Text(choosePlural("week", "weeks"))
+                RelativeDatePickerState.Mode.MONTHS -> Text(choosePlural("month", "months"))
+                RelativeDatePickerState.Mode.YEARS -> Text(choosePlural("year", "years"))
+                else -> {}
+            }
+        }
+        Button(attrs = {
+            style {
+                height(22.px)
+                width(22.px)
+            }
+            onClick { onNumberChange((rememberedPeriod + 1).coerceIn(min = 1, max = 99)) }
+        }) {
+            Text("+")
+        }
+    }
+}
+
+data class RelativeDatePickerState(
+    val mode: Mode,
+    val rememberedDate: LocalDate?,
+    val rememberedPeriod: Int,
+) {
+    enum class Mode {
+        NONE,
+        SET,
+        DAYS,
+        WEEKS,
+        MONTHS,
+        YEARS,
+    }
+}
