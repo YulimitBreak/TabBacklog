@@ -1,4 +1,4 @@
-package ui.common
+package ui.common.basecomponent
 
 import androidx.compose.runtime.Composable
 import org.jetbrains.compose.web.css.*
@@ -6,7 +6,7 @@ import org.jetbrains.compose.web.dom.AttrBuilderContext
 import org.jetbrains.compose.web.dom.Div
 import org.w3c.dom.HTMLDivElement
 
-object LoadingSpinner : StyleSheet() {
+private object LoadingSpinnerStyleSheet : StyleSheet() {
     private val keyframes by keyframes {
         from {
             property("transform", "rotate(0deg)")
@@ -19,7 +19,7 @@ object LoadingSpinner : StyleSheet() {
 
     val loader by style {
         border(8.px, LineStyle.Solid, Color.lightgray)
-        property("border-top", "8px solid blue")
+        property("border-top", "8px solid crimson")
         width(30.px)
         height(30.px)
         borderRadius(50.percent)
@@ -32,11 +32,11 @@ object LoadingSpinner : StyleSheet() {
 }
 
 @Composable
-fun Loader(attrs: AttrBuilderContext<HTMLDivElement>? = null) {
-    Style(LoadingSpinner)
+fun LoadingSpinner(attrs: AttrBuilderContext<HTMLDivElement>? = null) {
+    Style(LoadingSpinnerStyleSheet)
     Div(
         attrs = {
-            classes(LoadingSpinner.loader)
+            classes(LoadingSpinnerStyleSheet.loader)
             attrs?.invoke(this)
         }
     )

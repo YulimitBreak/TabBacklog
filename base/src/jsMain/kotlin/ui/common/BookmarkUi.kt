@@ -9,6 +9,7 @@ import org.jetbrains.compose.web.dom.Div
 import org.jetbrains.compose.web.dom.P
 import org.jetbrains.compose.web.dom.Text
 import org.w3c.dom.HTMLDivElement
+import ui.common.basecomponent.LoadingSpinner
 
 @Composable
 fun BookmarkContent(
@@ -60,6 +61,6 @@ fun BookmarkLoading(
             justifyContent(JustifyContent.Center)
         }
     }) {
-        Loader()
+        LoadingSpinner()
     }
 }

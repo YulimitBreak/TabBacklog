@@ -1,11 +1,13 @@
 package ui.common
 
 import androidx.compose.runtime.Composable
+import entity.BookmarkType
 import entity.EditedBookmark
 import org.jetbrains.compose.web.attributes.AttrsScope
 import org.jetbrains.compose.web.css.*
 import org.jetbrains.compose.web.dom.*
 import org.w3c.dom.HTMLDivElement
+import ui.common.basecomponent.SwitchToggle
 
 @Composable
 fun BookmarkEditor(
@@ -29,7 +31,12 @@ fun BookmarkEditor(
             style { width(100.percent) }
         }, onTitleChanged = { onBookmarkChange(bookmark.copy(title = it)) })
 
-
+        BookmarkTypeSelector(bookmark.currentType, attrs = {
+            style {
+                width(80.percent)
+                marginTop(16.px)
+            }
+        }, onTypeChanged = { onBookmarkChange(bookmark.copy(currentType = it)) })
 
         Div(attrs = {
             style {
@@ -117,6 +124,30 @@ fun BookmarkTitleEdit(
     }
 }
 
+@Composable
+fun BookmarkTypeSelector(
+    type: BookmarkType,
+    attrs: (AttrsScope<HTMLDivElement>.() -> Unit)? = null,
+    onTypeChanged: (BookmarkType) -> Unit,
+) {
+    SwitchToggle(
+        "Backlog",
+        "Library",
+        when (type) {
+            BookmarkType.LIBRARY -> false
+            BookmarkType.BACKLOG -> true
+        },
+        Color.crimson,
+        attrs,
+    ) {
+        onTypeChanged(
+            when (it) {
+                true -> BookmarkType.BACKLOG
+                false -> BookmarkType.LIBRARY
+            }
+        )
+    }
+}
 
 @Composable
 fun BookmarkCloseBar(
