@@ -1,4 +1,4 @@
-rootProject.name = "TabLibrary"
+rootProject.name = "TabBacklog"
 
 pluginManagement {
     repositories {
