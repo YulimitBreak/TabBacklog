@@ -40,7 +40,12 @@ fun Popup(appModule: AppModule) {
             Text("Open manager")
         }
 
-        BookmarkContent(model.uiState.bookmark) {
+        BookmarkContent(model.uiState.bookmark, attrs = {
+            style {
+                width(100.percent)
+                height(100.percent)
+            }
+        }) {
             model.updateBookmark(it)
         }
     }

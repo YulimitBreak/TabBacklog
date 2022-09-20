@@ -12,34 +12,38 @@ import org.jetbrains.compose.web.dom.*
 import org.w3c.dom.HTMLDivElement
 
 @Composable
-fun BookmarkEditor(bookmark: EditedBookmark, onBookmarkChange: (EditedBookmark) -> Unit) {
+fun BookmarkEditor(
+    bookmark: EditedBookmark,
+    attrs: AttrBuilderContext<HTMLDivElement>? = null,
+    onBookmarkChange: (EditedBookmark) -> Unit
+) {
 
-    Div(
-        attrs = {
-            style {
-                display(DisplayStyle.Flex)
-                flexDirection(FlexDirection.Column)
-                alignItems(AlignItems.Center)
-                marginTop(16.px)
-                marginBottom(16.px)
-            }
+    Div(attrs = {
+        attrs?.invoke(this)
+        style {
+            display(DisplayStyle.Flex)
+            flexDirection(FlexDirection.Column)
+            alignItems(AlignItems.Center)
+            justifyContent(JustifyContent.Stretch)
+            marginTop(16.px)
+            marginBottom(16.px)
         }
-    ) {
-        BookmarkTitleEdit(
-            bookmark.title, bookmark.base.favicon, bookmark.base.url,
-            attrs = {
-                style { width(100.percent) }
-            },
-            onTitleChanged = { onBookmarkChange(bookmark.copy(title = it)) }
-        )
-        BookmarkTypeSelector(
-            bookmark.isNew, bookmark.currentType, attrs = {
-                style {
-                    width(100.percent)
-                    marginTop(8.px)
-                }
-            }, onChange = { onBookmarkChange(bookmark.copy(currentType = it)) }
-        )
+    }) {
+        BookmarkTitleEdit(bookmark.title, bookmark.base.favicon, bookmark.base.url, attrs = {
+            style { width(100.percent) }
+        }, onTitleChanged = { onBookmarkChange(bookmark.copy(title = it)) })
+        BookmarkTypeSelector(bookmark.isNew, bookmark.currentType, attrs = {
+            style {
+                width(100.percent)
+                marginTop(8.px)
+            }
+        }, onChange = { onBookmarkChange(bookmark.copy(currentType = it)) })
+
+        Div(attrs = {
+            style {
+                flex(1)
+            }
+        }) { }
 
         Text(bookmark.currentType.toString())
     }
@@ -50,7 +54,7 @@ fun BookmarkTitleEdit(
     title: String,
     favicon: String?,
     url: String,
-    attrs: (AttrsScope<HTMLDivElement>.() -> Unit)?,
+    attrs: (AttrsScope<HTMLDivElement>.() -> Unit)? = null,
     onTitleChanged: (String) -> Unit
 ) {
     Div(attrs = {
@@ -115,7 +119,7 @@ fun BookmarkTitleEdit(
 fun BookmarkTypeSelector(
     isNew: Boolean,
     current: BookmarkType?,
-    attrs: (AttrsScope<HTMLDivElement>.() -> Unit)?,
+    attrs: (AttrsScope<HTMLDivElement>.() -> Unit)? = null,
     onChange: (BookmarkType?) -> Unit
 ) {
     Div(attrs = {
