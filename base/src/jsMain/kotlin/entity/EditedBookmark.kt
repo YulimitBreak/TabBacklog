@@ -15,4 +15,6 @@ data class EditedBookmark(
     val comment: String = base.comment,
 ) {
     val isNew get() = false // !base.isSaved
+
+    val isBeingDeleted get() = currentType == null
 }

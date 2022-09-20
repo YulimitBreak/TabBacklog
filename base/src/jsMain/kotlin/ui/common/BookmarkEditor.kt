@@ -45,7 +45,17 @@ fun BookmarkEditor(
             }
         }) { }
 
-        Text(bookmark.currentType.toString())
+        BookmarkCloseBar(
+            attrs = {
+                style {
+                    width(100.percent)
+                    margin(16.px)
+                }
+            },
+            onCancel = {},
+            onSave = {},
+            onSaveAndClose = {},
+        )
     }
 }
 
@@ -179,4 +189,43 @@ fun BookmarkTypeSelector(
             }
         }
     }
+}
+
+@Composable
+fun BookmarkCloseBar(
+    attrs: (AttrsScope<HTMLDivElement>.() -> Unit)? = null,
+    onCancel: () -> Unit,
+    onSave: () -> Unit,
+    onSaveAndClose: () -> Unit,
+) {
+    Div(attrs = {
+        attrs?.invoke(this)
+        style {
+            display(DisplayStyle.Flex)
+            flexDirection(FlexDirection.Row)
+            justifyContent(JustifyContent.SpaceAround)
+            alignItems(AlignItems.Center)
+        }
+    }
+    ) {
+        A(href = "javascript:void(0);", attrs = {
+            style {
+                color(Color.red)
+            }
+            onClick { onCancel() }
+        }) {
+            Text("Cancel")
+        }
+        A(href = "javascript:void(0);", attrs = {
+            onClick { onSave() }
+        }) {
+            Text("Save")
+        }
+        A(href = "javascript:void(0);", attrs = {
+            onClick { onSaveAndClose() }
+        }) {
+            Text("Save&Close")
+        }
+    }
+
 }
