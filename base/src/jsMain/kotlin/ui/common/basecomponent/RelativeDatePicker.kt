@@ -1,6 +1,6 @@
 package ui.common.basecomponent
 
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
 import common.DateUtils
 import common.coerceIn
 import kotlinx.datetime.DateTimeUnit
@@ -16,32 +16,10 @@ import org.w3c.dom.HTMLDivElement
 
 @Composable
 fun RelativeDatePicker(
-    initialDate: LocalDate?,
+    state: RelativeDatePickerState,
     attrs: AttrBuilderContext<HTMLDivElement>? = null,
-    onDatePicked: (LocalDate?) -> Unit
+    onStateUpdate: (RelativeDatePickerState) -> Unit
 ) {
-    var state by remember {
-        mutableStateOf(
-            RelativeDatePickerState(
-                if (initialDate == null) RelativeDatePickerState.Mode.NONE else RelativeDatePickerState.Mode.SET,
-                initialDate,
-                1
-            )
-        )
-    }
-
-
-    fun updateSource() {
-        val today = DateUtils.today
-        when (state.mode) {
-            RelativeDatePickerState.Mode.NONE -> null
-            RelativeDatePickerState.Mode.SET -> state.rememberedDate
-            RelativeDatePickerState.Mode.DAYS -> today.plus(state.rememberedPeriod, DateTimeUnit.DAY)
-            RelativeDatePickerState.Mode.WEEKS -> today.plus(state.rememberedPeriod, DateTimeUnit.WEEK)
-            RelativeDatePickerState.Mode.MONTHS -> today.plus(state.rememberedPeriod, DateTimeUnit.MONTH)
-            RelativeDatePickerState.Mode.YEARS -> today.plus(state.rememberedPeriod, DateTimeUnit.YEAR)
-        }.let(onDatePicked)
-    }
 
     Div(attrs = {
         attrs?.invoke(this)
@@ -63,16 +41,15 @@ fun RelativeDatePicker(
                     alignItems(AlignItems.Center)
                 }
             }) {
-                Text("None")
+                Text("Never")
             }
 
             RelativeDatePickerState.Mode.SET -> Input(InputType.Date) {
                 min(DateUtils.today.toString())
                 value(state.rememberedDate?.toString() ?: "")
                 onInput { event ->
-                    state =
-                        state.copy(rememberedDate = event.value.takeIf { it.isNotBlank() }?.let(LocalDate::parse))
-                    updateSource()
+                    onStateUpdate(state.copy(rememberedDate = event.value.takeIf { it.isNotBlank() }
+                        ?.let(LocalDate::parse)))
                 }
                 style {
                     border(0.px)
@@ -82,8 +59,7 @@ fun RelativeDatePicker(
 
 
             else -> RelativeDateCounter(state.rememberedPeriod, state.mode) {
-                state = state.copy(rememberedPeriod = it)
-                updateSource()
+                onStateUpdate(state.copy(rememberedPeriod = it))
             }
         }
 
@@ -96,8 +72,7 @@ fun RelativeDatePicker(
             }
             value(state.mode.ordinal)
             onInput {
-                state = state.copy(mode = RelativeDatePickerState.Mode.values()[it.value?.toInt() ?: 0])
-                updateSource()
+                onStateUpdate(state.copy(mode = RelativeDatePickerState.Mode.values()[it.value?.toInt() ?: 0]))
             }
         }
     }
@@ -185,5 +160,23 @@ data class RelativeDatePickerState(
         WEEKS,
         MONTHS,
         YEARS,
+    }
+
+    fun toResultingDate(startingPoint: LocalDate = DateUtils.today) = when (mode) {
+        Mode.NONE -> null
+        Mode.SET -> rememberedDate
+        Mode.DAYS -> startingPoint.plus(rememberedPeriod, DateTimeUnit.DAY)
+        Mode.WEEKS -> startingPoint.plus(rememberedPeriod, DateTimeUnit.WEEK)
+        Mode.MONTHS -> startingPoint.plus(rememberedPeriod, DateTimeUnit.MONTH)
+        Mode.YEARS -> startingPoint.plus(rememberedPeriod, DateTimeUnit.YEAR)
+    }
+
+    companion object {
+        fun fromInitialDate(initialDate: LocalDate?) =
+            RelativeDatePickerState(
+                if (initialDate == null) Mode.NONE else Mode.SET,
+                initialDate,
+                1
+            )
     }
 }
