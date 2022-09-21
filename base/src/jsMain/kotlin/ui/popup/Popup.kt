@@ -11,7 +11,7 @@ import org.jetbrains.compose.web.css.width
 import org.jetbrains.compose.web.dom.Button
 import org.jetbrains.compose.web.dom.Main
 import org.jetbrains.compose.web.dom.Text
-import ui.common.BookmarkContent
+import ui.common.bookmark.BookmarkContent
 
 @Composable
 fun Popup(appModule: AppModule) {

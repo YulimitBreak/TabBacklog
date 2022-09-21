@@ -1,4 +1,4 @@
-package ui.common
+package ui.common.bookmark
 
 import androidx.compose.runtime.Composable
 import entity.EditedBookmark
@@ -10,6 +10,7 @@ import org.jetbrains.compose.web.dom.P
 import org.jetbrains.compose.web.dom.Text
 import org.w3c.dom.HTMLDivElement
 import ui.common.basecomponent.LoadingSpinner
+import ui.common.bookmark.editor.BookmarkEditor
 
 @Composable
 fun BookmarkContent(
