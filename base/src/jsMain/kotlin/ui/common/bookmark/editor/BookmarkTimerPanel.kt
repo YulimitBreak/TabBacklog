@@ -16,7 +16,7 @@ import ui.common.basecomponent.RelativeDatePickerState
 fun BookmarkTimerPanel(
     state: BookmarkTimerPanelState,
     attrs: (AttrsScope<HTMLDivElement>.() -> Unit)? = null,
-    onStateChange: (BookmarkTimerPanelState) -> Unit,
+    onStateChanged: (BookmarkTimerPanelState) -> Unit,
 ) {
 
     Div(
@@ -31,33 +31,9 @@ fun BookmarkTimerPanel(
     ) {
         Div(
             attrs = {
-                title("For links that represent tasks that need to be done by specific date")
-                style {
-                    gridRow("1/2")
-                    gridColumn("1/2")
-                    display(DisplayStyle.Flex)
-                    justifyContent(JustifyContent.Center)
-                    alignItems(AlignItems.Center)
-                }
-            }
-        ) {
-            Text("Deadline")
-        }
-        RelativeDatePicker(
-            state.deadline,
-            attrs = {
-                style {
-                    gridRow("1/2")
-                    gridColumn("2/3")
-                }
-            },
-            onStateUpdate = { onStateChange(state.copy(deadline = it)) }
-        )
-        Div(
-            attrs = {
                 title("For links that will be hidden in the list until reminder date")
                 style {
-                    gridRow("2/3")
+                    gridRow("1/2")
                     gridColumn("1/2")
                     display(DisplayStyle.Flex)
                     justifyContent(JustifyContent.Center)
@@ -71,11 +47,35 @@ fun BookmarkTimerPanel(
             state.reminder,
             attrs = {
                 style {
+                    gridRow("1/2")
+                    gridColumn("2/3")
+                }
+            },
+            onStateUpdate = { onStateChanged(state.copy(reminder = it)) }
+        )
+        Div(
+            attrs = {
+                title("For links that represent tasks that need to be done by specific date")
+                style {
+                    gridRow("2/3")
+                    gridColumn("1/2")
+                    display(DisplayStyle.Flex)
+                    justifyContent(JustifyContent.Center)
+                    alignItems(AlignItems.Center)
+                }
+            }
+        ) {
+            Text("Deadline")
+        }
+        RelativeDatePicker(
+            state.deadline,
+            attrs = {
+                style {
                     gridRow("2/3")
                     gridColumn("2/3")
                 }
             },
-            onStateUpdate = { onStateChange(state.copy(reminder = it)) }
+            onStateUpdate = { onStateChanged(state.copy(deadline = it)) }
         )
         Div(
             attrs = {
@@ -99,7 +99,7 @@ fun BookmarkTimerPanel(
                     gridColumn("2/3")
                 }
             },
-            onStateUpdate = { onStateChange(state.copy(expiration = it)) }
+            onStateUpdate = { onStateChanged(state.copy(expiration = it)) }
         )
     }
 }
@@ -111,11 +111,7 @@ fun rememberBookmarkTimerPanelState(
     initialExpiration: LocalDate?
 ) = remember {
     mutableStateOf(
-        BookmarkTimerPanelState(
-            deadline = RelativeDatePickerState.fromInitialDate(initialDeadline),
-            reminder = RelativeDatePickerState.fromInitialDate(initialReminder),
-            expiration = RelativeDatePickerState.fromInitialDate(initialExpiration)
-        )
+        BookmarkTimerPanelState.fromInitialDate(initialDeadline, initialReminder, initialExpiration)
     )
 }
 
@@ -123,4 +119,19 @@ data class BookmarkTimerPanelState(
     val deadline: RelativeDatePickerState,
     val reminder: RelativeDatePickerState,
     val expiration: RelativeDatePickerState,
-)
+) {
+
+    val hasTimers get() = deadline.isValid || reminder.isValid || expiration.isValid
+
+    companion object {
+        fun fromInitialDate(
+            initialDeadline: LocalDate?,
+            initialReminder: LocalDate?,
+            initialExpiration: LocalDate?
+        ) = BookmarkTimerPanelState(
+            deadline = RelativeDatePickerState.fromInitialDate(initialDeadline),
+            reminder = RelativeDatePickerState.fromInitialDate(initialReminder),
+            expiration = RelativeDatePickerState.fromInitialDate(initialExpiration)
+        )
+    }
+}

@@ -1,16 +1,10 @@
 package ui.common.bookmark.editor
 
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import entity.BookmarkType
 import entity.EditedBookmark
-import org.jetbrains.compose.web.attributes.AttrsScope
 import org.jetbrains.compose.web.css.*
-import org.jetbrains.compose.web.dom.A
-import org.jetbrains.compose.web.dom.AttrBuilderContext
-import org.jetbrains.compose.web.dom.Div
-import org.jetbrains.compose.web.dom.Text
+import org.jetbrains.compose.web.dom.*
 import org.w3c.dom.HTMLDivElement
 import ui.common.basecomponent.SwitchToggle
 
@@ -47,14 +41,15 @@ fun BookmarkEditor(
             bookmark.taskDeadline, bookmark.remindDate, bookmark.expirationDate,
         )
 
-        BookmarkTimerPanel(timerState,
+        BookmarkTimerPanelContainer(
+            timerState,
             attrs = {
                 style {
-                    width(100.percent)
+                    width(90.percent)
                     marginTop(16.px)
                 }
             },
-            onStateChange = { state ->
+            onStateChanged = { state ->
                 timerState = state
                 onBookmarkChange(
                     bookmark.copy(
@@ -88,7 +83,7 @@ fun BookmarkEditor(
 @Composable
 fun BookmarkTypeSelector(
     type: BookmarkType,
-    attrs: (AttrsScope<HTMLDivElement>.() -> Unit)? = null,
+    attrs: AttrBuilderContext<HTMLDivElement>? = null,
     onTypeChanged: (BookmarkType) -> Unit,
 ) {
     SwitchToggle(
@@ -111,8 +106,118 @@ fun BookmarkTypeSelector(
 }
 
 @Composable
+fun BookmarkTimerPanelContainer(
+    state: BookmarkTimerPanelState,
+    attrs: AttrBuilderContext<HTMLDivElement>? = null,
+    onStateChanged: (BookmarkTimerPanelState) -> Unit,
+) {
+    var expanded by remember { mutableStateOf(false) }
+
+    Div(attrs = {
+        attrs?.invoke(this)
+        style {
+            marginLeft(16.px)
+            marginRight(16.px)
+            display(DisplayStyle.Flex)
+            flexDirection(FlexDirection.Column)
+            justifyContent(JustifyContent.Start)
+            alignItems(AlignItems.Center)
+            border(2.px, style = LineStyle.Solid, color = Color.crimson)
+        }
+    }) {
+        Div(
+            attrs = {
+
+                style {
+                    width(100.percent)
+                    height(24.px)
+                    display(DisplayStyle.Grid)
+                    gridTemplateRows("1f")
+                    gridTemplateColumns("25% 50% 25%")
+                    if (expanded) {
+                        property("border-bottom", "2px solid crimson")
+                    }
+                }
+            }
+        ) {
+            Div(
+                attrs = {
+                    onClick { expanded = !expanded }
+                    style {
+                        gridRow("1/2")
+                        gridColumn("1/4")
+                    }
+                }
+            )
+            Div(
+                attrs = {
+                    style {
+                        gridRow("1/2")
+                        gridColumn("1/2")
+                        property("pointer-events", "none")
+                        display(DisplayStyle.Flex)
+                        justifyContent(JustifyContent.Center)
+                        alignItems(AlignItems.Center)
+                    }
+                }
+            ) {
+                Text("Timers")
+            }
+            if (state.hasTimers) {
+                Button(attrs = {
+                    onClick {
+                        onStateChanged(BookmarkTimerPanelState.fromInitialDate(null, null, null))
+                    }
+                    style {
+                        gridRow("1/2")
+                        gridColumn("2/3")
+                        justifySelf("start")
+                        alignSelf("center")
+                        height(24.px)
+                        padding(4.px)
+                        paddingLeft(8.px)
+                        paddingRight(8.px)
+                        color(Color.white)
+                        backgroundColor(Color.crimson)
+                        border(0.px)
+                    }
+                }) {
+                    Text("Clear")
+                }
+            }
+            Img(src = if (expanded) "chevron-down.svg" else "chevron-up.svg") {
+                style {
+                    width(24.px)
+                    height(24.px)
+                    gridRow("1/2")
+                    marginRight(8.px)
+                    gridColumn("3/4")
+                    justifySelf("end")
+                    alignSelf("center")
+                    property("pointer-events", "none")
+                }
+            }
+        }
+
+        if (expanded) {
+            BookmarkTimerPanel(
+                state,
+                attrs = {
+                    style {
+                        width(100.percent)
+                        marginTop(16.px)
+                        marginBottom(16.px)
+                    }
+                },
+                onStateChanged = onStateChanged
+            )
+        }
+    }
+}
+
+@Composable
 fun BookmarkCloseBar(
-    attrs: (AttrsScope<HTMLDivElement>.() -> Unit)? = null,
+    attrs: AttrBuilderContext<HTMLDivElement>? = null,
     onCancel: () -> Unit,
     onSave: () -> Unit,
     onSaveAndClose: () -> Unit,

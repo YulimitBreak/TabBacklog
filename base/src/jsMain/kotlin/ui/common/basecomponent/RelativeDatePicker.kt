@@ -171,6 +171,8 @@ data class RelativeDatePickerState(
         Mode.YEARS -> startingPoint.plus(rememberedPeriod, DateTimeUnit.YEAR)
     }
 
+    val isValid get() = !(mode == Mode.NONE || (mode == Mode.SET && rememberedDate == null))
+
     companion object {
         fun fromInitialDate(initialDate: LocalDate?) =
             RelativeDatePickerState(
