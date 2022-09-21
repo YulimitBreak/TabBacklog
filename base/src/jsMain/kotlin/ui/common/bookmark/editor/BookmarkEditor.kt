@@ -146,6 +146,7 @@ fun BookmarkTimerPanelContainer(
                     style {
                         gridRow("1/2")
                         gridColumn("1/4")
+                        cursor("pointer")
                     }
                 }
             )
@@ -180,6 +181,7 @@ fun BookmarkTimerPanelContainer(
                         color(Color.white)
                         backgroundColor(Color.crimson)
                         border(0.px)
+                        cursor("pointer")
                     }
                 }) {
                     Text("Clear")

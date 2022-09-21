@@ -103,6 +103,11 @@ private fun RelativeDateCounter(
             style {
                 height(22.px)
                 width(22.px)
+                backgroundColor(Color.crimson)
+                color(Color.white)
+                borderRadius(2.px)
+                border(0.px)
+                cursor("pointer")
             }
             onClick { onNumberChange((rememberedPeriod - 1).coerceIn(min = 1, max = 99)) }
         }) {
@@ -140,6 +145,11 @@ private fun RelativeDateCounter(
             style {
                 height(22.px)
                 width(22.px)
+                backgroundColor(Color.crimson)
+                color(Color.white)
+                borderRadius(2.px)
+                border(0.px)
+                cursor("pointer")
             }
             onClick { onNumberChange((rememberedPeriod + 1).coerceIn(min = 1, max = 99)) }
         }) {
