@@ -3,6 +3,7 @@ package ui.common.bookmark.editor
 import androidx.compose.runtime.*
 import entity.BookmarkType
 import entity.EditedBookmark
+import org.jetbrains.compose.web.attributes.InputMode
 import org.jetbrains.compose.web.css.*
 import org.jetbrains.compose.web.dom.*
 import org.w3c.dom.HTMLDivElement
@@ -36,6 +37,30 @@ fun BookmarkEditor(
                 marginTop(16.px)
             }
         }, onTypeChanged = { onBookmarkChange(bookmark.copy(currentType = it)) })
+
+        Div(attrs = {
+            title("A reminder, why this page is in backlog or library")
+            style {
+                alignSelf(AlignSelf.SelfStart)
+                marginLeft(16.px)
+                marginTop(16.px)
+            }
+        }
+        ) {
+            Text("Comment")
+        }
+
+        TextArea {
+            inputMode(InputMode.Text)
+            value(bookmark.comment)
+            onInput { onBookmarkChange(bookmark.copy(comment = it.value)) }
+            style {
+                border(2.px, LineStyle.Solid, Color.crimson)
+                property("resize", "none")
+                width(90.percent)
+                marginTop(8.px)
+            }
+        }
 
         var timerState by rememberBookmarkTimerPanelState(
             bookmark.taskDeadline, bookmark.remindDate, bookmark.expirationDate,
@@ -116,8 +141,6 @@ fun BookmarkTimerPanelContainer(
     Div(attrs = {
         attrs?.invoke(this)
         style {
-            marginLeft(16.px)
-            marginRight(16.px)
             display(DisplayStyle.Flex)
             flexDirection(FlexDirection.Column)
             justifyContent(JustifyContent.Start)
