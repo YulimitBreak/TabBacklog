@@ -10,6 +10,7 @@ import org.jetbrains.compose.web.css.*
 import org.jetbrains.compose.web.dom.*
 import org.w3c.dom.HTMLDivElement
 import ui.common.basecomponent.SwitchToggle
+import ui.common.basecomponent.TagInput
 
 @Composable
 fun BookmarkEditor(
@@ -23,7 +24,7 @@ fun BookmarkEditor(
         appModule.createBookmarkEditorModel(scope, baseBookmark)
     }
 
-    val bookmark: EditedBookmark by lazy { model.state.bookmark }
+    val bookmark: EditedBookmark = model.state.bookmark
 
     Div(attrs = {
         attrs?.invoke(this)
@@ -70,6 +71,24 @@ fun BookmarkEditor(
                 marginTop(8.px)
             }
         }
+
+
+        TagInput(
+            model.state.tagInputUiState.currentInput,
+            bookmark.tags,
+            model.state.tagInputUiState.suggestedTags,
+            onTagInput = { model.updateTagInput(it) },
+            onTagConfirm = { model.onTagConfirm(it) },
+            onConfirmedTagEdited = { model.onConfirmedTagEdited(it) },
+            onConfirmedTagDeleted = { model.onConfirmedTagDeleted(it) },
+            attrs = {
+                style {
+                    width(90.percent)
+                    marginTop(16.px)
+                }
+            }
+
+        )
 
         var timerState by rememberBookmarkTimerPanelState(
             bookmark.deadline, bookmark.reminder, bookmark.expiration,

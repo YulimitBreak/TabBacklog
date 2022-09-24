@@ -9,8 +9,8 @@ data class EditedBookmark(
     val deadline: LocalDate? = base.deadline,
     val reminder: LocalDate? = base.remindDate,
     val expiration: LocalDate? = base.expirationDate,
-    val tags: String = base.tags.joinToString(separator = " ") { "#it" },
+    val tags: List<String> = base.tags.toList(),
     val comment: String = base.comment,
 ) {
-    val isNew get() = false // !base.isSaved
+    val isNew get() = !base.isSaved
 }

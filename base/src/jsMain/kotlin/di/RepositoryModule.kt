@@ -1,7 +1,8 @@
 package di
 
 import data.BookmarkRepository
-import data.TabRepository
+import data.TabsRepository
+import data.TagRepository
 import dev.shustoff.dikt.Create
 
 
@@ -21,5 +22,12 @@ class RepositoryModule {
     }
 
     @Create
-    private fun provideTabsRepository(): TabRepository
+    private fun provideTabsRepository(): TabsRepository
+
+    val tagRepository by lazy {
+        provideTagRepository()
+    }
+
+    @Create
+    private fun provideTagRepository(): TagRepository
 }

@@ -4,7 +4,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import data.BookmarkRepository
-import data.TabRepository
+import data.TabsRepository
 import entity.Bookmark
 import entity.Loadable
 import kotlinx.coroutines.CoroutineScope
@@ -13,7 +13,7 @@ import kotlinx.coroutines.launch
 class PopupBaseModel(
     private val scope: CoroutineScope,
     private val bookmarkRepository: BookmarkRepository,
-    private val tabRepository: TabRepository,
+    private val tabsRepository: TabsRepository,
 ) {
     var state by mutableStateOf(
         PopupUiState(
@@ -37,7 +37,7 @@ class PopupBaseModel(
 
     fun openManager() {
         scope.launch {
-            tabRepository.openManager()
+            tabsRepository.openManager()
         }
     }
 }
