@@ -1,7 +1,7 @@
 package ui.common.bookmark
 
 import androidx.compose.runtime.Composable
-import entity.EditedBookmark
+import entity.Bookmark
 import entity.Loadable
 import org.jetbrains.compose.web.css.*
 import org.jetbrains.compose.web.dom.AttrBuilderContext
@@ -14,14 +14,13 @@ import ui.common.bookmark.editor.BookmarkEditor
 
 @Composable
 fun BookmarkContent(
-    bookmark: Loadable<EditedBookmark>,
+    bookmark: Loadable<Bookmark>,
     attrs: AttrBuilderContext<HTMLDivElement>? = null,
-    onBookmarkChange: (EditedBookmark) -> Unit
 ) {
     when (bookmark) {
         is Loadable.Error -> BookmarkError(bookmark.error, attrs)
         is Loadable.Loading -> BookmarkLoading(attrs)
-        is Loadable.Success -> BookmarkEditor(bookmark.value, attrs, onBookmarkChange)
+        is Loadable.Success -> BookmarkEditor(bookmark.value, attrs)
     }
 }
 

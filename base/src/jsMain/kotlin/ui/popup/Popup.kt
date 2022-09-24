@@ -3,8 +3,7 @@ package ui.popup
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import di.AppModule
-import di.PopupModule
+import di.ModuleLocal
 import org.jetbrains.compose.web.css.height
 import org.jetbrains.compose.web.css.percent
 import org.jetbrains.compose.web.css.width
@@ -14,10 +13,10 @@ import org.jetbrains.compose.web.dom.Text
 import ui.common.bookmark.BookmarkContent
 
 @Composable
-fun Popup(appModule: AppModule) {
+fun Popup() {
     val scope = rememberCoroutineScope()
-    val module = remember { PopupModule(appModule, scope) }
-    val model = module.model
+    val appModule = ModuleLocal.App.current
+    val model = remember { appModule.createPopupBaseModel(scope) }
 
     Main(
         attrs = {
@@ -40,13 +39,11 @@ fun Popup(appModule: AppModule) {
             Text("Open manager")
         }
 
-        BookmarkContent(model.uiState.bookmark, attrs = {
+        BookmarkContent(model.state.bookmark, attrs = {
             style {
                 width(100.percent)
                 height(100.percent)
             }
-        }) {
-            model.updateBookmark(it)
-        }
+        })
     }
 }

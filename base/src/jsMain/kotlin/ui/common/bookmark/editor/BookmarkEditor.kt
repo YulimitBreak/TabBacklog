@@ -1,6 +1,8 @@
 package ui.common.bookmark.editor
 
 import androidx.compose.runtime.*
+import di.ModuleLocal
+import entity.Bookmark
 import entity.BookmarkType
 import entity.EditedBookmark
 import org.jetbrains.compose.web.attributes.InputMode
@@ -11,10 +13,17 @@ import ui.common.basecomponent.SwitchToggle
 
 @Composable
 fun BookmarkEditor(
-    bookmark: EditedBookmark,
+    baseBookmark: Bookmark,
     attrs: AttrBuilderContext<HTMLDivElement>? = null,
-    onBookmarkChange: (EditedBookmark) -> Unit
 ) {
+
+    val appModule = ModuleLocal.App.current
+    val scope = rememberCoroutineScope()
+    val model = remember(baseBookmark) {
+        appModule.createBookmarkEditorModel(scope, baseBookmark)
+    }
+
+    val bookmark: EditedBookmark by lazy { model.state.bookmark }
 
     Div(attrs = {
         attrs?.invoke(this)
@@ -29,14 +38,14 @@ fun BookmarkEditor(
     }) {
         BookmarkTitleEdit(bookmark.title, bookmark.base.favicon, bookmark.base.url, attrs = {
             style { width(100.percent) }
-        }, onTitleChanged = { onBookmarkChange(bookmark.copy(title = it)) })
+        }, onTitleChanged = { model.onTitleChanged(it) })
 
         BookmarkTypeSelector(bookmark.currentType, attrs = {
             style {
                 width(80.percent)
                 marginTop(16.px)
             }
-        }, onTypeChanged = { onBookmarkChange(bookmark.copy(currentType = it)) })
+        }, onTypeChanged = { model.onTypeChanged(it) })
 
         Div(attrs = {
             title("A reminder, why this page is in backlog or library")
@@ -53,7 +62,7 @@ fun BookmarkEditor(
         TextArea {
             inputMode(InputMode.Text)
             value(bookmark.comment)
-            onInput { onBookmarkChange(bookmark.copy(comment = it.value)) }
+            onInput { model.onCommentChanged(it.value) }
             style {
                 border(2.px, LineStyle.Solid, Color.crimson)
                 property("resize", "none")
@@ -63,7 +72,7 @@ fun BookmarkEditor(
         }
 
         var timerState by rememberBookmarkTimerPanelState(
-            bookmark.taskDeadline, bookmark.remindDate, bookmark.expirationDate,
+            bookmark.deadline, bookmark.reminder, bookmark.expiration,
         )
 
         BookmarkTimerPanelContainer(
@@ -76,12 +85,10 @@ fun BookmarkEditor(
             },
             onStateChanged = { state ->
                 timerState = state
-                onBookmarkChange(
-                    bookmark.copy(
-                        taskDeadline = state.deadline.toResultingDate(),
-                        remindDate = state.reminder.toResultingDate(),
-                        expirationDate = state.reminder.toResultingDate(),
-                    )
+                model.onTimersChanged(
+                    deadline = state.deadline.toResultingDate(),
+                    reminder = state.reminder.toResultingDate(),
+                    expiration = state.reminder.toResultingDate(),
                 )
             })
 

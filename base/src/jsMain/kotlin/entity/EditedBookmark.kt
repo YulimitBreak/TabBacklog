@@ -6,9 +6,9 @@ data class EditedBookmark(
     val base: Bookmark,
     val title: String = base.title,
     val currentType: BookmarkType = base.type,
-    val taskDeadline: LocalDate? = base.deadline,
-    val remindDate: LocalDate? = base.remindDate,
-    val expirationDate: LocalDate? = base.expirationDate,
+    val deadline: LocalDate? = base.deadline,
+    val reminder: LocalDate? = base.remindDate,
+    val expiration: LocalDate? = base.expirationDate,
     val tags: String = base.tags.joinToString(separator = " ") { "#it" },
     val comment: String = base.comment,
 ) {

@@ -1,24 +1,21 @@
 package di
 
-import data.BookmarkRepository
-import data.TabRepository
 import dev.shustoff.dikt.Create
+import dev.shustoff.dikt.UseModules
+import entity.Bookmark
+import kotlinx.coroutines.CoroutineScope
+import ui.common.bookmark.editor.BookmarkEditorModel
+import ui.popup.PopupBaseModel
 
-@Suppress("unused")
-class AppModule {
-
-    // Doing it like this because @CreateSingle causes compilation issues
-    val bookmarkRepository by lazy {
-        provideBookmarkRepository()
-    }
-
-    @Create
-    private fun provideBookmarkRepository(): BookmarkRepository
-
-    val tabRepository by lazy {
-        provideTabsRepository()
-    }
+@Suppress("unused", "UNUSED_PARAMETER")
+@UseModules(RepositoryModule::class)
+class AppModule(
+    val repositoryModule: RepositoryModule
+) {
 
     @Create
-    private fun provideTabsRepository(): TabRepository
+    fun createPopupBaseModel(coroutineScope: CoroutineScope): PopupBaseModel
+
+    @Create
+    fun createBookmarkEditorModel(coroutineScope: CoroutineScope, baseBookmark: Bookmark): BookmarkEditorModel
 }
