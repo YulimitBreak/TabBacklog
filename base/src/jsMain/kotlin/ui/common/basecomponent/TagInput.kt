@@ -136,6 +136,7 @@ fun ConfirmedTagLabel(
                 display(DisplayStyle.Flex)
                 justifyContent(JustifyContent.Center)
                 alignItems(AlignItems.Center)
+                cursor("pointer")
             }
         }) {
             Text(text)

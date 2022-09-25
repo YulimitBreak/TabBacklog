@@ -1,4 +1,4 @@
-package data
+package ui.common.basecomponent
 
 import androidx.compose.runtime.*
 import org.jetbrains.compose.web.css.*
@@ -26,7 +26,6 @@ fun CollapsiblePanel(
             justifyContent(JustifyContent.Start)
             alignItems(AlignItems.Center)
             border(2.px, style = LineStyle.Solid, color = Color.crimson)
-            property("transition", "all 0.5s ease")
 
         }
     }) {
@@ -39,6 +38,7 @@ fun CollapsiblePanel(
                     display(DisplayStyle.Grid)
                     gridTemplateRows("1f")
                     gridTemplateColumns("25% 50% 25%")
+                    overflow("hidden")
                     if (expanded) {
                         property("border-bottom", "2px solid crimson")
                     }
@@ -76,22 +76,24 @@ fun CollapsiblePanel(
                         gridColumn("2/3")
                         justifySelf("start")
                         alignSelf("center")
+                        overflow("hidden")
                     }
                 }) {
                     panelContent(expanded)
                 }
             }
-            Img(src = if (expanded) "chevron-down.svg" else "chevron-up.svg") {
+            Img(src = if (expanded) "chevron-up.svg" else "chevron-down.svg") {
                 style {
-                    width(32.px)
+                    width(40.px)
                     height(24.px)
                     gridRow("1/2")
                     paddingRight(8.px)
+                    paddingLeft(8.px)
                     gridColumn("3/4")
                     justifySelf("end")
                     alignSelf("center")
                     property("pointer-events", "none")
-                    background("linear-gradient(to right, #fff0, #fff")
+                    background("linear-gradient(to right, #fff0, #fff 50%, #fff")
                 }
             }
         }

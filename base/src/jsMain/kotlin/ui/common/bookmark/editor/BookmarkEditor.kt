@@ -1,7 +1,6 @@
 package ui.common.bookmark.editor
 
 import androidx.compose.runtime.*
-import data.CollapsiblePanel
 import di.ModuleLocal
 import entity.Bookmark
 import entity.BookmarkType
@@ -10,6 +9,7 @@ import org.jetbrains.compose.web.attributes.InputMode
 import org.jetbrains.compose.web.css.*
 import org.jetbrains.compose.web.dom.*
 import org.w3c.dom.HTMLDivElement
+import ui.common.basecomponent.CollapsiblePanel
 import ui.common.basecomponent.SwitchToggle
 import ui.common.basecomponent.TagInput
 
@@ -73,23 +73,76 @@ fun BookmarkEditor(
             }
         }
 
-
-        TagInput(
-            model.state.tagInputUiState.currentInput,
-            bookmark.tags,
-            model.state.tagInputUiState.suggestedTags,
-            onTagInput = { model.updateTagInput(it) },
-            onTagConfirm = { model.onTagConfirm(it) },
-            onConfirmedTagEdited = { model.onConfirmedTagEdited(it) },
-            onConfirmedTagDeleted = { model.onConfirmedTagDeleted(it) },
+        CollapsiblePanel(
+            title = "Tags",
             attrs = {
                 style {
                     width(90.percent)
                     marginTop(16.px)
                 }
+            },
+            expanded = model.state.openedPanel == BookmarkEditorModel.OpenedPanel.TAGS,
+            onExpand = { model.toggleOpenedPanel(BookmarkEditorModel.OpenedPanel.TAGS) },
+            panelContent = { expanded ->
+                if (!expanded) {
+                    Div(
+                        attrs = {
+                            style {
+                                display(DisplayStyle.Flex)
+                                width(100.percent)
+                                height(100.percent)
+                                justifyContent(JustifyContent.Start)
+                                alignItems(AlignItems.Center)
+                                flexDirection(FlexDirection.Row)
+                                columnGap(5.px)
+                            }
+                        }
+                    ) {
+                        bookmark.tags.take(5).forEach { tag ->
+                            key(tag) {
+                                Div(attrs = {
+                                    onClick {
+                                        // Because pointer-events: none doesn't work for some reason
+                                        model.toggleOpenedPanel(BookmarkEditorModel.OpenedPanel.TAGS)
+                                    }
+                                    style {
+                                        border(0.px)
+                                        color(Color.white)
+                                        backgroundColor(Color.crimson)
+                                        borderRadius(4.px)
+                                        height(16.px)
+                                        paddingLeft(4.px)
+                                        paddingRight(4.px)
+                                        fontSize(10.px)
+                                        cursor("pointer")
+                                    }
+                                }) {
+                                    Text(tag)
+                                }
+                            }
+                        }
+                    }
+                }
             }
+        ) {
+            TagInput(
+                model.state.tagInputUiState.currentInput,
+                bookmark.tags,
+                model.state.tagInputUiState.suggestedTags,
+                onTagInput = { model.updateTagInput(it) },
+                onTagConfirm = { model.onTagConfirm(it) },
+                onConfirmedTagEdited = { model.onConfirmedTagEdited(it) },
+                onConfirmedTagDeleted = { model.onConfirmedTagDeleted(it) },
+                attrs = {
+                    style {
+                        width(90.percent)
+                        marginTop(16.px)
+                        marginBottom(16.px)
+                    }
+                }
 
-        )
+            )
+        }
 
         var timerState by rememberBookmarkTimerPanelState(
             bookmark.deadline, bookmark.reminder, bookmark.expiration,
@@ -97,6 +150,11 @@ fun BookmarkEditor(
 
         fun onTimerStateChanged(state: BookmarkTimerPanelState) {
             timerState = state
+            model.onTimersChanged(
+                deadline = state.deadline.toResultingDate(),
+                reminder = state.reminder.toResultingDate(),
+                expiration = state.expiration.toResultingDate(),
+            )
         }
 
         CollapsiblePanel(
@@ -107,6 +165,8 @@ fun BookmarkEditor(
                     marginTop(16.px)
                 }
             },
+            expanded = model.state.openedPanel == BookmarkEditorModel.OpenedPanel.TIMERS,
+            onExpand = { model.toggleOpenedPanel(BookmarkEditorModel.OpenedPanel.TIMERS) },
             panelContent = {
                 if (timerState.hasTimers) {
                     Button(attrs = {

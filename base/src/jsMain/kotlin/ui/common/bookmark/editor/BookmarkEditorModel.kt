@@ -23,8 +23,9 @@ class BookmarkEditorModel(
 
     var state by mutableStateOf(
         UiState(
-            EditedBookmark(baseBookmark),
-            TagInputState()
+            bookmark = EditedBookmark(baseBookmark),
+            tagInputUiState = TagInputState(),
+            openedPanel = null
         )
     )
         private set
@@ -52,6 +53,14 @@ class BookmarkEditorModel(
 
     fun onCommentChanged(comment: String) {
         updateBookmark { it.copy(comment = comment) }
+    }
+
+    fun toggleOpenedPanel(panel: OpenedPanel) {
+        if (state.openedPanel == panel) {
+            state = state.copy(openedPanel = null)
+        } else {
+            state = state.copy(openedPanel = panel)
+        }
     }
 
 
@@ -123,12 +132,18 @@ class BookmarkEditorModel(
     data class UiState(
         val bookmark: EditedBookmark,
         val tagInputUiState: TagInputState,
+        val openedPanel: OpenedPanel?,
     )
 
     data class TagInputState(
         val currentInput: String = "",
         val suggestedTags: List<String> = emptyList(),
     )
+
+    enum class OpenedPanel {
+        TAGS,
+        TIMERS,
+    }
 }
 
 
