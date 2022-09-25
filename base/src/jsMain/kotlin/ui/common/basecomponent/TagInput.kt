@@ -69,7 +69,7 @@ fun TagInput(
                 gap(4.px)
             }
         }) {
-            confirmedTags.forEachIndexed { index, tag ->
+            confirmedTags.forEach { tag ->
                 key(tag) {
                     ConfirmedTagLabel(
                         tag,
