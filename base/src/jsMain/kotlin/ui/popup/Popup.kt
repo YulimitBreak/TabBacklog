@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import di.ModuleLocal
+import org.jetbrains.compose.web.css.Style
 import org.jetbrains.compose.web.css.height
 import org.jetbrains.compose.web.css.percent
 import org.jetbrains.compose.web.css.width
@@ -11,12 +12,15 @@ import org.jetbrains.compose.web.dom.Button
 import org.jetbrains.compose.web.dom.Main
 import org.jetbrains.compose.web.dom.Text
 import ui.common.bookmark.BookmarkContent
+import ui.common.styles.UtilStyle
 
 @Composable
 fun Popup() {
     val scope = rememberCoroutineScope()
     val appModule = ModuleLocal.App.current
     val model = remember { appModule.createPopupBaseModel(scope) }
+
+    Style(UtilStyle)
 
     Main(
         attrs = {

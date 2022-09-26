@@ -11,6 +11,7 @@ import org.jetbrains.compose.web.dom.Text
 import org.w3c.dom.HTMLDivElement
 import ui.common.basecomponent.RelativeDatePicker
 import ui.common.basecomponent.RelativeDatePickerState
+import ui.common.styles.UtilStyle
 
 @Composable
 fun BookmarkTimerPanel(
@@ -32,12 +33,10 @@ fun BookmarkTimerPanel(
         Div(
             attrs = {
                 title("For links that will be hidden in the list until reminder date")
+                classes(UtilStyle.centerContent)
                 style {
                     gridRow("1/2")
                     gridColumn("1/2")
-                    display(DisplayStyle.Flex)
-                    justifyContent(JustifyContent.Center)
-                    alignItems(AlignItems.Center)
                 }
             }
         ) {
@@ -56,12 +55,10 @@ fun BookmarkTimerPanel(
         Div(
             attrs = {
                 title("For links that represent tasks that need to be done by specific date")
+                classes(UtilStyle.centerContent)
                 style {
                     gridRow("2/3")
                     gridColumn("1/2")
-                    display(DisplayStyle.Flex)
-                    justifyContent(JustifyContent.Center)
-                    alignItems(AlignItems.Center)
                 }
             }
         ) {
@@ -80,12 +77,10 @@ fun BookmarkTimerPanel(
         Div(
             attrs = {
                 title("For links that should be deleted after specific date")
+                classes(UtilStyle.centerContent)
                 style {
                     gridRow("3/4")
                     gridColumn("1/2")
-                    display(DisplayStyle.Flex)
-                    justifyContent(JustifyContent.Center)
-                    alignItems(AlignItems.Center)
                 }
             }
         ) {

@@ -11,6 +11,7 @@ import org.jetbrains.compose.web.dom.Text
 import org.w3c.dom.HTMLDivElement
 import ui.common.basecomponent.LoadingSpinner
 import ui.common.bookmark.editor.BookmarkEditor
+import ui.common.styles.UtilStyle
 
 @Composable
 fun BookmarkContent(
@@ -54,12 +55,8 @@ fun BookmarkLoading(
     attrs: AttrBuilderContext<HTMLDivElement>? = null,
 ) {
     Div(attrs = {
+        classes(UtilStyle.centerContent)
         attrs?.invoke(this)
-        style {
-            display(DisplayStyle.Flex)
-            alignItems(AlignItems.Center)
-            justifyContent(JustifyContent.Center)
-        }
     }) {
         LoadingSpinner()
     }

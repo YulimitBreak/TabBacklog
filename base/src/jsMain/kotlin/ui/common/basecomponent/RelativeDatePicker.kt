@@ -13,6 +13,7 @@ import org.jetbrains.compose.web.attributes.pattern
 import org.jetbrains.compose.web.css.*
 import org.jetbrains.compose.web.dom.*
 import org.w3c.dom.HTMLDivElement
+import ui.common.styles.UtilStyle
 
 @Composable
 fun RelativeDatePicker(
@@ -33,12 +34,9 @@ fun RelativeDatePicker(
 
         when (state.mode) {
             RelativeDatePickerState.Mode.NONE -> Div(attrs = {
+                classes(UtilStyle.centerContent)
                 style {
                     height(24.px)
-                    display(DisplayStyle.Flex)
-                    flexDirection(FlexDirection.Column)
-                    justifyContent(JustifyContent.Center)
-                    alignItems(AlignItems.Center)
                 }
             }) {
                 Text("Never")

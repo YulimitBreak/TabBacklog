@@ -7,6 +7,7 @@ import org.jetbrains.compose.web.dom.Div
 import org.jetbrains.compose.web.dom.Img
 import org.jetbrains.compose.web.dom.Text
 import org.w3c.dom.HTMLDivElement
+import ui.common.styles.UtilStyle
 
 @Composable
 fun CollapsiblePanel(
@@ -57,13 +58,10 @@ fun CollapsiblePanel(
             )
             Div(
                 attrs = {
+                    classes(UtilStyle.centerContent, UtilStyle.clickThrough)
                     style {
                         gridRow("1/2")
                         gridColumn("1/2")
-                        property("pointer-events", "none")
-                        display(DisplayStyle.Flex)
-                        justifyContent(JustifyContent.Center)
-                        alignItems(AlignItems.Center)
                     }
                 }
             ) {
@@ -83,6 +81,7 @@ fun CollapsiblePanel(
                 }
             }
             Img(src = if (expanded) "chevron-up.svg" else "chevron-down.svg") {
+                classes(UtilStyle.clickThrough)
                 style {
                     width(40.px)
                     height(24.px)
@@ -92,7 +91,6 @@ fun CollapsiblePanel(
                     gridColumn("3/4")
                     justifySelf("end")
                     alignSelf("center")
-                    property("pointer-events", "none")
                     background("linear-gradient(to right, #fff0, #fff 50%, #fff")
                 }
             }

@@ -6,6 +6,7 @@ import org.jetbrains.compose.web.attributes.list
 import org.jetbrains.compose.web.css.*
 import org.jetbrains.compose.web.dom.*
 import org.w3c.dom.HTMLDivElement
+import ui.common.styles.UtilStyle
 
 @Composable
 fun TagInput(
@@ -115,14 +116,12 @@ fun ConfirmedTagLabel(
     }) {
 
         Div(attrs = {
+            classes(UtilStyle.centerContent)
             onClick { onTagDeleted() }
             style {
                 height(100.percent)
                 padding(4.px)
                 cursor("pointer")
-                display(DisplayStyle.Flex)
-                justifyContent(JustifyContent.Center)
-                alignItems(AlignItems.Center)
             }
         }) {
             Text("x")
