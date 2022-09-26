@@ -10,6 +10,7 @@ data class EditedBookmark(
     val reminder: LocalDate? = base.remindDate,
     val expiration: LocalDate? = base.expirationDate,
     val tags: List<String> = base.tags.toList(),
+    val favorite: Boolean = base.favorite,
     val comment: String = base.comment,
 ) {
     val isNew get() = !base.isSaved

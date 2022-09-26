@@ -129,6 +129,10 @@ class BookmarkEditorModel(
         }
     }
 
+    fun onFavoriteChanged(favorite: Boolean) {
+        updateBookmark { it.copy(favorite = favorite) }
+    }
+
     data class UiState(
         val bookmark: EditedBookmark,
         val tagInputUiState: TagInputState,

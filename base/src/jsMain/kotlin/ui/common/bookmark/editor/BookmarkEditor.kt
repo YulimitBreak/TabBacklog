@@ -10,6 +10,7 @@ import org.jetbrains.compose.web.css.*
 import org.jetbrains.compose.web.dom.*
 import org.w3c.dom.HTMLDivElement
 import ui.common.basecomponent.CollapsiblePanel
+import ui.common.basecomponent.FavoriteButton
 import ui.common.basecomponent.SwitchToggle
 import ui.common.basecomponent.TagInput
 
@@ -48,6 +49,14 @@ fun BookmarkEditor(
                 marginTop(16.px)
             }
         }, onTypeChanged = { model.onTypeChanged(it) })
+
+        FavoriteButton(
+            bookmark.favorite,
+            onChange = { model.onFavoriteChanged(it) },
+            attrs = {
+                style { width(50.percent) }
+            }
+        )
 
         Div(attrs = {
             title("A reminder, why this page is in backlog or library")
