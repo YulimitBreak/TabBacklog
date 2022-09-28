@@ -7,6 +7,7 @@ import org.jetbrains.compose.web.dom.Div
 import org.jetbrains.compose.web.dom.Img
 import org.jetbrains.compose.web.dom.Text
 import org.w3c.dom.HTMLDivElement
+import ui.common.styles.MainStyle
 import ui.common.styles.UtilStyle
 
 @Composable
@@ -21,13 +22,12 @@ fun CollapsiblePanel(
 
     Div(attrs = {
         attrs?.invoke(this)
+        classes(MainStyle.outline)
         style {
             display(DisplayStyle.Flex)
             flexDirection(FlexDirection.Column)
             justifyContent(JustifyContent.Start)
             alignItems(AlignItems.Center)
-            border(2.px, style = LineStyle.Solid, color = Color.crimson)
-
         }
     }) {
         Div(

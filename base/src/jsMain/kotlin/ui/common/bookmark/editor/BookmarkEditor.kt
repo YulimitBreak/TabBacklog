@@ -13,6 +13,8 @@ import ui.common.basecomponent.CollapsiblePanel
 import ui.common.basecomponent.FavoriteButton
 import ui.common.basecomponent.SwitchToggle
 import ui.common.basecomponent.TagInput
+import ui.common.styles.MainStyle
+import ui.common.styles.UtilStyle
 
 @Composable
 fun BookmarkEditor(
@@ -71,11 +73,11 @@ fun BookmarkEditor(
         }
 
         TextArea {
+            classes(MainStyle.outline)
             inputMode(InputMode.Text)
             value(bookmark.comment)
             onInput { model.onCommentChanged(it.value) }
             style {
-                border(2.px, LineStyle.Solid, Color.crimson)
                 property("resize", "none")
                 width(90.percent)
                 marginTop(8.px)
@@ -114,15 +116,8 @@ fun BookmarkEditor(
                                         // Because pointer-events: none doesn't work for some reason
                                         model.toggleOpenedPanel(BookmarkEditorModel.OpenedPanel.TAGS)
                                     }
+                                    classes(MainStyle.tag, UtilStyle.centerContent)
                                     style {
-                                        border(0.px)
-                                        color(Color.white)
-                                        backgroundColor(Color.crimson)
-                                        borderRadius(4.px)
-                                        height(16.px)
-                                        paddingLeft(4.px)
-                                        paddingRight(4.px)
-                                        fontSize(10.px)
                                         cursor("pointer")
                                     }
                                 }) {
@@ -184,15 +179,12 @@ fun BookmarkEditor(
                                 BookmarkTimerPanelState.fromInitialDate(null, null, null)
                             )
                         }
+                        classes(MainStyle.button, MainStyle.solid)
                         style {
                             height(24.px)
                             padding(4.px)
                             paddingLeft(8.px)
                             paddingRight(8.px)
-                            color(Color.white)
-                            backgroundColor(Color.crimson)
-                            border(0.px)
-                            cursor("pointer")
                         }
                     }) {
                         Text("Clear")
@@ -239,7 +231,7 @@ fun BookmarkTypeSelector(
             BookmarkType.LIBRARY -> false
             BookmarkType.BACKLOG -> true
         },
-        Color.crimson,
+        MainStyle.primaryColor,
         attrs,
     ) {
         onTypeChanged(

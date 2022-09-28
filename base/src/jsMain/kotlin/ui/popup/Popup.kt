@@ -12,6 +12,7 @@ import org.jetbrains.compose.web.dom.Button
 import org.jetbrains.compose.web.dom.Main
 import org.jetbrains.compose.web.dom.Text
 import ui.common.bookmark.BookmarkContent
+import ui.common.styles.MainStyle
 import ui.common.styles.UtilStyle
 
 @Composable
@@ -21,6 +22,7 @@ fun Popup() {
     val model = remember { appModule.createPopupBaseModel(scope) }
 
     Style(UtilStyle)
+    Style(MainStyle)
 
     Main(
         attrs = {

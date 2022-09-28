@@ -7,6 +7,7 @@ import org.jetbrains.compose.web.dom.Div
 import org.jetbrains.compose.web.dom.Img
 import org.jetbrains.compose.web.dom.Text
 import org.w3c.dom.HTMLDivElement
+import ui.common.styles.MainStyle
 
 @Composable
 fun FavoriteButton(
@@ -23,7 +24,7 @@ fun FavoriteButton(
                 flexDirection(FlexDirection.Row)
                 justifyContent(JustifyContent.Center)
                 alignItems(AlignItems.Center)
-                border(2.px, LineStyle.Solid, Color.crimson)
+                border(2.px, LineStyle.Solid, MainStyle.primaryColor)
                 padding(4.px)
                 height(16.px)
                 cursor("pointer")

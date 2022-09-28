@@ -6,6 +6,7 @@ import org.jetbrains.compose.web.attributes.list
 import org.jetbrains.compose.web.css.*
 import org.jetbrains.compose.web.dom.*
 import org.w3c.dom.HTMLDivElement
+import ui.common.styles.MainStyle
 import ui.common.styles.UtilStyle
 
 @Composable
@@ -74,12 +75,6 @@ fun TagInput(
                 key(tag) {
                     ConfirmedTagLabel(
                         tag,
-                        attrs = {
-                            style {
-                                height(16.px)
-                                fontSize(10.px)
-                            }
-                        },
                         onTagEdited = {
                             onConfirmedTagEdited(tag)
                         },
@@ -98,16 +93,14 @@ private const val SUGGESTION_DATA_LIST_ID = "suggestions"
 @Composable
 fun ConfirmedTagLabel(
     text: String,
-    attrs: AttrBuilderContext<HTMLDivElement>?,
+    attrs: AttrBuilderContext<HTMLDivElement>? = null,
     onTagEdited: () -> Unit,
     onTagDeleted: () -> Unit,
 ) {
     Div(attrs = {
         attrs?.invoke(this)
+        classes(MainStyle.tag)
         style {
-            border(0.px)
-            color(Color.white)
-            backgroundColor(Color.crimson)
             borderRadius(4.px)
             display(DisplayStyle.Flex)
             alignItems(AlignItems.Center)
