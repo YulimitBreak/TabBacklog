@@ -10,10 +10,10 @@ import org.jetbrains.compose.web.css.*
 import org.jetbrains.compose.web.dom.*
 import org.w3c.dom.HTMLDivElement
 import ui.common.basecomponent.CollapsiblePanel
-import ui.common.basecomponent.FavoriteButton
 import ui.common.basecomponent.SwitchToggle
 import ui.common.basecomponent.TagInput
 import ui.common.styles.MainStyle
+import ui.common.styles.TooltipStyle
 import ui.common.styles.UtilStyle
 
 @Composable
@@ -54,6 +54,7 @@ fun BookmarkEditor(
 
         FavoriteButton(
             bookmark.favorite,
+            TooltipStyle.PopupDirection.BOTTOM,
             onChange = { model.onFavoriteChanged(it) },
             attrs = {
                 style { width(50.percent) }

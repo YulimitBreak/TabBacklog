@@ -41,7 +41,7 @@ fun CollapsiblePanel(
                     gridTemplateColumns("25% 50% 25%")
                     overflow("hidden")
                     if (expanded) {
-                        property("border-bottom", "2px solid crimson")
+                        property("border-bottom", "1px solid ${MainStyle.primaryColor}")
                     }
                 }
             }

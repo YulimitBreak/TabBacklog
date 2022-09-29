@@ -16,7 +16,7 @@ private class SwitchToggleStylesheet(val color: CSSColorValue) : StyleSheet() {
         property("transition", "background-position 0.5s ease, color 0.5s ease")
         backgroundSize("200% 100%")
         textAlign("center")
-        border(2.px, style = LineStyle.Solid, color = color)
+        border(1.px, style = LineStyle.Solid, color = color)
         property("border-right", "1px $color")
     }
 
@@ -27,7 +27,7 @@ private class SwitchToggleStylesheet(val color: CSSColorValue) : StyleSheet() {
         property("transition", "background-position 0.5s ease, color 0.5s ease")
         backgroundSize("200% 100%")
         textAlign("center")
-        border(2.px, style = LineStyle.Solid, color = color)
+        border(1.px, style = LineStyle.Solid, color = color)
         property("border-left", "1px $color")
     }
 }

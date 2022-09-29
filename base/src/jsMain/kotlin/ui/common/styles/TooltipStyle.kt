@@ -42,6 +42,13 @@ object TooltipStyle : StyleSheet() {
         marginLeft((-60).px)
     }
 
+    enum class PopupDirection(val className: String) {
+        TOP(dirTop),
+        BOTTOM(dirBottom),
+        LEFT(dirLeft),
+        RIGHT(dirRight),
+    }
+
     init {
         ".$targetView:hover .$popup" style {
             display(DisplayStyle.Block)
@@ -51,13 +58,13 @@ object TooltipStyle : StyleSheet() {
             color(Color.white)
             border(0.px)
             padding(5.px)
-            backgroundColor(Color.crimson)
+            backgroundColor(MainStyle.primaryColor)
         }
 
         ".$targetView.${MainStyle.solid} .$popup" style {
             color(Color.black)
-            border(2.px, LineStyle.Solid, MainStyle.primaryColor)
-            padding(3.px)
+            border(1.px, LineStyle.Solid, MainStyle.primaryColor)
+            padding(4.px)
             backgroundColor(Color.white)
         }
 
