@@ -13,6 +13,7 @@ import org.jetbrains.compose.web.dom.Main
 import org.jetbrains.compose.web.dom.Text
 import ui.common.bookmark.BookmarkContent
 import ui.common.styles.MainStyle
+import ui.common.styles.TooltipStyle
 import ui.common.styles.UtilStyle
 
 @Composable
@@ -23,6 +24,7 @@ fun Popup() {
 
     Style(UtilStyle)
     Style(MainStyle)
+    Style(TooltipStyle)
 
     Main(
         attrs = {
