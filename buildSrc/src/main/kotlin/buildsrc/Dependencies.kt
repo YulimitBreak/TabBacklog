@@ -8,4 +8,5 @@ object Lib {
     }
 
     const val TIME = "org.jetbrains.kotlinx:kotlinx-datetime:0.4.0"
+    const val INDEXED_DB = "com.juul.indexeddb:core:0.2.3"
 }

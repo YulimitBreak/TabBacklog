@@ -33,6 +33,7 @@ kotlin {
                 implementation(buildsrc.Lib.Kotlin.COROUTINES_CORE_JS)
                 implementation(buildsrc.Lib.Kotlin.COROUTINES_CORE)
                 implementation(buildsrc.Lib.TIME)
+                implementation(buildsrc.Lib.INDEXED_DB)
                 implementation(compose.web.core)
                 implementation(compose.runtime)
             }
