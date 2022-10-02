@@ -1,19 +1,20 @@
-package data.database
+package data.database.core
 
 import com.juul.indexeddb.*
-import common.safeCast
 
 interface DbField {
+
+    val storeName: String
 
     val index: Index?
 
     val name: String
 
     sealed class Index {
-        data class PrimaryKey(val storeName: String? = null) : Index()
-        data class Autoincrement(val storeName: String) : Index()
-        data class Field(val unique: Boolean) : Index()
-        data class Composite(val reference: List<DbField>, val unique: Boolean) : Index() {
+        object PrimaryKey : Index()
+        object Autoincrement : Index()
+        data class Field(val unique: Boolean = false) : Index()
+        data class Composite(val reference: List<DbField>, val unique: Boolean = false) : Index() {
             constructor(vararg reference: DbField, unique: Boolean = false) : this(reference.toList(), unique)
         }
     }
@@ -24,19 +25,18 @@ interface EntityDbField<T> : DbField {
 }
 
 value class DbSchema<Field : DbField>(val fields: List<Field>) {
+
+    val storeName: String get() = fields.first().storeName
+
     fun VersionChangeTransaction.createObjectStore(database: Database) {
         val autoincrement = fields.map { it.index }.filterIsInstance<DbField.Index.Autoincrement>().singleOrNull()
         val store: ObjectStore = if (autoincrement != null) {
-            database.createObjectStore(autoincrement.storeName, AutoIncrement)
+            database.createObjectStore(storeName, AutoIncrement)
         } else {
             val primaryKeys = fields.filter { it.index is DbField.Index.PrimaryKey }
-            val name = primaryKeys
-                .mapNotNull { it.index?.safeCast<DbField.Index.PrimaryKey>()?.storeName }
-                .distinct()
-                .singleOrNull() ?: throw IllegalArgumentException("Undefined store name")
             val firstKey = primaryKeys.first().name
             val otherKeys = primaryKeys.drop(1).map { it.name }.toTypedArray()
-            database.createObjectStore(name, KeyPath(firstKey, *otherKeys))
+            database.createObjectStore(storeName, KeyPath(firstKey, *otherKeys))
         }
 
         fields
