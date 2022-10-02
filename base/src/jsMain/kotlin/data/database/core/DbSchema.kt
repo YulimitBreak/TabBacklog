@@ -30,6 +30,8 @@ value class DbSchema<Field : DbField>(val fields: List<Field>) {
 
     fun VersionChangeTransaction.createObjectStore(database: Database) {
         val autoincrement = fields.map { it.index }.filterIsInstance<DbField.Index.Autoincrement>().singleOrNull()
+
+        console.log("Creating object store $storeName")
         val store: ObjectStore = if (autoincrement != null) {
             database.createObjectStore(storeName, AutoIncrement)
         } else {
@@ -42,6 +44,7 @@ value class DbSchema<Field : DbField>(val fields: List<Field>) {
         fields
             .mapNotNull { Pair(it.name, it.index as? DbField.Index.Field ?: return@mapNotNull null) }
             .forEach { (name, index) ->
+                console.log("Creating index for field $name")
                 store.createIndex(name, KeyPath(name), unique = index.unique)
             }
 
@@ -50,6 +53,7 @@ value class DbSchema<Field : DbField>(val fields: List<Field>) {
             .forEach { (name, index) ->
                 val firstKey = index.reference.first().name
                 val otherKeys = index.reference.drop(1).map { it.name }.toTypedArray()
+                console.log("Creating composite index $name")
                 store.createIndex(name, KeyPath(firstKey, *otherKeys), unique = index.unique)
             }
     }
