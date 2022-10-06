@@ -9,6 +9,7 @@ repositories {
     mavenLocal()
     mavenCentral()
     gradlePluginPortal()
+    maven(url = buildsrc.Lib.Kobweb.Repo)
 }
 
 kotlin {
@@ -30,10 +31,14 @@ kotlin {
         val jsMain by getting {
             dependencies {
                 implementation(kotlin("stdlib-js"))
-                implementation(buildsrc.Lib.Kotlin.COROUTINES_CORE_JS)
-                implementation(buildsrc.Lib.Kotlin.COROUTINES_CORE)
-                implementation(buildsrc.Lib.TIME)
-                implementation(buildsrc.Lib.INDEXED_DB)
+                implementation(buildsrc.Lib.Kotlin.CoroutinesCoreJs)
+                implementation(buildsrc.Lib.Kotlin.CoroutinesCore)
+                implementation(buildsrc.Lib.Time)
+                implementation(buildsrc.Lib.IndexedDb)
+                implementation(buildsrc.Lib.Kobweb.Compose)
+                implementation(buildsrc.Lib.Kobweb.ComposeExt)
+                implementation(buildsrc.Lib.Kobweb.Silk)
+                implementation(buildsrc.Lib.Kobweb.SilkFaIcons)
                 implementation(compose.web.core)
                 implementation(compose.runtime)
             }

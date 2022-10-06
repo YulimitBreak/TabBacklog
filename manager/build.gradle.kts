@@ -29,8 +29,8 @@ kotlin {
     sourceSets {
         val jsMain by getting {
             dependencies {
-                implementation(buildsrc.Lib.Kotlin.COROUTINES_CORE_JS)
-                implementation(buildsrc.Lib.Kotlin.COROUTINES_CORE)
+                implementation(buildsrc.Lib.Kotlin.CoroutinesCoreJs)
+                implementation(buildsrc.Lib.Kotlin.CoroutinesCore)
                 implementation(project(":base"))
                 implementation(kotlin("stdlib-js"))
                 implementation(compose.web.core)

@@ -16,6 +16,7 @@ allprojects {
         mavenLocal()
         mavenCentral()
         gradlePluginPortal()
+        maven(url = buildsrc.Lib.Kobweb.Repo)
     }
 }
 
@@ -24,6 +25,7 @@ repositories {
     mavenLocal()
     mavenCentral()
     gradlePluginPortal()
+    maven(url = buildsrc.Lib.Kobweb.Repo)
 }
 
 kotlin {
