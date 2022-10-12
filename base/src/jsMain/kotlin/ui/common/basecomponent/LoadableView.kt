@@ -23,10 +23,10 @@ fun <T> LoadableView(
 interface LoadableViewDelegate {
 
     @Composable
-    fun Loading(modifier: Modifier = Modifier)
+    fun Loading(modifier: Modifier)
 
     @Composable
-    fun Error(error: Throwable, modifier: Modifier = Modifier)
+    fun Error(error: Throwable, modifier: Modifier)
 
     companion object {
         val Local = compositionLocalOf<LoadableViewDelegate> {
