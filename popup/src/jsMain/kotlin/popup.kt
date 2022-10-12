@@ -1,15 +1,18 @@
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
 import di.AppModule
+import di.ModuleLocal
 import di.RepositoryModule
-import org.jetbrains.compose.web.renderComposable
+import ui.common.renderApp
 import ui.popup.Popup
 
 fun main() {
 
-    renderComposable(rootElementId = "root") {
+    renderApp(rootElementId = "root") {
         val appModule = remember { AppModule(RepositoryModule()) }
-        CompositionLocalProvider() {
+        CompositionLocalProvider(
+            ModuleLocal.App provides appModule
+        ) {
             Popup(
 
             )
