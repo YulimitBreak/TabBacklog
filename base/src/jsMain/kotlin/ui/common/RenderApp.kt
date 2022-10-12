@@ -16,7 +16,9 @@ fun renderApp(
     content: @Composable DOMScope<Element>.() -> Unit
 ) {
 
-    initSilk(additionalInit)
+    initSilk {
+        additionalInit(it)
+    }
     renderComposable(rootElementId) {
         Style(KobwebComposeStyleSheet)
         Style(SilkStyleSheet)

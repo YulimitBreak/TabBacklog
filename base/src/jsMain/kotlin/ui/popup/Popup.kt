@@ -5,13 +5,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import di.ModuleLocal
 import org.jetbrains.compose.web.css.Style
-import org.jetbrains.compose.web.css.height
-import org.jetbrains.compose.web.css.percent
-import org.jetbrains.compose.web.css.width
-import org.jetbrains.compose.web.dom.Button
-import org.jetbrains.compose.web.dom.Main
-import org.jetbrains.compose.web.dom.Text
-import ui.common.bookmark.BookmarkContent
+import ui.common.DefaultLocalProvider
 import ui.common.styles.MainStyle
 import ui.common.styles.TooltipStyle
 import ui.common.styles.UtilStyle
@@ -26,6 +20,11 @@ fun Popup() {
     Style(MainStyle)
     Style(TooltipStyle)
 
+    DefaultLocalProvider {
+
+    }
+
+    /*
     Main(
         attrs = {
             style {
@@ -53,5 +52,5 @@ fun Popup() {
                 height(100.percent)
             }
         })
-    }
+    }*/
 }

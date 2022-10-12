@@ -1,10 +1,10 @@
 package ui.common.basecomponent
 
 import androidx.compose.runtime.Composable
+import com.varabyte.kobweb.compose.foundation.layout.Box
+import com.varabyte.kobweb.compose.ui.Modifier
+import com.varabyte.kobweb.compose.ui.modifiers.classNames
 import org.jetbrains.compose.web.css.*
-import org.jetbrains.compose.web.dom.AttrBuilderContext
-import org.jetbrains.compose.web.dom.Div
-import org.w3c.dom.HTMLDivElement
 
 private object LoadingSpinnerStyleSheet : StyleSheet() {
     private val keyframes by keyframes {
@@ -32,12 +32,9 @@ private object LoadingSpinnerStyleSheet : StyleSheet() {
 }
 
 @Composable
-fun LoadingSpinner(attrs: AttrBuilderContext<HTMLDivElement>? = null) {
+fun LoadingSpinner(modifier: Modifier = Modifier) {
     Style(LoadingSpinnerStyleSheet)
-    Div(
-        attrs = {
-            classes(LoadingSpinnerStyleSheet.loader)
-            attrs?.invoke(this)
-        }
+    Box(
+        modifier = modifier.classNames(LoadingSpinnerStyleSheet.loader)
     )
 }
