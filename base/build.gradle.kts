@@ -39,6 +39,7 @@ kotlin {
                 implementation(buildsrc.Lib.Kobweb.ComposeExt)
                 implementation(buildsrc.Lib.Kobweb.Silk)
                 implementation(buildsrc.Lib.Kobweb.SilkFaIcons)
+                implementation(buildsrc.Lib.Routing)
                 implementation(compose.web.core)
                 implementation(compose.runtime)
             }

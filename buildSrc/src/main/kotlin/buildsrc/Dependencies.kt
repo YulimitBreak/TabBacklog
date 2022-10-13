@@ -18,4 +18,6 @@ object Lib {
         const val Silk = "com.varabyte.kobweb:kobweb-silk-widgets:$Version"
         const val SilkFaIcons = "com.varabyte.kobweb:kobweb-silk-icons-fa:$Version"
     }
+
+    const val Routing = "app.softwork:routing-compose:0.2.9"
 }
