@@ -33,6 +33,9 @@ kotlin {
                 implementation(kotlin("stdlib-js"))
                 implementation(buildsrc.Lib.Kotlin.CoroutinesCoreJs)
                 implementation(buildsrc.Lib.Kotlin.CoroutinesCore)
+                implementation(compose.web.core)
+                implementation(compose.runtime)
+
                 implementation(buildsrc.Lib.Time)
                 implementation(buildsrc.Lib.IndexedDb)
                 implementation(buildsrc.Lib.Kobweb.Compose)
@@ -40,8 +43,6 @@ kotlin {
                 implementation(buildsrc.Lib.Kobweb.Silk)
                 implementation(buildsrc.Lib.Kobweb.SilkFaIcons)
                 implementation(buildsrc.Lib.Routing)
-                implementation(compose.web.core)
-                implementation(compose.runtime)
             }
         }
     }
