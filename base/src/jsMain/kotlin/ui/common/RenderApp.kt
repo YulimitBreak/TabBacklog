@@ -7,6 +7,9 @@ import com.varabyte.kobweb.silk.SilkStyleSheet
 import com.varabyte.kobweb.silk.initSilk
 import org.jetbrains.compose.web.css.Style
 import org.jetbrains.compose.web.dom.DOMScope
+import org.jetbrains.compose.web.dom.P
+import org.jetbrains.compose.web.dom.Pre
+import org.jetbrains.compose.web.dom.Text
 import org.jetbrains.compose.web.renderComposable
 import org.w3c.dom.Element
 
@@ -19,9 +22,25 @@ fun renderApp(
     initSilk {
         additionalInit(it)
     }
-    renderComposable(rootElementId) {
-        Style(KobwebComposeStyleSheet)
-        Style(SilkStyleSheet)
-        content()
+    try {
+        renderComposable(rootElementId) {
+            Style(KobwebComposeStyleSheet)
+            Style(SilkStyleSheet)
+
+            content()
+        }
+    } catch (e: Throwable) {
+        e.printStackTrace()
+        renderComposable(rootElementId) {
+            P {
+                Text("Error: ")
+            }
+            P {
+                Text(e.message ?: "unknown")
+            }
+            Pre {
+                Text(e.stackTraceToString())
+            }
+        }
     }
 }
