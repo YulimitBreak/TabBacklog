@@ -1,9 +1,9 @@
-import org.jetbrains.compose.web.renderComposable
+import ui.common.renderApp
 import ui.manager.Manager
 
 fun main() {
 
-    renderComposable(rootElementId = "root") {
+    renderApp(rootElementId = "root") {
         Manager()
     }
 }
