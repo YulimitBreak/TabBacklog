@@ -1,4 +1,4 @@
-package ui.common.bookmark.editor
+package ui.common.bookmark
 
 import androidx.compose.runtime.Composable
 import org.jetbrains.compose.web.attributes.AttrsScope

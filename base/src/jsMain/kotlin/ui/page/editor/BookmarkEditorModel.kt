@@ -1,4 +1,4 @@
-package ui.common.bookmark.editor
+package ui.page.editor
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf

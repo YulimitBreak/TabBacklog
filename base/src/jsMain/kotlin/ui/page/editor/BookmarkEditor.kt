@@ -1,4 +1,4 @@
-package ui.common.bookmark.editor
+package ui.page.editor
 
 import androidx.compose.runtime.*
 import di.ModuleLocal
@@ -12,6 +12,7 @@ import org.w3c.dom.HTMLDivElement
 import ui.common.basecomponent.CollapsiblePanel
 import ui.common.basecomponent.SwitchToggle
 import ui.common.basecomponent.TagInput
+import ui.common.bookmark.*
 import ui.common.styles.MainStyle
 import ui.common.styles.TooltipStyle
 import ui.common.styles.UtilStyle
