@@ -18,7 +18,7 @@ import org.jetbrains.compose.web.dom.Main
 import org.jetbrains.compose.web.dom.Text
 import ui.common.DefaultLocalProvider
 import ui.common.basecomponent.LoadableView
-import ui.common.bookmark.editor.BookmarkEditor
+import ui.common.bookmark.BookmarkTitleView
 import ui.common.styles.MainStyle
 import ui.common.styles.TooltipStyle
 import ui.common.styles.UtilStyle
@@ -45,9 +45,14 @@ fun Popup() {
 
             LoadableView(
                 model.state.bookmark,
-                Modifier.fillMaxWidth().minHeight(300.px)
+                Modifier.fillMaxWidth().minHeight(100.px)
             ) { bookmark: Bookmark, modifier: Modifier ->
-                BookmarkEditor(bookmark, modifier.asAttributesBuilder())
+                BookmarkTitleView(
+                    bookmark.title,
+                    bookmark.favicon,
+                    bookmark.url,
+                    modifier
+                )
             }
         }
     }
