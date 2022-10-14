@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import com.varabyte.kobweb.compose.style.KobwebComposeStyleSheet
 import com.varabyte.kobweb.silk.InitSilkContext
 import com.varabyte.kobweb.silk.SilkStyleSheet
+import com.varabyte.kobweb.silk.components.layout.Surface
 import com.varabyte.kobweb.silk.initSilk
 import org.jetbrains.compose.web.css.Style
 import org.jetbrains.compose.web.dom.DOMScope
@@ -26,8 +27,9 @@ fun renderApp(
         renderComposable(rootElementId) {
             Style(KobwebComposeStyleSheet)
             Style(SilkStyleSheet)
-
-            content()
+            Surface {
+                content()
+            }
         }
     } catch (e: Throwable) {
         e.printStackTrace()

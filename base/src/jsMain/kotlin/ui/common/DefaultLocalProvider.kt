@@ -25,7 +25,9 @@ fun DefaultLocalProvider(content: @Composable () -> Unit) {
 private class DefaultLoadableViewDelegate : LoadableViewDelegate {
     @Composable
     override fun Loading(modifier: Modifier) {
-        LoadingSpinner(modifier)
+        Box(modifier, contentAlignment = Alignment.Center) {
+            LoadingSpinner()
+        }
     }
 
     @Composable
