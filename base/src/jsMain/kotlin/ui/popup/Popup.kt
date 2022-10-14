@@ -3,56 +3,53 @@ package ui.popup
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import app.softwork.routingcompose.HashRouter
 import com.varabyte.kobweb.compose.ui.Modifier
 import com.varabyte.kobweb.compose.ui.asAttributesBuilder
 import com.varabyte.kobweb.compose.ui.modifiers.fillMaxWidth
 import com.varabyte.kobweb.compose.ui.modifiers.minHeight
-import com.varabyte.kobweb.compose.ui.modifiers.width
-import com.varabyte.kobweb.silk.components.forms.Button
 import di.ModuleLocal
-import entity.Bookmark
 import org.jetbrains.compose.web.css.Style
-import org.jetbrains.compose.web.css.percent
 import org.jetbrains.compose.web.css.px
 import org.jetbrains.compose.web.dom.Main
-import org.jetbrains.compose.web.dom.Text
 import ui.common.DefaultLocalProvider
 import ui.common.basecomponent.LoadableView
-import ui.common.bookmark.BookmarkTitleView
 import ui.common.styles.MainStyle
 import ui.common.styles.TooltipStyle
 import ui.common.styles.UtilStyle
+import ui.page.editor.BookmarkEditor
+import ui.page.summary.BookmarkSummary
 
 @Composable
 fun Popup() {
     val scope = rememberCoroutineScope()
     val appModule = ModuleLocal.App.current
-    val model = remember { appModule.createPopupBaseModel(scope) }
+    val model: PopupBaseModel = remember { appModule.createPopupBaseModel(scope) }
 
     Style(UtilStyle)
     Style(MainStyle)
     Style(TooltipStyle)
 
     DefaultLocalProvider {
+        LoadableView(
+            model.state.bookmark,
+            Modifier.minHeight(200.px).fillMaxWidth()
+        ) { bookmark, modifier ->
+            Main(attrs = Modifier.fillMaxWidth().asAttributesBuilder()) {
+                HashRouter("/") {
 
-        Main(attrs = Modifier.fillMaxWidth().asAttributesBuilder()) {
-            Button(
-                onClick = { model.openManager() },
-                Modifier.width(50.percent),
-            ) {
-                Text("Open manager")
-            }
+                    route("/") {
+                        BookmarkSummary(
+                            bookmark,
+                            onBookmarkUpdate = { model.replaceBookmark(it) },
+                            modifier
+                        )
+                    }
 
-            LoadableView(
-                model.state.bookmark,
-                Modifier.fillMaxWidth().minHeight(100.px)
-            ) { bookmark: Bookmark, modifier: Modifier ->
-                BookmarkTitleView(
-                    bookmark.title,
-                    bookmark.favicon,
-                    bookmark.url,
-                    modifier
-                )
+                    route("/edit") {
+                        BookmarkEditor(bookmark, modifier.asAttributesBuilder())
+                    }
+                }
             }
         }
     }

@@ -4,6 +4,7 @@ import androidx.compose.runtime.*
 import com.juul.indexeddb.Database
 import com.juul.indexeddb.deleteDatabase
 import com.juul.indexeddb.openDatabase
+import com.varabyte.kobweb.compose.foundation.layout.Column
 import common.DateUtils
 import data.database.core.DbField
 import data.database.core.DbSchema
@@ -59,27 +60,29 @@ fun Manager() {
     var viewType by remember { mutableStateOf(TestViewType.GET_ALL) }
     P { Text("Manager") }
 
-    Div(attrs = {
-        style {
-            display(DisplayStyle.Flex)
-            flexDirection(FlexDirection.Row)
-            flexWrap(FlexWrap.Wrap)
-        }
-    }) {
-        TestViewType.values().forEach { type ->
-            Button(
-                attrs = {
-                    onClick {
-                        viewType = type
+    Column {
+        Div(attrs = {
+            style {
+                display(DisplayStyle.Flex)
+                flexDirection(FlexDirection.Row)
+                flexWrap(FlexWrap.Wrap)
+            }
+        }) {
+            TestViewType.values().forEach { type ->
+                Button(
+                    attrs = {
+                        onClick {
+                            viewType = type
+                        }
                     }
+                ) {
+                    Text(type.toString())
                 }
-            ) {
-                Text(type.toString())
             }
         }
-    }
 
-    TestView(viewType)
+        TestView(viewType)
+    }
 }
 
 @Composable

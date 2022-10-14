@@ -40,6 +40,12 @@ class PopupBaseModel(
             tabsRepository.openManager()
         }
     }
+
+    fun replaceBookmark(newBookmark: Bookmark) {
+        state = state.copy(
+            bookmark = Loadable.Success(newBookmark)
+        )
+    }
 }
 
 data class PopupUiState(
