@@ -5,6 +5,7 @@ import dev.shustoff.dikt.UseModules
 import entity.Bookmark
 import kotlinx.coroutines.CoroutineScope
 import ui.page.editor.BookmarkEditorModel
+import ui.page.summary.BookmarkSummaryModel
 import ui.popup.PopupBaseModel
 
 @Suppress("unused", "UNUSED_PARAMETER")
@@ -18,4 +19,7 @@ class AppModule(
 
     @Create
     fun createBookmarkEditorModel(coroutineScope: CoroutineScope, baseBookmark: Bookmark): BookmarkEditorModel
+
+    @Create
+    fun createBookmarkSummaryModel(coroutineScope: CoroutineScope): BookmarkSummaryModel
 }
