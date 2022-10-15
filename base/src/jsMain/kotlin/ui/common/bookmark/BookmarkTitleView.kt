@@ -12,6 +12,7 @@ import com.varabyte.kobweb.compose.ui.Alignment
 import com.varabyte.kobweb.compose.ui.Modifier
 import com.varabyte.kobweb.compose.ui.asAttributesBuilder
 import com.varabyte.kobweb.compose.ui.modifiers.*
+import com.varabyte.kobweb.silk.components.icons.fa.FaFileLines
 import org.jetbrains.compose.web.css.FlexWrap
 import org.jetbrains.compose.web.css.em
 import org.jetbrains.compose.web.css.percent
@@ -28,11 +29,13 @@ fun BookmarkTitleView(
     modifier: Modifier = Modifier,
 ) {
     Row(
-        modifier.minWidth(200.px).maxWidth(400.px).flexWrap(FlexWrap.Nowrap),
+        modifier.minWidth(200.px).maxWidth(400.px).flexWrap(FlexWrap.Nowrap).gap(16.px),
         verticalAlignment = Alignment.CenterVertically
     ) {
         if (!favicon.isNullOrBlank()) {
-            Img(src = favicon, attrs = Modifier.size(32.px).margin(right = 16.px).asAttributesBuilder())
+            Img(src = favicon, attrs = Modifier.size(32.px).asAttributesBuilder())
+        } else {
+            FaFileLines(Modifier.fontSize(32.px).size(32.px))
         }
 
         Column(
