@@ -14,6 +14,7 @@ import com.varabyte.kobweb.silk.components.icons.fa.*
 import com.varabyte.kobweb.silk.components.text.SpanText
 import com.varabyte.kobweb.silk.theme.SilkTheme
 import common.DateUtils
+import common.styleProperty
 import di.ModuleLocal
 import entity.Bookmark
 import entity.BookmarkType
@@ -26,7 +27,6 @@ import ui.common.basecomponent.DivText
 import ui.common.basecomponent.RowButton
 import ui.common.basecomponent.TagListView
 import ui.common.bookmark.BookmarkTitleView
-import ui.common.ext.styleProperty
 import ui.common.styles.MainStyle
 
 

@@ -13,13 +13,13 @@ import com.varabyte.kobweb.compose.ui.Modifier
 import com.varabyte.kobweb.compose.ui.asAttributesBuilder
 import com.varabyte.kobweb.compose.ui.modifiers.*
 import com.varabyte.kobweb.silk.components.icons.fa.FaFileLines
+import common.styleProperty
 import org.jetbrains.compose.web.css.FlexWrap
 import org.jetbrains.compose.web.css.em
 import org.jetbrains.compose.web.css.percent
 import org.jetbrains.compose.web.css.px
 import org.jetbrains.compose.web.dom.Img
 import ui.common.basecomponent.DivText
-import ui.common.ext.styleProperty
 
 @Composable
 fun BookmarkTitleView(

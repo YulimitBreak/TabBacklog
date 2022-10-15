@@ -1,4 +1,4 @@
-package ui.common.ext
+package common
 
 import com.varabyte.kobweb.compose.ui.Modifier
 import com.varabyte.kobweb.compose.ui.styleModifier
