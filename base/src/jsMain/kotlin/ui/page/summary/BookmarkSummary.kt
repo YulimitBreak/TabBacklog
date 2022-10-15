@@ -18,16 +18,16 @@ import common.styleProperty
 import di.ModuleLocal
 import entity.Bookmark
 import entity.BookmarkType
+import org.jetbrains.compose.web.css.minus
 import org.jetbrains.compose.web.css.percent
 import org.jetbrains.compose.web.css.px
-import org.jetbrains.compose.web.css.value
 import org.jetbrains.compose.web.dom.Text
 import ui.common.basecomponent.DivText
 import ui.common.basecomponent.RowButton
 import ui.common.basecomponent.TagListView
 import ui.common.bookmark.BookmarkTitleView
+import ui.common.bookmark.TimerDisplay
 import ui.common.styles.MainStyle
-import ui.common.styles.Palette
 
 
 @Composable
@@ -42,7 +42,7 @@ fun BookmarkSummary(
 
     val model: BookmarkSummaryModel = remember { appModule.createBookmarkSummaryModel(scope) }
 
-    Column(modifier.gap(8.px)) {
+    Column(modifier.gap(8.px).margin(bottom = 16.px)) {
         Row(Modifier.fillMaxWidth().gap(8.px)) {
 
             RowButton(onClick = { model.openManager() }) {
@@ -64,7 +64,12 @@ fun BookmarkSummary(
                 }
             }
         }
-        BookmarkTitleView(bookmark.title, bookmark.favicon, bookmark.url, Modifier.fillMaxWidth())
+        BookmarkTitleView(
+            bookmark.title,
+            bookmark.favicon,
+            bookmark.url,
+            Modifier.margin(leftRight = 8.px).width(100.percent - 16.px)
+        )
         Row(Modifier.fillMaxWidth().gap(8.px)) {
             val currentType = bookmark.takeIf { it.isSaved }?.type
             RowButton(
@@ -118,10 +123,30 @@ fun BookmarkSummary(
 
         if (bookmark.tags.isNotEmpty()) {
             SpanText("Tags:")
-            console.log(Palette.Variable.color_primary_light.value())
             TagListView(
                 bookmark.tags.toList(), Modifier.margin(leftRight = 8.px),
             )
+        }
+
+        if (bookmark.hasTimers) {
+            SpanText("Timers:")
+            Column(Modifier.margin(left = 8.px).width(100.percent - 8.px)) {
+                if (bookmark.remindDate != null) {
+                    TimerDisplay("Reminder", bookmark.remindDate, Modifier.fillMaxWidth(),
+                        onDelete = { onBookmarkUpdate(bookmark.copy(remindDate = null)) }
+                    )
+                }
+                if (bookmark.deadline != null) {
+                    TimerDisplay("Deadline", bookmark.deadline, Modifier.fillMaxWidth(),
+                        onDelete = { onBookmarkUpdate(bookmark.copy(deadline = null)) }
+                    )
+                }
+                if (bookmark.expirationDate != null) {
+                    TimerDisplay("Expiration", bookmark.expirationDate, Modifier.fillMaxWidth(),
+                        onDelete = { onBookmarkUpdate(bookmark.copy(expirationDate = null)) }
+                    )
+                }
+            }
         }
     }
 }

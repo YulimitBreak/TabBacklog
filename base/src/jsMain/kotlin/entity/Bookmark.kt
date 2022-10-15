@@ -17,4 +17,5 @@ data class Bookmark(
     val comment: String = "",
 ) {
     val isSaved get() = creationDate != null
+    val hasTimers get() = deadline != null || remindDate != null || expirationDate != null
 }

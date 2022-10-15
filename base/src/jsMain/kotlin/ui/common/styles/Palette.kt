@@ -22,6 +22,7 @@ data class Palette(
     val onBackground: Color,
     val onPrimary: Color,
     val onAccent: Color,
+    val warning: Color,
 ) {
 
     val primaryLight = primary.lightened(0.3f)
@@ -47,6 +48,7 @@ data class Palette(
                 variable(Variable.color_onBackground, onBackground.toCssColor())
                 variable(Variable.color_onPrimary, onPrimary.toCssColor())
                 variable(Variable.color_onAccent, onAccent.toCssColor())
+                variable(Variable.color_warning, warning.toCssColor())
             })
         }
     }
@@ -63,6 +65,7 @@ data class Palette(
         val color_onBackground by variable<CSSColorValue>(PREFIX)
         val color_onPrimary by variable<CSSColorValue>(PREFIX)
         val color_onAccent by variable<CSSColorValue>(PREFIX)
+        val color_warning by variable<CSSColorValue>(PREFIX)
     }
 
     companion object {
@@ -78,6 +81,11 @@ data class Palette(
             @Composable
             @ReadOnlyComposable
             get() = Local.current.accent
+
+        val warningColor
+            @Composable
+            @ReadOnlyComposable
+            get() = Local.current.warning
     }
 }
 
