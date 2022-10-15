@@ -18,7 +18,6 @@ import common.styleProperty
 import di.ModuleLocal
 import entity.Bookmark
 import entity.BookmarkType
-import org.jetbrains.compose.web.css.Color
 import org.jetbrains.compose.web.css.em
 import org.jetbrains.compose.web.css.percent
 import org.jetbrains.compose.web.css.px
@@ -28,6 +27,7 @@ import ui.common.basecomponent.RowButton
 import ui.common.basecomponent.TagListView
 import ui.common.bookmark.BookmarkTitleView
 import ui.common.styles.MainStyle
+import ui.common.styles.primaryColors
 
 
 @Composable
@@ -122,7 +122,7 @@ fun BookmarkSummary(
                 bookmark.tags.toList(), Modifier.margin(leftRight = 8.px),
                 tagModifier = {
                     Modifier.fontSize(0.8.em).padding(leftRight = 4.px, topBottom = 2.px)
-                        .backgroundColor(MainStyle.primaryColor).color(Color.white)
+                        .primaryColors()
                         .borderRadius(4.px)
                 }
             )

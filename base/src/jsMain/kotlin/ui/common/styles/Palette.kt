@@ -7,6 +7,8 @@ import androidx.compose.runtime.compositionLocalOf
 import com.varabyte.kobweb.compose.ui.Modifier
 import com.varabyte.kobweb.compose.ui.graphics.Color
 import com.varabyte.kobweb.compose.ui.graphics.toCssColor
+import com.varabyte.kobweb.compose.ui.modifiers.backgroundColor
+import com.varabyte.kobweb.compose.ui.modifiers.color
 import com.varabyte.kobweb.compose.ui.styleModifier
 import common.variable
 import entity.error.CompositionLocalError
@@ -61,3 +63,17 @@ data class Palette(
             get() = Local.current.accent
     }
 }
+
+
+@Composable
+@ReadOnlyComposable
+fun Modifier.primaryColors(): Modifier = Palette.Local.current.run { backgroundColor(primary).color(onPrimary) }
+
+@Composable
+@ReadOnlyComposable
+fun Modifier.accentColors(): Modifier = Palette.Local.current.run { backgroundColor(accent).color(onAccent) }
+
+@Composable
+@ReadOnlyComposable
+fun Modifier.backgroundColors(): Modifier =
+    Palette.Local.current.run { backgroundColor(background).color(onBackground) }

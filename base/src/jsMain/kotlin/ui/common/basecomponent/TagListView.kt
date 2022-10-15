@@ -12,7 +12,7 @@ import org.jetbrains.compose.web.css.px
 fun TagListView(
     tags: List<String>,
     modifier: Modifier = Modifier,
-    tagModifier: (tag: String) -> Modifier = { Modifier },
+    tagModifier: @Composable (tag: String) -> Modifier = { Modifier },
 ) {
 
     Row(modifier.gap(2.px)) {
