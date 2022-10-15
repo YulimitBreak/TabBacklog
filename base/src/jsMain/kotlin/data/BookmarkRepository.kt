@@ -19,7 +19,7 @@ class BookmarkRepository {
             title = tab.title ?: "",
             favicon = tab.favIconUrl,
             type = BookmarkType.BACKLOG,
-            creationDate = null
+            creationDate = null,
         )
     }
 

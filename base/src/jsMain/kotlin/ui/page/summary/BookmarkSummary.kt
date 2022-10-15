@@ -11,6 +11,7 @@ import com.varabyte.kobweb.compose.foundation.layout.Spacer
 import com.varabyte.kobweb.compose.ui.Modifier
 import com.varabyte.kobweb.compose.ui.modifiers.*
 import com.varabyte.kobweb.silk.components.icons.fa.*
+import com.varabyte.kobweb.silk.components.text.SpanText
 import com.varabyte.kobweb.silk.theme.SilkTheme
 import common.DateUtils
 import di.ModuleLocal
@@ -19,6 +20,7 @@ import entity.BookmarkType
 import org.jetbrains.compose.web.css.percent
 import org.jetbrains.compose.web.css.px
 import org.jetbrains.compose.web.dom.Text
+import ui.common.basecomponent.DivText
 import ui.common.basecomponent.RowButton
 import ui.common.bookmark.BookmarkTitleView
 import ui.common.ext.styleProperty
@@ -104,6 +106,11 @@ fun BookmarkSummary(
                 FaPencil()
                 Text("Edit")
             }
+        }
+
+        if (bookmark.comment.isNotBlank()) {
+            SpanText("Comment:")
+            DivText(bookmark.comment, Modifier.fontWeight(FontWeight.Lighter).margin(leftRight = 8.px))
         }
     }
 }
