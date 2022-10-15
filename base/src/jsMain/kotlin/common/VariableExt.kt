@@ -15,10 +15,10 @@ fun <TValue : StylePropertyValue> StyleScope.variable(variable: CSSStyleVariable
     variable("--${variable.name}", value.toString())
 }
 
-fun <TValue : StylePropertyValue> variable(includePrefix: Boolean = true) =
-    ReadOnlyProperty<Any?, CSSStyleVariable<TValue>> { parent, property ->
-        val name = if (includePrefix && parent != null) {
-            "${parent::class.simpleName}--${property.name}"
+fun <TValue : StylePropertyValue> variable(prefix: String?) =
+    ReadOnlyProperty<Any?, CSSStyleVariable<TValue>> { _, property ->
+        val name = if (prefix != null) {
+            "$prefix-${property.name}"
         } else {
             property.name
         }

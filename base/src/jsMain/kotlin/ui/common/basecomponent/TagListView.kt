@@ -5,8 +5,10 @@ import androidx.compose.runtime.key
 import com.varabyte.kobweb.compose.foundation.layout.Row
 import com.varabyte.kobweb.compose.ui.Modifier
 import com.varabyte.kobweb.compose.ui.modifiers.gap
+import com.varabyte.kobweb.silk.components.style.toModifier
 import com.varabyte.kobweb.silk.components.text.SpanText
 import org.jetbrains.compose.web.css.px
+import ui.common.styles.components.TagComponent
 
 @Composable
 fun TagListView(
@@ -18,7 +20,7 @@ fun TagListView(
     Row(modifier.gap(2.px)) {
         tags.forEach { tag ->
             key(tag) {
-                SpanText(tag, modifier = tagModifier(tag))
+                SpanText(tag, modifier = TagComponent.Style.toModifier().then(tagModifier(tag)))
             }
         }
     }
