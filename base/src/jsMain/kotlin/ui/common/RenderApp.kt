@@ -21,6 +21,8 @@ fun renderApp(
 ) {
 
     initSilk {
+        it.theme.registerComponentVariants(
+        )
         additionalInit(it)
     }
     try {

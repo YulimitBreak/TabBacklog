@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import app.softwork.routingcompose.HashRouter
+import app.softwork.routingcompose.Router
 import com.varabyte.kobweb.compose.ui.Modifier
 import com.varabyte.kobweb.compose.ui.asAttributesBuilder
 import com.varabyte.kobweb.compose.ui.modifiers.fillMaxWidth
@@ -33,15 +34,16 @@ fun Popup() {
     DefaultLocalProvider {
         LoadableView(
             model.state.bookmark,
-            Modifier.minHeight(200.px).fillMaxWidth()
+            Modifier.minHeight(100.px).fillMaxWidth()
         ) { bookmark, modifier ->
             Main(attrs = Modifier.fillMaxWidth().asAttributesBuilder()) {
                 HashRouter("/") {
-
+                    val router = Router.current
                     route("/") {
                         BookmarkSummary(
                             bookmark,
                             onBookmarkUpdate = { model.replaceBookmark(it) },
+                            onEditRequest = { router.navigate("/edit") },
                             modifier
                         )
                     }
