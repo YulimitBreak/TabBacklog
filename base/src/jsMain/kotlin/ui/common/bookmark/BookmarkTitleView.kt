@@ -17,7 +17,7 @@ import org.jetbrains.compose.web.css.em
 import org.jetbrains.compose.web.css.percent
 import org.jetbrains.compose.web.css.px
 import org.jetbrains.compose.web.dom.Img
-import ui.common.basecomponent.T
+import ui.common.basecomponent.DivText
 import ui.common.ext.styleProperty
 
 @Composable
@@ -28,20 +28,19 @@ fun BookmarkTitleView(
     modifier: Modifier = Modifier,
 ) {
     Row(
-        modifier.minWidth(250.px).maxWidth(400.px).flexWrap(FlexWrap.Nowrap),
+        modifier.minWidth(200.px).maxWidth(400.px).flexWrap(FlexWrap.Nowrap),
         verticalAlignment = Alignment.CenterVertically
     ) {
-
-        if (favicon != null) {
+        if (!favicon.isNullOrBlank()) {
             Img(src = favicon, attrs = Modifier.size(32.px).margin(right = 16.px).asAttributesBuilder())
         }
 
         Column(
-            Modifier.width(100.percent),
+            Modifier.width(100.percent).gap(8.px),
             horizontalAlignment = Alignment.Start,
             verticalArrangement = Arrangement.Center
         ) {
-            T(
+            DivText(
                 title,
                 modifier = Modifier.width(100.percent).title(title)
                     .overflowWrap(OverflowWrap.BreakWord).overflow(Overflow.Hidden)
@@ -49,11 +48,9 @@ fun BookmarkTitleView(
                     .lineHeight(1.2.em)
                     .maxHeight(2.4.em)
             )
-
-            T(
+            DivText(
                 url,
                 modifier = Modifier.width(200.px).title(url)
-                    .margin(top = 8.px)
                     .whiteSpace(WhiteSpace.NoWrap).overflowWrap(OverflowWrap.Anywhere).overflow(Overflow.Hidden)
                     .fontWeight(FontWeight.Lighter)
                     .fontSize(0.8.em)

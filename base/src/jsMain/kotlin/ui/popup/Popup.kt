@@ -36,7 +36,7 @@ fun Popup() {
             model.state.bookmark,
             Modifier.minHeight(100.px).fillMaxWidth()
         ) { bookmark, modifier ->
-            Main(attrs = Modifier.fillMaxWidth().asAttributesBuilder()) {
+            Main(attrs = modifier.asAttributesBuilder()) {
                 HashRouter("/") {
                     val router = Router.current
                     route("/") {
@@ -44,12 +44,12 @@ fun Popup() {
                             bookmark,
                             onBookmarkUpdate = { model.replaceBookmark(it) },
                             onEditRequest = { router.navigate("/edit") },
-                            modifier
+                            modifier = Modifier.fillMaxWidth()
                         )
                     }
 
                     route("/edit") {
-                        BookmarkEditor(bookmark, modifier.asAttributesBuilder())
+                        BookmarkEditor(bookmark, Modifier.fillMaxWidth().asAttributesBuilder())
                     }
                 }
             }
