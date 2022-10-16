@@ -5,7 +5,7 @@ import dev.shustoff.dikt.UseModules
 import entity.Bookmark
 import entity.Url
 import kotlinx.coroutines.CoroutineScope
-import ui.page.editor.BookmarkEditorModel
+import ui.page.editor.OldBookmarkEditorModel
 import ui.page.summary.BookmarkSummaryModel
 import ui.popup.PopupBaseModel
 
@@ -19,7 +19,7 @@ class AppModule(
     fun createPopupBaseModel(coroutineScope: CoroutineScope): PopupBaseModel
 
     @Create
-    fun createBookmarkEditorModel(coroutineScope: CoroutineScope, baseBookmark: Bookmark): BookmarkEditorModel
+    fun createBookmarkEditorModel(coroutineScope: CoroutineScope, baseBookmark: Bookmark): OldBookmarkEditorModel
 
     @Create
     fun createBookmarkSummaryModel(

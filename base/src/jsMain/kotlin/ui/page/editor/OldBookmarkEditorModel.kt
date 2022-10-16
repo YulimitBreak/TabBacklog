@@ -14,7 +14,7 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
 
-class BookmarkEditorModel(
+class OldBookmarkEditorModel(
     private val baseBookmark: Bookmark,
     private val scope: CoroutineScope,
     private val bookmarkRepository: BookmarkRepository,

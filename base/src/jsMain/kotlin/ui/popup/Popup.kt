@@ -15,7 +15,7 @@ import ui.common.DefaultLocalProvider
 import ui.common.styles.MainStyle
 import ui.common.styles.TooltipStyle
 import ui.common.styles.UtilStyle
-import ui.page.editor.BookmarkEditor
+import ui.page.editor.OldBookmarkEditor
 import ui.page.summary.BookmarkSummary
 
 @Composable
@@ -41,7 +41,7 @@ fun Popup() {
                 }
 
                 route("/edit") {
-                    BookmarkEditor(TODO(), Modifier.fillMaxWidth().asAttributesBuilder())
+                    OldBookmarkEditor(TODO(), Modifier.fillMaxWidth().asAttributesBuilder())
                 }
             }
         }

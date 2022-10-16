@@ -18,7 +18,7 @@ import ui.common.styles.TooltipStyle
 import ui.common.styles.UtilStyle
 
 @Composable
-fun BookmarkEditor(
+fun OldBookmarkEditor(
     baseBookmark: Bookmark,
     attrs: AttrBuilderContext<HTMLDivElement>? = null,
 ) {
@@ -94,8 +94,8 @@ fun BookmarkEditor(
                     marginTop(16.px)
                 }
             },
-            expanded = model.state.openedPanel == BookmarkEditorModel.OpenedPanel.TAGS,
-            onExpand = { model.toggleOpenedPanel(BookmarkEditorModel.OpenedPanel.TAGS) },
+            expanded = model.state.openedPanel == OldBookmarkEditorModel.OpenedPanel.TAGS,
+            onExpand = { model.toggleOpenedPanel(OldBookmarkEditorModel.OpenedPanel.TAGS) },
             panelContent = { expanded ->
                 if (!expanded) {
                     Div(
@@ -116,7 +116,7 @@ fun BookmarkEditor(
                                 Div(attrs = {
                                     onClick {
                                         // Because pointer-events: none doesn't work for some reason
-                                        model.toggleOpenedPanel(BookmarkEditorModel.OpenedPanel.TAGS)
+                                        model.toggleOpenedPanel(OldBookmarkEditorModel.OpenedPanel.TAGS)
                                     }
                                     classes(MainStyle.tag, UtilStyle.centerContent)
                                     style {
@@ -171,8 +171,8 @@ fun BookmarkEditor(
                     marginTop(16.px)
                 }
             },
-            expanded = model.state.openedPanel == BookmarkEditorModel.OpenedPanel.TIMERS,
-            onExpand = { model.toggleOpenedPanel(BookmarkEditorModel.OpenedPanel.TIMERS) },
+            expanded = model.state.openedPanel == OldBookmarkEditorModel.OpenedPanel.TIMERS,
+            onExpand = { model.toggleOpenedPanel(OldBookmarkEditorModel.OpenedPanel.TIMERS) },
             panelContent = {
                 if (timerState.hasTimers) {
                     Button(attrs = {
