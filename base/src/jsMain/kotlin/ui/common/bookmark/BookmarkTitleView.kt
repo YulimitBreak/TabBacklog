@@ -74,7 +74,7 @@ fun BookmarkTitleEdit(
     ) {
         Favicon(favicon)
 
-        TextArea(title, Modifier.fontSize(1.2.em).fillMaxWidth().height(4.8.em)
+        TextArea(title, Modifier.lineHeight(1.2.em).fillMaxWidth().height(3.6.em)
             .styleProperty("resize", "none")
             .asAttributesBuilder {
                 onInput { onInput(it.value) }

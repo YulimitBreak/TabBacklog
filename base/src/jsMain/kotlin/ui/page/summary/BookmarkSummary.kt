@@ -90,7 +90,11 @@ fun BookmarkSummary(
 
             if (bookmark.comment.isNotBlank()) {
                 SpanText("Comment:")
-                DivText(bookmark.comment, Modifier.fontWeight(FontWeight.Lighter).margin(leftRight = 8.px))
+                DivText(
+                    bookmark.comment, Modifier.fontWeight(FontWeight.Lighter)
+                        .margin(left = 8.px)
+                        .width(100.percent - 8.px)
+                )
             }
 
             if (bookmark.tags.isNotEmpty()) {

@@ -51,6 +51,10 @@ class BookmarkEditorModel(
         updateBookmark { it.copy(title = title) }
     }
 
+    fun updateComment(comment: String) {
+        updateBookmark { it.copy(comment = comment) }
+    }
+
     fun deleteBookmark(onDeletionComplete: () -> Unit) {
         scope.launch {
             val url = bookmark.value?.base?.url
@@ -88,5 +92,5 @@ class BookmarkEditorModel(
 
 enum class EditedBlock {
     TITLE,
-
+    COMMENT,
 }
