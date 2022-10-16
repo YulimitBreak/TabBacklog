@@ -70,7 +70,18 @@ fun TagEditView(tags: List<String>, modifier: Modifier, onTagEditEvent: (TagEdit
                 }
                 .asAttributesBuilder {
                     list(SUGGESTION_DATA_LIST_ID)
-                    onInput { model.onTagInput(it.value) }
+                    var userInput = true
+                    onKeyDown {
+                        // When you select item from the list, key is undefined, we can use this to separate
+                        // normal input and list selection
+                        userInput = it.key != undefined
+                    }
+                    onInput {
+                        model.onTagInput(it.value)
+                        if (!userInput) {
+                            model.confirmTag(onTagEditEvent)
+                        }
+                    }
                 })
             RowButton(onClick = { model.confirmTag(onTagEditEvent) }, Modifier.size(1.2.em)) {
                 FaCheck()

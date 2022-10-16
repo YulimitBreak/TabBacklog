@@ -21,7 +21,7 @@ class TagEditModel(
     var editedTag: String
         get() = _editedTag.value
         private set(value) {
-            _editedTag.value = value
+            _editedTag.value = value.take(25).lowercase()
             fetchTagAutocomplete(value)
         }
 
