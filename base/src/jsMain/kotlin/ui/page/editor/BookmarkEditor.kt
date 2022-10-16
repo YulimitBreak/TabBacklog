@@ -26,11 +26,13 @@ import org.jetbrains.compose.web.dom.TextArea
 import ui.common.basecomponent.DivText
 import ui.common.basecomponent.LoadableView
 import ui.common.basecomponent.RowButton
+import ui.common.basecomponent.TagListView
 import ui.common.bookmark.BookmarkTitleEdit
 import ui.common.bookmark.BookmarkTitleView
 import ui.common.bookmark.BookmarkTypeBacklogButton
 import ui.common.bookmark.BookmarkTypeLibraryButton
 import ui.common.styles.components.BookmarkEditClickableArea
+import ui.page.tagedit.TagEditView
 
 @Composable
 fun BookmarkEditor(
@@ -127,9 +129,7 @@ fun BookmarkEditor(
                         Modifier.border(2.px, LineStyle.Solid, Color.transparent)
                     }
             ) {
-                Row {
-                    SpanText("Comment:")
-                }
+                SpanText("Comment:")
                 if (model.editedBlock != BookmarkEditedBlock.COMMENT) {
                     DivText(
                         bookmark.comment.takeIf { it.isNotBlank() } ?: "No comment",
@@ -162,6 +162,46 @@ fun BookmarkEditor(
                     ) {
                         FaXmark()
                         Text("Clear")
+                    }
+                }
+            }
+
+            Column(Modifier.padding(left = 2.px, right = 2.px, bottom = 4.px)
+                .gap(8.px)
+                .width(100.percent - 4.px)
+                .margin(left = (-4).px, right = (-4).px, top = (-2).px, bottom = (-6).px)
+                .thenIf(model.editedBlock != BookmarkEditedBlock.TAGS,
+                    BookmarkEditClickableArea.Style.toModifier()
+                        .onClick { model.requestEdit(BookmarkEditedBlock.TAGS) }
+                )
+                .thenIf(model.editedBlock == BookmarkEditedBlock.TAGS) {
+                    Modifier.border(2.px, LineStyle.Solid, Color.transparent)
+                }) {
+
+                SpanText("Tags:")
+
+                when {
+                    model.editedBlock == BookmarkEditedBlock.TAGS -> {
+                        TagEditView(
+                            bookmark.tags,
+                            Modifier.margin(leftRight = 8.px).width(100.percent - 16.px)
+                        ) { event ->
+                            model.onTagEvent(event)
+                        }
+                    }
+
+                    bookmark.tags.isEmpty() -> {
+                        SpanText(
+                            "No tags",
+                            Modifier.fontWeight(FontWeight.Lighter).margin(left = 8.px).width(100.percent - 8.px)
+                                .fontStyle(FontStyle.Italic)
+                        )
+                    }
+
+                    else -> {
+                        TagListView(
+                            bookmark.tags.toList(), Modifier.margin(leftRight = 8.px).width(100.percent - 16.px),
+                        )
                     }
                 }
             }

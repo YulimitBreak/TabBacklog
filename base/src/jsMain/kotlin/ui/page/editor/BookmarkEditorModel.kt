@@ -7,6 +7,7 @@ import data.BookmarkRepository
 import entity.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import ui.page.tagedit.TagEditEvent
 
 class BookmarkEditorModel(
     private val url: Url?,
@@ -73,6 +74,10 @@ class BookmarkEditorModel(
         updateBookmark { it.copy(currentType = type) }
     }
 
+    fun onTagEvent(event: TagEditEvent) {
+        // TODO
+    }
+
     fun requestEdit(block: BookmarkEditedBlock?) {
         editedBlock = block
     }
@@ -88,9 +93,11 @@ class BookmarkEditorModel(
             onComplete()
         }
     }
+
 }
 
 enum class BookmarkEditedBlock {
     TITLE,
     COMMENT,
+    TAGS,
 }

@@ -36,6 +36,8 @@ class BookmarkRepository(private val databaseHolder: DatabaseHolder) {
             favicon = tab.favIconUrl,
             type = BookmarkType.BACKLOG,
             creationDate = null,
+
+            tags = TagRepository.words.shuffled().take(10).toSet()
         )
     }
 
