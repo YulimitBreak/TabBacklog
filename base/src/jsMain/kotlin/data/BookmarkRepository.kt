@@ -3,6 +3,8 @@ package data
 import browser.tabs.QueryQueryInfo
 import browser.tabs.Tab
 import com.juul.indexeddb.Key
+import com.juul.indexeddb.WriteTransaction
+import common.DateUtils
 import data.database.core.DatabaseHolder
 import data.database.core.DbSchema
 import data.database.core.generate
@@ -12,6 +14,7 @@ import entity.Bookmark
 import entity.BookmarkType
 import entity.error.UnsupportedTabException
 import kotlinx.coroutines.await
+import kotlinx.coroutines.flow.takeWhile
 import kotlinx.datetime.toLocalDate
 import kotlinx.datetime.toLocalDateTime
 
@@ -45,8 +48,7 @@ class BookmarkRepository(val databaseHolder: DatabaseHolder) {
             objectStore(tagsSchema.storeName).index(TagSchema.Url.name).openCursor(Key(url)).collect { cursor ->
                 cursor.delete()
             }
-
-            console.log(objectStore(tagsSchema.storeName).getAll())
+            deleteExpiredBookmarks()
         }
     }
 
@@ -68,6 +70,7 @@ class BookmarkRepository(val databaseHolder: DatabaseHolder) {
                     )
                 )
             }
+            deleteExpiredBookmarks()
         }
     }
 
@@ -101,5 +104,35 @@ class BookmarkRepository(val databaseHolder: DatabaseHolder) {
             console.log("Found tags $tags")
             return@transaction bookmark.copy(tags = tags)
         }
+    }
+
+    private suspend fun WriteTransaction.deleteBookmark(url: String) {
+        val bookmarkSchema = DbSchema<BookmarkSchema>()
+        val tagsSchema = DbSchema<TagSchema>()
+        objectStore(bookmarkSchema.storeName).delete(Key(url))
+        objectStore(tagsSchema.storeName).index(TagSchema.Url.name).openCursor(Key(url)).collect { cursor ->
+            cursor.delete()
+        }
+    }
+
+    private suspend fun WriteTransaction.deleteExpiredBookmarks() {
+        val bookmarkSchema = DbSchema<BookmarkSchema>()
+        val tagsSchema = DbSchema<TagSchema>()
+        objectStore(bookmarkSchema.storeName).index(BookmarkSchema.ExpirationDate.name).openCursor()
+            .takeWhile { cursor ->
+                val date = bookmarkSchema.extract(cursor.value) {
+                    BookmarkSchema.ExpirationDate.value<String>().toLocalDate()
+                }
+                date.toEpochDays() < DateUtils.today.toEpochDays()
+            }
+            .collect { cursor ->
+                val url = bookmarkSchema.extract(cursor.value) {
+                    BookmarkSchema.Url.value<String>()
+                }
+                objectStore(tagsSchema.storeName).index(TagSchema.Url.name).openCursor(Key(url)).collect { tagCursor ->
+                    tagCursor.delete()
+                }
+                cursor.delete()
+            }
     }
 }
