@@ -5,6 +5,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import data.TagRepository
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
 
 class TagEditModel(
     private val scope: CoroutineScope,
@@ -14,7 +17,15 @@ class TagEditModel(
     var selectedTag: String? by mutableStateOf(null)
         private set
 
-    var editedTag: String by mutableStateOf("")
+    private val _editedTag = mutableStateOf("")
+    var editedTag: String
+        get() = _editedTag.value
+        private set(value) {
+            _editedTag.value = value
+            fetchTagAutocomplete(value)
+        }
+
+    var suggestedTags: List<String> by mutableStateOf(emptyList())
         private set
 
     private var storedEditedTag: String = ""
@@ -63,4 +74,21 @@ class TagEditModel(
             }
         }
     }
+
+    private var autocompleteFetchJob: Job? = null
+
+    private fun fetchTagAutocomplete(input: String) {
+        autocompleteFetchJob?.cancel()
+        autocompleteFetchJob = scope.launch {
+            val tags = tagRepository.fetchTagAutocomplete(input)
+            if (!isActive) return@launch
+            suggestedTags = tags
+        }
+    }
+}
+
+sealed class TagEditEvent {
+    data class Add(val tag: String) : TagEditEvent()
+    data class Edit(val from: String, val to: String) : TagEditEvent()
+    data class Delete(val tag: String) : TagEditEvent()
 }

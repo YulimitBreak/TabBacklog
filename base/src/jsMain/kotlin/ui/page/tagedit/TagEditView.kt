@@ -1,6 +1,7 @@
 package ui.page.tagedit
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import com.varabyte.kobweb.compose.foundation.layout.Column
@@ -15,7 +16,10 @@ import com.varabyte.kobweb.silk.components.icons.fa.FaEject
 import com.varabyte.kobweb.silk.components.icons.fa.FaEraser
 import com.varabyte.kobweb.silk.components.icons.fa.FaTrash
 import di.ModuleLocal
+import org.jetbrains.compose.web.attributes.list
 import org.jetbrains.compose.web.css.*
+import org.jetbrains.compose.web.dom.Datalist
+import org.jetbrains.compose.web.dom.Option
 import org.jetbrains.compose.web.dom.TextInput
 import ui.common.basecomponent.RowButton
 import ui.common.basecomponent.TagListView
@@ -29,6 +33,16 @@ fun TagEditView(tags: List<String>, modifier: Modifier, onTagEditEvent: (TagEdit
     val scope = rememberCoroutineScope()
     val model: TagEditModel =
         remember { appModule.createTagEditModel(scope) }
+
+    Datalist(attrs = {
+        id(SUGGESTION_DATA_LIST_ID)
+    }) {
+        model.suggestedTags.forEach {
+            key(it) {
+                Option(it)
+            }
+        }
+    }
 
     Column(modifier = modifier.gap(8.px)) {
         TagListView(tags, modifier = Modifier.fillMaxWidth(), tagModifier = { tag ->
@@ -55,6 +69,7 @@ fun TagEditView(tags: List<String>, modifier: Modifier, onTagEditEvent: (TagEdit
                     }
                 }
                 .asAttributesBuilder {
+                    list(SUGGESTION_DATA_LIST_ID)
                     onInput { model.onTagInput(it.value) }
                 })
             RowButton(onClick = { model.confirmTag(onTagEditEvent) }, Modifier.size(1.2.em)) {
@@ -76,8 +91,4 @@ fun TagEditView(tags: List<String>, modifier: Modifier, onTagEditEvent: (TagEdit
     }
 }
 
-sealed class TagEditEvent {
-    data class Add(val tag: String) : TagEditEvent()
-    data class Edit(val from: String, val to: String) : TagEditEvent()
-    data class Delete(val tag: String) : TagEditEvent()
-}
+private const val SUGGESTION_DATA_LIST_ID = "suggestions"

@@ -5,9 +5,9 @@ import kotlinx.coroutines.delay
 class TagRepository {
 
     suspend fun fetchTagAutocomplete(tag: String): List<String> {
+        if (tag.isBlank()) return emptyList()
         delay(1000)
-        if (tag.isEmpty()) return emptyList()
-        return words.asSequence().filter { it.startsWith(tag) }.sorted().take(6).toList()
+        return words.asSequence().filter { it.startsWith(tag.trim()) }.sorted().take(6).toList()
     }
 
     companion object {
