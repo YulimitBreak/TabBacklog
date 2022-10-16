@@ -1,20 +1,38 @@
 package ui.page.summary
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import common.DateUtils
 import data.BookmarkRepository
 import data.TabsRepository
-import entity.Bookmark
-import entity.BookmarkType
+import entity.*
 import kotlinx.browser.window
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 class BookmarkSummaryModel(
+    private val url: Url?,
     private val scope: CoroutineScope,
     private val bookmarkRepository: BookmarkRepository,
     private val tabsRepository: TabsRepository,
-    private val bookmarkUpdateListener: BookmarkUpdateListener,
 ) {
+
+    var bookmark by mutableStateOf<Loadable<Bookmark>>(Loadable.Loading<Bookmark>())
+        private set
+
+    private fun CoroutineScope.loadBookmark(loader: suspend () -> Bookmark) =
+        load(setter = { bookmark = it }, debounceTime = 200L, loader)
+
+    init {
+        scope.loadBookmark {
+            if (url == null) {
+                bookmarkRepository.loadBookmarkForActiveTab()
+            } else {
+                bookmarkRepository.loadBookmark(url.url) ?: throw IllegalStateException("Bookmark not found")
+            }
+        }
+    }
 
     fun openManager() {
         scope.launch {
@@ -24,58 +42,56 @@ class BookmarkSummaryModel(
     }
 
     fun updateType(bookmark: Bookmark, type: BookmarkType) {
-        scope.launch {
+        scope.loadBookmark {
             val newBookmark = if (bookmark.isSaved) {
                 bookmark.copy(type = type)
             } else {
                 bookmark.copy(type = type, creationDate = DateUtils.now)
             }
             bookmarkRepository.saveBookmark(newBookmark)
-            bookmarkUpdateListener.onUpdate(newBookmark)
+            newBookmark
         }
     }
 
     fun deleteBookmark(bookmark: Bookmark) {
-        scope.launch {
+        scope.loadBookmark {
             bookmarkRepository.deleteBookmark(bookmark.url)
-            bookmarkUpdateListener.onUpdate(
-                bookmark.copy(
-                    type = BookmarkType.BACKLOG,
-                    creationDate = null,
-                )
+            bookmark.copy(
+                type = BookmarkType.BACKLOG,
+                creationDate = null,
             )
         }
     }
 
     fun updateFavorite(bookmark: Bookmark, isFavorite: Boolean) {
-        scope.launch {
+        scope.loadBookmark {
             val newBookmark = bookmark.copy(favorite = isFavorite)
             bookmarkRepository.saveBookmark(newBookmark)
-            bookmarkUpdateListener.onUpdate(newBookmark)
+            newBookmark
         }
     }
 
     fun deleteReminder(bookmark: Bookmark) {
-        scope.launch {
+        scope.loadBookmark {
             val newBookmark = bookmark.copy(remindDate = null)
             bookmarkRepository.saveBookmark(newBookmark)
-            bookmarkUpdateListener.onUpdate(newBookmark)
+            newBookmark
         }
     }
 
     fun deleteDeadline(bookmark: Bookmark) {
-        scope.launch {
+        scope.loadBookmark {
             val newBookmark = bookmark.copy(deadline = null)
             bookmarkRepository.saveBookmark(newBookmark)
-            bookmarkUpdateListener.onUpdate(newBookmark)
+            newBookmark
         }
     }
 
     fun deleteExpiration(bookmark: Bookmark) {
-        scope.launch {
+        scope.loadBookmark {
             val newBookmark = bookmark.copy(remindDate = null)
             bookmarkRepository.saveBookmark(newBookmark)
-            bookmarkUpdateListener.onUpdate(newBookmark)
+            newBookmark
         }
     }
 }

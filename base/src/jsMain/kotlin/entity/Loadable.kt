@@ -1,5 +1,10 @@
 package entity
 
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+
 sealed class Loadable<out T> {
     abstract val value: T?
 
@@ -28,5 +33,39 @@ sealed class Loadable<out T> {
             "Loading"
 
         override fun <R> map(f: (T) -> R) = Loading<R>()
+    }
+}
+
+/**
+ * Loads data from [loader] and saves it into Loadable (assigned by [setter]) along with progress
+ *
+ * [debounceTime] when not null, pauses for this amount of time before showing loading - to avoid blinking
+ * for short load
+ */
+fun <T> CoroutineScope.load(
+    setter: (Loadable<T>) -> Unit,
+    debounceTime: Long = 0,
+    loader: suspend () -> T
+) {
+    launch {
+        var debounceJob: Job? = null
+        if (debounceTime == 0L) {
+            setter(Loadable.Loading())
+        } else {
+            debounceJob = launch {
+                delay(debounceTime)
+                setter(Loadable.Loading())
+            }
+        }
+        try {
+            val result = loader()
+            debounceJob?.cancel()
+            setter(Loadable.Success(result))
+        } catch (e: Exception) {
+            console.error(e)
+            e.printStackTrace()
+            debounceJob?.cancel()
+            setter(Loadable.Error(e))
+        }
     }
 }

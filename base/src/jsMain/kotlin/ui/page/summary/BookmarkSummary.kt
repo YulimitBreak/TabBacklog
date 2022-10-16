@@ -15,13 +15,14 @@ import com.varabyte.kobweb.silk.components.text.SpanText
 import com.varabyte.kobweb.silk.theme.SilkTheme
 import common.styleProperty
 import di.ModuleLocal
-import entity.Bookmark
 import entity.BookmarkType
+import entity.Url
 import org.jetbrains.compose.web.css.minus
 import org.jetbrains.compose.web.css.percent
 import org.jetbrains.compose.web.css.px
 import org.jetbrains.compose.web.dom.Text
 import ui.common.basecomponent.DivText
+import ui.common.basecomponent.LoadableView
 import ui.common.basecomponent.RowButton
 import ui.common.basecomponent.TagListView
 import ui.common.bookmark.BookmarkTitleView
@@ -31,8 +32,7 @@ import ui.common.styles.MainStyle
 
 @Composable
 fun BookmarkSummary(
-    bookmark: Bookmark,
-    updateListener: BookmarkUpdateListener,
+    url: String? = null,
     onEditRequest: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -40,111 +40,113 @@ fun BookmarkSummary(
     val scope = rememberCoroutineScope()
 
     val model: BookmarkSummaryModel =
-        remember(updateListener) { appModule.createBookmarkSummaryModel(scope, updateListener) }
+        remember(url) { appModule.createBookmarkSummaryModel(scope, url?.let { Url(it) }) }
 
-    Column(modifier.gap(8.px).margin(bottom = 16.px)) {
-        Row(Modifier.fillMaxWidth().gap(8.px)) {
+    LoadableView(model.bookmark, modifier.minHeight(100.px)) { bookmark, m ->
+        Column(m.gap(8.px).margin(bottom = 16.px)) {
+            Row(Modifier.fillMaxWidth().gap(8.px)) {
 
-            RowButton(onClick = { model.openManager() }) {
-                FaListCheck()
-                Text("Open manager")
-            }
-
-            Spacer()
-            if (bookmark.isSaved) {
-                RowButton(
-                    onClick = { model.updateFavorite(bookmark, !bookmark.favorite) },
-                ) {
-                    FaStar(style = if (bookmark.favorite) IconStyle.FILLED else IconStyle.OUTLINE)
-                    Text("Favorite")
+                RowButton(onClick = { model.openManager() }) {
+                    FaListCheck()
+                    Text("Open manager")
                 }
-                RowButton(onClick = { model.deleteBookmark(bookmark) }) {
-                    FaTrash()
-                    Text("Delete")
-                }
-            }
-        }
-        BookmarkTitleView(
-            bookmark.title,
-            bookmark.favicon,
-            bookmark.url,
-            Modifier.margin(leftRight = 8.px).width(100.percent - 16.px)
-        )
-        Row(Modifier.fillMaxWidth().gap(8.px)) {
-            val currentType = bookmark.takeIf { it.isSaved }?.type
-            RowButton(
-                onClick = {
-                    model.updateType(bookmark, type = BookmarkType.LIBRARY)
-                }, modifier = if (currentType == BookmarkType.LIBRARY) {
-                    SelectedBookmarkTypeModifier
-                } else {
-                    Modifier
-                }.width(30.percent)
-            ) {
-                FaBookBookmark()
-                if (currentType == BookmarkType.LIBRARY) {
-                    Text("In library")
-                } else {
-                    Text("To library")
+
+                Spacer()
+                if (bookmark.isSaved) {
+                    RowButton(
+                        onClick = { model.updateFavorite(bookmark, !bookmark.favorite) },
+                    ) {
+                        FaStar(style = if (bookmark.favorite) IconStyle.FILLED else IconStyle.OUTLINE)
+                        Text("Favorite")
+                    }
+                    RowButton(onClick = { model.deleteBookmark(bookmark) }) {
+                        FaTrash()
+                        Text("Delete")
+                    }
                 }
             }
-            RowButton(
-                onClick = {
-                    model.updateType(bookmark, BookmarkType.BACKLOG)
-                },
-                modifier = if (currentType == BookmarkType.BACKLOG) {
-                    SelectedBookmarkTypeModifier
-                } else {
-                    Modifier
-                }.width(30.percent)
-            ) {
-                FaNoteSticky()
-                if (currentType == BookmarkType.BACKLOG) {
-                    Text("In backlog")
-                } else {
-                    Text("To backlog")
-                }
-            }
-
-            Spacer()
-
-            RowButton(onClick = {
-                onEditRequest()
-            }) {
-                FaPencil()
-                Text("Edit")
-            }
-        }
-
-        if (bookmark.comment.isNotBlank()) {
-            SpanText("Comment:")
-            DivText(bookmark.comment, Modifier.fontWeight(FontWeight.Lighter).margin(leftRight = 8.px))
-        }
-
-        if (bookmark.tags.isNotEmpty()) {
-            SpanText("Tags:")
-            TagListView(
-                bookmark.tags.toList(), Modifier.margin(leftRight = 8.px),
+            BookmarkTitleView(
+                bookmark.title,
+                bookmark.favicon,
+                bookmark.url,
+                Modifier.margin(leftRight = 8.px).width(100.percent - 16.px)
             )
-        }
+            Row(Modifier.fillMaxWidth().gap(8.px)) {
+                val currentType = bookmark.takeIf { it.isSaved }?.type
+                RowButton(
+                    onClick = {
+                        model.updateType(bookmark, type = BookmarkType.LIBRARY)
+                    }, modifier = if (currentType == BookmarkType.LIBRARY) {
+                        SelectedBookmarkTypeModifier
+                    } else {
+                        Modifier
+                    }.width(30.percent)
+                ) {
+                    FaBookBookmark()
+                    if (currentType == BookmarkType.LIBRARY) {
+                        Text("In library")
+                    } else {
+                        Text("To library")
+                    }
+                }
+                RowButton(
+                    onClick = {
+                        model.updateType(bookmark, BookmarkType.BACKLOG)
+                    },
+                    modifier = if (currentType == BookmarkType.BACKLOG) {
+                        SelectedBookmarkTypeModifier
+                    } else {
+                        Modifier
+                    }.width(30.percent)
+                ) {
+                    FaNoteSticky()
+                    if (currentType == BookmarkType.BACKLOG) {
+                        Text("In backlog")
+                    } else {
+                        Text("To backlog")
+                    }
+                }
 
-        if (bookmark.hasTimers) {
-            SpanText("Timers:")
-            Column(Modifier.margin(left = 8.px).width(100.percent - 8.px)) {
-                if (bookmark.remindDate != null) {
-                    TimerDisplay("Reminder", bookmark.remindDate, Modifier.fillMaxWidth(),
-                        onDelete = { model.deleteReminder(bookmark) }
-                    )
+                Spacer()
+
+                RowButton(onClick = {
+                    onEditRequest()
+                }) {
+                    FaPencil()
+                    Text("Edit")
                 }
-                if (bookmark.deadline != null) {
-                    TimerDisplay("Deadline", bookmark.deadline, Modifier.fillMaxWidth(),
-                        onDelete = { model.deleteDeadline(bookmark) }
-                    )
-                }
-                if (bookmark.expirationDate != null) {
-                    TimerDisplay("Expiration", bookmark.expirationDate, Modifier.fillMaxWidth(),
-                        onDelete = { model.deleteExpiration(bookmark) }
-                    )
+            }
+
+            if (bookmark.comment.isNotBlank()) {
+                SpanText("Comment:")
+                DivText(bookmark.comment, Modifier.fontWeight(FontWeight.Lighter).margin(leftRight = 8.px))
+            }
+
+            if (bookmark.tags.isNotEmpty()) {
+                SpanText("Tags:")
+                TagListView(
+                    bookmark.tags.toList(), Modifier.margin(leftRight = 8.px),
+                )
+            }
+
+            if (bookmark.hasTimers) {
+                SpanText("Timers:")
+                Column(Modifier.margin(left = 8.px).width(100.percent - 8.px)) {
+                    if (bookmark.remindDate != null) {
+                        TimerDisplay("Reminder", bookmark.remindDate, Modifier.fillMaxWidth(),
+                            onDelete = { model.deleteReminder(bookmark) }
+                        )
+                    }
+                    if (bookmark.deadline != null) {
+                        TimerDisplay("Deadline", bookmark.deadline, Modifier.fillMaxWidth(),
+                            onDelete = { model.deleteDeadline(bookmark) }
+                        )
+                    }
+                    if (bookmark.expirationDate != null) {
+                        TimerDisplay("Expiration", bookmark.expirationDate, Modifier.fillMaxWidth(),
+                            onDelete = { model.deleteExpiration(bookmark) }
+                        )
+                    }
                 }
             }
         }
