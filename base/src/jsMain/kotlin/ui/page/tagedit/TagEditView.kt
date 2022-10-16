@@ -49,6 +49,11 @@ fun TagEditView(tags: List<String>, modifier: Modifier, onTagEditEvent: (TagEdit
                 .border(0.px)
                 .outline(0.px)
                 .borderBottom(1.px, LineStyle.Dashed, Palette.primaryColor.toCssColor())
+                .onKeyDown {
+                    if (it.getNormalizedKey() == "Enter") {
+                        model.confirmTag(onTagEditEvent)
+                    }
+                }
                 .asAttributesBuilder {
                     onInput { model.onTagInput(it.value) }
                 })
