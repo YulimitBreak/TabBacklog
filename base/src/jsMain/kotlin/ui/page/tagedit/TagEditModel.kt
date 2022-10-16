@@ -31,4 +31,31 @@ class TagEditModel(
         selectedTag = null
         editedTag = storedEditedTag
     }
+
+    fun onTagInput(input: String) {
+        editedTag = input
+    }
+
+    fun confirmTag(onTagEditEvent: (TagEditEvent) -> Unit) {
+        val editedTag = editedTag
+        val selectedTag = selectedTag
+        if (editedTag.isBlank()) {
+            if (selectedTag != null) {
+                onTagEditEvent(TagEditEvent.Delete(selectedTag))
+                deselectTag()
+            } else {
+                this.editedTag = ""
+            }
+        } else {
+            if (selectedTag != null) {
+                if (selectedTag != editedTag) {
+                    onTagEditEvent(TagEditEvent.Edit(selectedTag, editedTag))
+                }
+                deselectTag()
+            } else {
+                onTagEditEvent(TagEditEvent.Add(editedTag))
+                this.editedTag = ""
+            }
+        }
+    }
 }
