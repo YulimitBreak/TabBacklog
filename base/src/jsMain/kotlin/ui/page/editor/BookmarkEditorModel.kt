@@ -4,10 +4,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import data.BookmarkRepository
-import entity.EditedBookmark
-import entity.Loadable
-import entity.Url
-import entity.load
+import entity.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -68,8 +65,24 @@ class BookmarkEditorModel(
         }
     }
 
+    fun updateType(type: BookmarkType) {
+        updateBookmark { it.copy(currentType = type) }
+    }
+
     fun requestEdit(block: EditedBlock?) {
         editedBlock = block
+    }
+
+    fun saveBookmark(onComplete: () -> Unit) {
+        scope.launch {
+            val editedBookmark = bookmark.value ?: kotlin.run {
+                console.warn("Saving bookmark in unloaded state")
+                return@launch
+            }
+            bookmark = Loadable.Loading()
+            bookmarkRepository.saveBookmark(editedBookmark.toImmutableBookmark())
+            onComplete()
+        }
     }
 }
 

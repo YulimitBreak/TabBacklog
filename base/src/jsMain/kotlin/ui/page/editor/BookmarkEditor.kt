@@ -8,12 +8,10 @@ import com.varabyte.kobweb.compose.foundation.layout.Row
 import com.varabyte.kobweb.compose.foundation.layout.Spacer
 import com.varabyte.kobweb.compose.ui.Modifier
 import com.varabyte.kobweb.compose.ui.modifiers.*
-import com.varabyte.kobweb.silk.components.icons.fa.FaArrowLeft
-import com.varabyte.kobweb.silk.components.icons.fa.FaStar
-import com.varabyte.kobweb.silk.components.icons.fa.FaTrash
-import com.varabyte.kobweb.silk.components.icons.fa.IconStyle
+import com.varabyte.kobweb.silk.components.icons.fa.*
 import com.varabyte.kobweb.silk.components.style.toModifier
 import di.ModuleLocal
+import entity.BookmarkType
 import entity.Url
 import org.jetbrains.compose.web.css.minus
 import org.jetbrains.compose.web.css.percent
@@ -23,6 +21,8 @@ import ui.common.basecomponent.LoadableView
 import ui.common.basecomponent.RowButton
 import ui.common.bookmark.BookmarkTitleEdit
 import ui.common.bookmark.BookmarkTitleView
+import ui.common.bookmark.BookmarkTypeBacklogButton
+import ui.common.bookmark.BookmarkTypeLibraryButton
 import ui.common.styles.components.BookmarkEditClickableArea
 
 @Composable
@@ -86,6 +86,25 @@ fun BookmarkEditor(
                             }
                         }
                 )
+            }
+
+            Row(Modifier.fillMaxWidth().gap(8.px)) {
+                val currentType = bookmark.currentType
+                BookmarkTypeLibraryButton(currentType == BookmarkType.LIBRARY, Modifier.width(30.percent)) {
+                    model.updateType(BookmarkType.LIBRARY)
+                }
+                BookmarkTypeBacklogButton(currentType == BookmarkType.BACKLOG, Modifier.width(30.percent)) {
+                    model.updateType(BookmarkType.BACKLOG)
+                }
+
+                Spacer()
+
+                RowButton(onClick = {
+                    model.saveBookmark(onNavigateBack)
+                }) {
+                    FaFloppyDisk(style = IconStyle.FILLED)
+                    Text("Save")
+                }
             }
         }
     }
