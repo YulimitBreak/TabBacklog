@@ -3,7 +3,7 @@ package ui.common.basecomponent
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.compositionLocalOf
 import com.varabyte.kobweb.compose.ui.Modifier
-import entity.Loadable
+import entity.core.Loadable
 import entity.error.CompositionLocalError
 
 @Composable

@@ -13,7 +13,7 @@ import com.varabyte.kobweb.silk.components.icons.fa.*
 import com.varabyte.kobweb.silk.components.text.SpanText
 import di.ModuleLocal
 import entity.BookmarkType
-import entity.Url
+import entity.core.Url
 import org.jetbrains.compose.web.css.minus
 import org.jetbrains.compose.web.css.percent
 import org.jetbrains.compose.web.css.px

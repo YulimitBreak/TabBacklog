@@ -2,7 +2,7 @@ package di
 
 import dev.shustoff.dikt.Create
 import dev.shustoff.dikt.UseModules
-import entity.Url
+import entity.core.Url
 import kotlinx.coroutines.CoroutineScope
 import ui.page.editor.BookmarkEditorModel
 import ui.page.summary.BookmarkSummaryModel

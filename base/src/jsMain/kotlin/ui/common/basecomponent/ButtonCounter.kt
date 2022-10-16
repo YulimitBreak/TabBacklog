@@ -9,7 +9,7 @@ import com.varabyte.kobweb.compose.ui.modifiers.size
 import com.varabyte.kobweb.silk.components.icons.fa.FaMinus
 import com.varabyte.kobweb.silk.components.icons.fa.FaPlus
 import com.varabyte.kobweb.silk.components.text.SpanText
-import entity.PluralText
+import entity.core.PluralText
 import org.jetbrains.compose.web.css.em
 
 @Composable

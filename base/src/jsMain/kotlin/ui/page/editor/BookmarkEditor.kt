@@ -19,7 +19,7 @@ import com.varabyte.kobweb.silk.components.text.SpanText
 import common.styleProperty
 import di.ModuleLocal
 import entity.BookmarkType
-import entity.Url
+import entity.core.Url
 import org.jetbrains.compose.web.css.*
 import org.jetbrains.compose.web.dom.Text
 import org.jetbrains.compose.web.dom.TextArea

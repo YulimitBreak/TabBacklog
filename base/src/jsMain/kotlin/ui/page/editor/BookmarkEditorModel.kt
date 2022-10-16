@@ -4,7 +4,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import data.BookmarkRepository
-import entity.*
+import entity.BookmarkType
+import entity.EditedBookmark
+import entity.core.Loadable
+import entity.core.Url
+import entity.core.load
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import ui.page.tagedit.TagEditEvent

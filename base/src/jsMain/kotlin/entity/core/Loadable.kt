@@ -1,4 +1,4 @@
-package entity
+package entity.core
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job

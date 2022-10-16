@@ -1,4 +1,4 @@
-package entity
+package entity.core
 
 fun interface PluralText {
     fun pluralize(count: Int): String

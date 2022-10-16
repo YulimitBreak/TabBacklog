@@ -6,7 +6,11 @@ import androidx.compose.runtime.setValue
 import common.DateUtils
 import data.BookmarkRepository
 import data.TabsRepository
-import entity.*
+import entity.Bookmark
+import entity.BookmarkType
+import entity.core.Loadable
+import entity.core.Url
+import entity.core.load
 import kotlinx.browser.window
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
