@@ -1,7 +1,6 @@
 package ui.page.summary
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import com.varabyte.kobweb.compose.css.FontWeight
@@ -12,8 +11,6 @@ import com.varabyte.kobweb.compose.ui.Modifier
 import com.varabyte.kobweb.compose.ui.modifiers.*
 import com.varabyte.kobweb.silk.components.icons.fa.*
 import com.varabyte.kobweb.silk.components.text.SpanText
-import com.varabyte.kobweb.silk.theme.SilkTheme
-import common.styleProperty
 import di.ModuleLocal
 import entity.BookmarkType
 import entity.Url
@@ -26,8 +23,9 @@ import ui.common.basecomponent.LoadableView
 import ui.common.basecomponent.RowButton
 import ui.common.basecomponent.TagListView
 import ui.common.bookmark.BookmarkTitleView
+import ui.common.bookmark.BookmarkTypeBacklogButton
+import ui.common.bookmark.BookmarkTypeLibraryButton
 import ui.common.bookmark.TimerDisplay
-import ui.common.styles.MainStyle
 
 
 @Composable
@@ -73,38 +71,11 @@ fun BookmarkSummary(
             )
             Row(Modifier.fillMaxWidth().gap(8.px)) {
                 val currentType = bookmark.takeIf { it.isSaved }?.type
-                RowButton(
-                    onClick = {
-                        model.updateType(BookmarkType.LIBRARY)
-                    }, modifier = if (currentType == BookmarkType.LIBRARY) {
-                        SelectedBookmarkTypeModifier
-                    } else {
-                        Modifier
-                    }.width(30.percent)
-                ) {
-                    FaBookBookmark()
-                    if (currentType == BookmarkType.LIBRARY) {
-                        Text("In library")
-                    } else {
-                        Text("To library")
-                    }
+                BookmarkTypeLibraryButton(currentType == BookmarkType.LIBRARY, Modifier.width(30.percent)) {
+                    model.updateType(BookmarkType.LIBRARY)
                 }
-                RowButton(
-                    onClick = {
-                        model.updateType(BookmarkType.BACKLOG)
-                    },
-                    modifier = if (currentType == BookmarkType.BACKLOG) {
-                        SelectedBookmarkTypeModifier
-                    } else {
-                        Modifier
-                    }.width(30.percent)
-                ) {
-                    FaNoteSticky()
-                    if (currentType == BookmarkType.BACKLOG) {
-                        Text("In backlog")
-                    } else {
-                        Text("To backlog")
-                    }
+                BookmarkTypeBacklogButton(currentType == BookmarkType.BACKLOG, Modifier.width(30.percent)) {
+                    model.updateType(BookmarkType.BACKLOG)
                 }
 
                 Spacer()
@@ -152,12 +123,3 @@ fun BookmarkSummary(
         }
     }
 }
-
-private val SelectedBookmarkTypeModifier
-    @Composable
-    @ReadOnlyComposable
-    get() = Modifier
-        .styleProperty("pointer-events", "none")
-        .backgroundColor(SilkTheme.palette.background)
-        .color(MainStyle.primaryColor)
-        .fontWeight(FontWeight.Lighter)
