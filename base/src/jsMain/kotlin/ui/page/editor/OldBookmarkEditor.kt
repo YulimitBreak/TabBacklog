@@ -25,8 +25,8 @@ fun OldBookmarkEditor(
 
     val appModule = ModuleLocal.App.current
     val scope = rememberCoroutineScope()
-    val model = remember(baseBookmark) {
-        appModule.createBookmarkEditorModel(scope, baseBookmark)
+    val model: OldBookmarkEditorModel = remember(baseBookmark) {
+        OldBookmarkEditorModel(baseBookmark, scope, TODO(), TODO())
     }
 
     val bookmark: EditedBookmark = model.state.bookmark
