@@ -75,7 +75,29 @@ class BookmarkEditorModel(
     }
 
     fun onTagEvent(event: TagEditEvent) {
-        // TODO
+        updateBookmark { bookmark ->
+            when (event) {
+                is TagEditEvent.Add -> {
+                    if (bookmark.tags.contains(event.tag)) {
+                        bookmark
+                    } else {
+                        bookmark.copy(tags = bookmark.tags + event.tag)
+                    }
+                }
+
+                is TagEditEvent.Delete -> {
+                    bookmark.copy(tags = bookmark.tags - event.tag)
+                }
+
+                is TagEditEvent.Edit -> {
+                    if (bookmark.tags.contains(event.to)) {
+                        bookmark.copy(tags = bookmark.tags - event.from)
+                    } else {
+                        bookmark.copy(tags = bookmark.tags - event.from + event.to)
+                    }
+                }
+            }
+        }
     }
 
     fun requestEdit(block: BookmarkEditedBlock?) {
