@@ -33,6 +33,7 @@ object TagComponent {
     val Selected = Style.addVariant("selected") {
         base {
             Modifier.backgroundColor(Palette.Variable.color_accent.value())
+                .color(Palette.Variable.color_onAccent.value())
         }
     }
 }

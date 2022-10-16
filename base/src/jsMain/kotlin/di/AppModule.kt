@@ -6,6 +6,7 @@ import entity.Url
 import kotlinx.coroutines.CoroutineScope
 import ui.page.editor.BookmarkEditorModel
 import ui.page.summary.BookmarkSummaryModel
+import ui.page.tagedit.TagEditModel
 import ui.popup.PopupBaseModel
 
 @Suppress("unused", "UNUSED_PARAMETER")
@@ -22,4 +23,7 @@ class AppModule(
 
     @Create
     fun createBookmarkSummaryModel(coroutineScope: CoroutineScope, url: Url?): BookmarkSummaryModel
+
+    @Create
+    fun createTagEditModel(coroutineScope: CoroutineScope): TagEditModel
 }
