@@ -8,6 +8,7 @@ import com.varabyte.kobweb.compose.foundation.layout.Spacer
 import com.varabyte.kobweb.compose.ui.Alignment
 import com.varabyte.kobweb.compose.ui.Modifier
 import com.varabyte.kobweb.compose.ui.modifiers.*
+import com.varabyte.kobweb.compose.ui.thenIf
 import com.varabyte.kobweb.silk.components.forms.Button
 import com.varabyte.kobweb.silk.components.icons.fa.FaXmark
 import com.varabyte.kobweb.silk.components.text.SpanText
@@ -32,12 +33,11 @@ fun TimerDisplay(
         SpanText(DateUtils.Formatter.DmySlash(date))
         SpanText(
             DateUtils.formatTimeRelation(date),
-            modifier = if (DateUtils.today.toEpochDays() >= date.toEpochDays()) {
+            modifier =
+            Modifier.width(30.percent).fontWeight(FontWeight.Lighter).textAlign(TextAlign.Center).thenIf(
+                DateUtils.today.toEpochDays() >= date.toEpochDays(),
                 Modifier.color(Palette.warningColor)
-            } else {
-                Modifier
-            }
-                .width(30.percent).fontWeight(FontWeight.Lighter).textAlign(TextAlign.Center)
+            )
         )
         if (onDelete != null) {
             Button(onClick = onDelete, Modifier.size(2.em)) {
