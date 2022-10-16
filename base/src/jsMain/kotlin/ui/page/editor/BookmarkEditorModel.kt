@@ -17,7 +17,7 @@ class BookmarkEditorModel(
     var bookmark: Loadable<EditedBookmark> by mutableStateOf(Loadable.Loading())
         private set
 
-    var editedBlock: EditedBlock? by mutableStateOf(null)
+    var editedBlock: BookmarkEditedBlock? by mutableStateOf(null)
         private set
 
     init {
@@ -73,7 +73,7 @@ class BookmarkEditorModel(
         updateBookmark { it.copy(currentType = type) }
     }
 
-    fun requestEdit(block: EditedBlock?) {
+    fun requestEdit(block: BookmarkEditedBlock?) {
         editedBlock = block
     }
 
@@ -90,7 +90,7 @@ class BookmarkEditorModel(
     }
 }
 
-enum class EditedBlock {
+enum class BookmarkEditedBlock {
     TITLE,
     COMMENT,
 }

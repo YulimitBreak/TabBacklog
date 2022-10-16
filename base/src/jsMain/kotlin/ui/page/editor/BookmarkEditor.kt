@@ -68,7 +68,7 @@ fun BookmarkEditor(
                 }
             }
 
-            if (model.editedBlock != EditedBlock.TITLE) {
+            if (model.editedBlock != BookmarkEditedBlock.TITLE) {
                 BookmarkTitleView(bookmark.title, bookmark.base.favicon, bookmark.base.url,
                     BookmarkEditClickableArea.Style.toModifier()
                         .width(100.percent - 16.px)
@@ -76,7 +76,7 @@ fun BookmarkEditor(
                         .margin(leftRight = 4.px, topBottom = (-2).px) // Negative margin to compensate for border
                         .padding(leftRight = 2.px)
                         .onClick {
-                            model.requestEdit(EditedBlock.TITLE)
+                            model.requestEdit(BookmarkEditedBlock.TITLE)
                         }
                 )
             } else {
@@ -119,18 +119,18 @@ fun BookmarkEditor(
                     .gap(8.px)
                     .width(100.percent - 4.px)
                     .margin(leftRight = (-4).px, topBottom = (-2).px)
-                    .thenIf(model.editedBlock != EditedBlock.COMMENT,
+                    .thenIf(model.editedBlock != BookmarkEditedBlock.COMMENT,
                         BookmarkEditClickableArea.Style.toModifier()
-                            .onClick { model.requestEdit(EditedBlock.COMMENT) }
+                            .onClick { model.requestEdit(BookmarkEditedBlock.COMMENT) }
                     )
-                    .thenIf(model.editedBlock == EditedBlock.COMMENT) {
+                    .thenIf(model.editedBlock == BookmarkEditedBlock.COMMENT) {
                         Modifier.border(2.px, LineStyle.Solid, Color.transparent)
                     }
             ) {
                 Row {
                     SpanText("Comment:")
                 }
-                if (model.editedBlock != EditedBlock.COMMENT) {
+                if (model.editedBlock != BookmarkEditedBlock.COMMENT) {
                     DivText(
                         bookmark.comment.takeIf { it.isNotBlank() } ?: "No comment",
                         Modifier.fontWeight(FontWeight.Lighter).margin(left = 8.px).width(100.percent - 8.px)
