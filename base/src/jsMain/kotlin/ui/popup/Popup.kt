@@ -20,12 +20,14 @@ import ui.common.styles.TooltipStyle
 import ui.common.styles.UtilStyle
 import ui.page.editor.BookmarkEditor
 import ui.page.summary.BookmarkSummary
+import ui.page.summary.BookmarkUpdateListener
 
 @Composable
 fun Popup() {
     val scope = rememberCoroutineScope()
     val appModule = ModuleLocal.App.current
     val model: PopupBaseModel = remember { appModule.createPopupBaseModel(scope) }
+    val updateListener = remember(model) { BookmarkUpdateListener { model.replaceBookmark(it) } } // TODO remove
 
     Style(UtilStyle)
     Style(MainStyle)
@@ -42,7 +44,7 @@ fun Popup() {
                     route("/") {
                         BookmarkSummary(
                             bookmark,
-                            onBookmarkUpdate = { model.replaceBookmark(it) },
+                            updateListener = updateListener,
                             onEditRequest = { router.navigate("/edit") },
                             modifier = Modifier.fillMaxWidth()
                         )

@@ -30,6 +30,7 @@ class PopupBaseModel(
                     bookmark = Loadable.Success(result),
                 )
             } catch (e: Exception) {
+                e.printStackTrace()
                 state.copy(bookmark = Loadable.Error(e))
             }
         }

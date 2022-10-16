@@ -11,7 +11,7 @@ object Lib {
     const val IndexedDb = "com.juul.indexeddb:core:0.2.3"
 
     object Kobweb {
-        private const val Version = "0.10.0-SNAPSHOT"
+        private const val Version = "0.10.0"
         const val Repo = "https://us-central1-maven.pkg.dev/varabyte-repos/public"
         const val Compose = "com.varabyte.kobweb:kobweb-compose:$Version"
         const val ComposeExt = "com.varabyte.kobweb:web-compose-ext:$Version"

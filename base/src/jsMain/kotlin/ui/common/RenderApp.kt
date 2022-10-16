@@ -57,15 +57,9 @@ fun renderApp(
         e.printStackTrace()
         renderComposable(rootElementId) {
             Div(attrs = Modifier.color(defaultPalette.warning).asAttributesBuilder()) {
-                P {
-                    Text("Error: ")
-                }
-                P {
-                    Text(e.message ?: "unknown")
-                }
-                Pre {
-                    Text(e.stackTraceToString())
-                }
+                P { Text("Error: ") }
+                P { Text(e.message ?: "unknown") }
+                Pre { Text(e.stackTraceToString()) }
             }
         }
     }

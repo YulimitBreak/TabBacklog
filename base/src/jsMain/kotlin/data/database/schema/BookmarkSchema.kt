@@ -2,6 +2,7 @@ package data.database.schema
 
 import data.database.core.DbField.Index
 import data.database.core.EntityDbField
+import data.database.core.saveAsString
 import entity.Bookmark
 
 @Suppress("unused")
@@ -12,11 +13,11 @@ enum class BookmarkSchema(
     Url(Bookmark::url, Index.PrimaryKey),
     Title(Bookmark::title, Index.Field()),
     Favicon(Bookmark::favicon),
-    Type(Bookmark::type, Index.Field()),
-    CreationDate(Bookmark::creationDate, Index.Field()),
-    Deadline(Bookmark::deadline, Index.Field()),
-    RemindDate(Bookmark::remindDate, Index.Field()),
-    ExpirationDate(Bookmark::expirationDate, Index.Field()),
+    Type(saveAsString(Bookmark::type), Index.Field()),
+    CreationDate(saveAsString(Bookmark::creationDate), Index.Field()),
+    Deadline(saveAsString(Bookmark::deadline), Index.Field()),
+    RemindDate(saveAsString(Bookmark::remindDate), Index.Field()),
+    ExpirationDate(saveAsString(Bookmark::expirationDate), Index.Field()),
     Favorite(Bookmark::favorite, Index.Field()),
     Comment(Bookmark::comment)
     ;

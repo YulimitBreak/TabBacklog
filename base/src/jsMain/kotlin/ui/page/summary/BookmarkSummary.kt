@@ -13,7 +13,6 @@ import com.varabyte.kobweb.compose.ui.modifiers.*
 import com.varabyte.kobweb.silk.components.icons.fa.*
 import com.varabyte.kobweb.silk.components.text.SpanText
 import com.varabyte.kobweb.silk.theme.SilkTheme
-import common.DateUtils
 import common.styleProperty
 import di.ModuleLocal
 import entity.Bookmark
@@ -33,14 +32,15 @@ import ui.common.styles.MainStyle
 @Composable
 fun BookmarkSummary(
     bookmark: Bookmark,
-    onBookmarkUpdate: (Bookmark) -> Unit,
+    updateListener: BookmarkUpdateListener,
     onEditRequest: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val appModule = ModuleLocal.App.current
     val scope = rememberCoroutineScope()
 
-    val model: BookmarkSummaryModel = remember { appModule.createBookmarkSummaryModel(scope) }
+    val model: BookmarkSummaryModel =
+        remember(updateListener) { appModule.createBookmarkSummaryModel(scope, updateListener) }
 
     Column(modifier.gap(8.px).margin(bottom = 16.px)) {
         Row(Modifier.fillMaxWidth().gap(8.px)) {
@@ -53,12 +53,12 @@ fun BookmarkSummary(
             Spacer()
             if (bookmark.isSaved) {
                 RowButton(
-                    onClick = { onBookmarkUpdate(bookmark.copy(favorite = !bookmark.favorite)) },
+                    onClick = { model.updateFavorite(bookmark, !bookmark.favorite) },
                 ) {
                     FaStar(style = if (bookmark.favorite) IconStyle.FILLED else IconStyle.OUTLINE)
                     Text("Favorite")
                 }
-                RowButton(onClick = { onBookmarkUpdate(bookmark.copy(creationDate = null)) }) {
+                RowButton(onClick = { model.deleteBookmark(bookmark) }) {
                     FaTrash()
                     Text("Delete")
                 }
@@ -74,7 +74,7 @@ fun BookmarkSummary(
             val currentType = bookmark.takeIf { it.isSaved }?.type
             RowButton(
                 onClick = {
-                    onBookmarkUpdate(bookmark.copy(type = BookmarkType.LIBRARY, creationDate = DateUtils.now))
+                    model.updateType(bookmark, type = BookmarkType.LIBRARY)
                 }, modifier = if (currentType == BookmarkType.LIBRARY) {
                     SelectedBookmarkTypeModifier
                 } else {
@@ -90,7 +90,7 @@ fun BookmarkSummary(
             }
             RowButton(
                 onClick = {
-                    onBookmarkUpdate(bookmark.copy(type = BookmarkType.BACKLOG, creationDate = DateUtils.now))
+                    model.updateType(bookmark, BookmarkType.BACKLOG)
                 },
                 modifier = if (currentType == BookmarkType.BACKLOG) {
                     SelectedBookmarkTypeModifier
@@ -133,17 +133,17 @@ fun BookmarkSummary(
             Column(Modifier.margin(left = 8.px).width(100.percent - 8.px)) {
                 if (bookmark.remindDate != null) {
                     TimerDisplay("Reminder", bookmark.remindDate, Modifier.fillMaxWidth(),
-                        onDelete = { onBookmarkUpdate(bookmark.copy(remindDate = null)) }
+                        onDelete = { model.deleteReminder(bookmark) }
                     )
                 }
                 if (bookmark.deadline != null) {
                     TimerDisplay("Deadline", bookmark.deadline, Modifier.fillMaxWidth(),
-                        onDelete = { onBookmarkUpdate(bookmark.copy(deadline = null)) }
+                        onDelete = { model.deleteDeadline(bookmark) }
                     )
                 }
                 if (bookmark.expirationDate != null) {
                     TimerDisplay("Expiration", bookmark.expirationDate, Modifier.fillMaxWidth(),
-                        onDelete = { onBookmarkUpdate(bookmark.copy(expirationDate = null)) }
+                        onDelete = { model.deleteExpiration(bookmark) }
                     )
                 }
             }

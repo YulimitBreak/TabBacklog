@@ -23,6 +23,7 @@ interface DbField {
 interface EntityDbField<T> : DbField {
     val backingField: ((T) -> dynamic)?
 }
+fun <T> saveAsString(getter: (T) -> Any?): (T) -> dynamic = { getter(it)?.toString() }
 
 value class DbSchema<Field : DbField>(val fields: List<Field>) {
 
@@ -38,7 +39,13 @@ value class DbSchema<Field : DbField>(val fields: List<Field>) {
             val primaryKeys = fields.filter { it.index is DbField.Index.PrimaryKey }
             val firstKey = primaryKeys.first().name
             val otherKeys = primaryKeys.drop(1).map { it.name }.toTypedArray()
-            database.createObjectStore(storeName, KeyPath(firstKey, *otherKeys))
+            val store = database.createObjectStore(storeName, KeyPath(firstKey, *otherKeys))
+            if (otherKeys.isNotEmpty()) {
+                primaryKeys.forEach { field ->
+                    store.createIndex(field.name, KeyPath(field.name), false)
+                }
+            }
+            store
         }
 
         fields
@@ -58,10 +65,16 @@ value class DbSchema<Field : DbField>(val fields: List<Field>) {
             }
     }
 
-    fun <T> extract(source: dynamic, f: (Map<Field, dynamic>) -> T): T {
-        return f(
-            fields.associateWith { source[it.name] }
-        )
+    fun <T> extract(source: dynamic, f: ExtractScope<Field>.(Map<Field, dynamic>) -> T): T {
+        val map = fields.associateWith { source[it.name] }
+        val scope = object : ExtractScope<Field> {
+            override fun <T> Field.value(): T = map[this] as T
+        }
+        return scope.f(map)
+    }
+
+    interface ExtractScope<Field : DbField> {
+        fun <T> Field.value(): T
     }
 
     fun generate(map: Map<Field, dynamic>): dynamic {
@@ -69,7 +82,6 @@ value class DbSchema<Field : DbField>(val fields: List<Field>) {
         map.forEach { (k, v) -> result[k] = v }
         return result
     }
-
 
     companion object {
         inline operator fun <reified E> invoke() where E : DbField, E : Enum<E> =

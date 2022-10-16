@@ -6,6 +6,7 @@ import entity.Bookmark
 import kotlinx.coroutines.CoroutineScope
 import ui.page.editor.BookmarkEditorModel
 import ui.page.summary.BookmarkSummaryModel
+import ui.page.summary.BookmarkUpdateListener
 import ui.popup.PopupBaseModel
 
 @Suppress("unused", "UNUSED_PARAMETER")
@@ -21,5 +22,8 @@ class AppModule(
     fun createBookmarkEditorModel(coroutineScope: CoroutineScope, baseBookmark: Bookmark): BookmarkEditorModel
 
     @Create
-    fun createBookmarkSummaryModel(coroutineScope: CoroutineScope): BookmarkSummaryModel
+    fun createBookmarkSummaryModel(
+        coroutineScope: CoroutineScope,
+        updateListener: BookmarkUpdateListener
+    ): BookmarkSummaryModel
 }
