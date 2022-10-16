@@ -9,8 +9,8 @@ import org.jetbrains.compose.web.css.*
 import org.jetbrains.compose.web.dom.Div
 import org.jetbrains.compose.web.dom.Text
 import org.w3c.dom.HTMLDivElement
-import ui.common.basecomponent.RelativeDatePicker
-import ui.common.basecomponent.RelativeDatePickerState
+import ui.common.basecomponent.OldRelativeDatePicker
+import ui.common.basecomponent.OldRelativeDatePickerState
 import ui.common.styles.UtilStyle
 
 @Composable
@@ -42,7 +42,7 @@ fun BookmarkTimerPanel(
         ) {
             Text("Reminder")
         }
-        RelativeDatePicker(
+        OldRelativeDatePicker(
             state.reminder,
             attrs = {
                 style {
@@ -64,7 +64,7 @@ fun BookmarkTimerPanel(
         ) {
             Text("Deadline")
         }
-        RelativeDatePicker(
+        OldRelativeDatePicker(
             state.deadline,
             attrs = {
                 style {
@@ -86,7 +86,7 @@ fun BookmarkTimerPanel(
         ) {
             Text("Expiration")
         }
-        RelativeDatePicker(
+        OldRelativeDatePicker(
             state.expiration,
             attrs = {
                 style {
@@ -111,9 +111,9 @@ fun rememberBookmarkTimerPanelState(
 }
 
 data class BookmarkTimerPanelState(
-    val deadline: RelativeDatePickerState,
-    val reminder: RelativeDatePickerState,
-    val expiration: RelativeDatePickerState,
+    val deadline: OldRelativeDatePickerState,
+    val reminder: OldRelativeDatePickerState,
+    val expiration: OldRelativeDatePickerState,
 ) {
 
     val hasTimers get() = deadline.isValid || reminder.isValid || expiration.isValid
@@ -124,9 +124,9 @@ data class BookmarkTimerPanelState(
             initialReminder: LocalDate?,
             initialExpiration: LocalDate?
         ) = BookmarkTimerPanelState(
-            deadline = RelativeDatePickerState.fromInitialDate(initialDeadline),
-            reminder = RelativeDatePickerState.fromInitialDate(initialReminder),
-            expiration = RelativeDatePickerState.fromInitialDate(initialExpiration)
+            deadline = OldRelativeDatePickerState.fromInitialDate(initialDeadline),
+            reminder = OldRelativeDatePickerState.fromInitialDate(initialReminder),
+            expiration = OldRelativeDatePickerState.fromInitialDate(initialExpiration)
         )
     }
 }

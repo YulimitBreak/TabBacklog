@@ -17,10 +17,10 @@ import ui.common.styles.MainStyle
 import ui.common.styles.UtilStyle
 
 @Composable
-fun RelativeDatePicker(
-    state: RelativeDatePickerState,
+fun OldRelativeDatePicker(
+    state: OldRelativeDatePickerState,
     attrs: AttrBuilderContext<HTMLDivElement>? = null,
-    onStateUpdate: (RelativeDatePickerState) -> Unit
+    onStateUpdate: (OldRelativeDatePickerState) -> Unit
 ) {
 
     Div(attrs = {
@@ -34,7 +34,7 @@ fun RelativeDatePicker(
     }) {
 
         when (state.mode) {
-            RelativeDatePickerState.Mode.NONE -> Div(attrs = {
+            OldRelativeDatePickerState.Mode.NONE -> Div(attrs = {
                 classes(UtilStyle.centerContent)
                 style {
                     height(24.px)
@@ -43,7 +43,7 @@ fun RelativeDatePicker(
                 Text("Never")
             }
 
-            RelativeDatePickerState.Mode.SET -> Input(InputType.Date) {
+            OldRelativeDatePickerState.Mode.SET -> Input(InputType.Date) {
                 min(DateUtils.today.toString())
                 value(state.rememberedDate?.toString() ?: "")
                 onInput { event ->
@@ -57,21 +57,21 @@ fun RelativeDatePicker(
             }
 
 
-            else -> RelativeDateCounter(state.rememberedPeriod, state.mode) {
+            else -> OldRelativeDateCounter(state.rememberedPeriod, state.mode) {
                 onStateUpdate(state.copy(rememberedPeriod = it))
             }
         }
 
         Input(InputType.Range) {
             min("0")
-            max(RelativeDatePickerState.Mode.values().size.minus(1).toString())
+            max(OldRelativeDatePickerState.Mode.values().size.minus(1).toString())
             style {
                 width(200.px)
                 property("transform", "scale(0.8)")
             }
             value(state.mode.ordinal)
             onInput {
-                onStateUpdate(state.copy(mode = RelativeDatePickerState.Mode.values()[it.value?.toInt() ?: 0]))
+                onStateUpdate(state.copy(mode = OldRelativeDatePickerState.Mode.values()[it.value?.toInt() ?: 0]))
             }
         }
     }
@@ -79,9 +79,9 @@ fun RelativeDatePicker(
 }
 
 @Composable
-private fun RelativeDateCounter(
+private fun OldRelativeDateCounter(
     rememberedPeriod: Int,
-    mode: RelativeDatePickerState.Mode,
+    mode: OldRelativeDatePickerState.Mode,
     onNumberChange: (Int) -> Unit
 ) {
 
@@ -129,10 +129,10 @@ private fun RelativeDateCounter(
             }
         }) {
             when (mode) {
-                RelativeDatePickerState.Mode.DAYS -> Text(choosePlural("day", "days"))
-                RelativeDatePickerState.Mode.WEEKS -> Text(choosePlural("week", "weeks"))
-                RelativeDatePickerState.Mode.MONTHS -> Text(choosePlural("month", "months"))
-                RelativeDatePickerState.Mode.YEARS -> Text(choosePlural("year", "years"))
+                OldRelativeDatePickerState.Mode.DAYS -> Text(choosePlural("day", "days"))
+                OldRelativeDatePickerState.Mode.WEEKS -> Text(choosePlural("week", "weeks"))
+                OldRelativeDatePickerState.Mode.MONTHS -> Text(choosePlural("month", "months"))
+                OldRelativeDatePickerState.Mode.YEARS -> Text(choosePlural("year", "years"))
                 else -> {}
             }
         }
@@ -149,7 +149,7 @@ private fun RelativeDateCounter(
     }
 }
 
-data class RelativeDatePickerState(
+data class OldRelativeDatePickerState(
     val mode: Mode,
     val rememberedDate: LocalDate?,
     val rememberedPeriod: Int,
@@ -176,7 +176,7 @@ data class RelativeDatePickerState(
 
     companion object {
         fun fromInitialDate(initialDate: LocalDate?) =
-            RelativeDatePickerState(
+            OldRelativeDatePickerState(
                 if (initialDate == null) Mode.NONE else Mode.SET,
                 initialDate,
                 1
