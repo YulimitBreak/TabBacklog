@@ -16,6 +16,7 @@ import org.jetbrains.compose.web.dom.*
 import org.jetbrains.compose.web.renderComposable
 import org.w3c.dom.Element
 import ui.common.styles.Palette
+import ui.common.styles.components.BookmarkEditClickableArea
 import ui.common.styles.components.TagComponent
 
 fun renderApp(
@@ -41,6 +42,7 @@ fun renderApp(
         )
         it.theme.registerComponentStyle(TagComponent.Style)
         it.theme.registerComponentVariants(TagComponent.Clickable, TagComponent.Selected)
+        it.theme.registerComponentStyle(BookmarkEditClickableArea.Style)
         additionalInit(it)
     }
     try {

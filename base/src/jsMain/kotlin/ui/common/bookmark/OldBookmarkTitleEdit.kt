@@ -10,7 +10,7 @@ import org.jetbrains.compose.web.dom.TextArea
 import org.w3c.dom.HTMLDivElement
 
 @Composable
-fun BookmarkTitleEdit(
+fun OldBookmarkTitleEdit(
     title: String,
     favicon: String?,
     url: String,

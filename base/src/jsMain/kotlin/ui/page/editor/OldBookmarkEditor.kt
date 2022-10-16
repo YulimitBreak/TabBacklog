@@ -42,7 +42,7 @@ fun OldBookmarkEditor(
             marginBottom(16.px)
         }
     }) {
-        BookmarkTitleEdit(bookmark.title, bookmark.base.favicon, bookmark.base.url, attrs = {
+        OldBookmarkTitleEdit(bookmark.title, bookmark.base.favicon, bookmark.base.url, attrs = {
             style { width(100.percent) }
         }, onTitleChanged = { model.onTitleChanged(it) })
 

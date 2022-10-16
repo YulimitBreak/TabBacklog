@@ -69,7 +69,7 @@ fun BookmarkSummary(
                 bookmark.title,
                 bookmark.favicon,
                 bookmark.url,
-                Modifier.margin(leftRight = 8.px).width(100.percent - 16.px)
+                Modifier.margin(leftRight = 8.px).width(100.percent - 16.px).height(64.px)
             )
             Row(Modifier.fillMaxWidth().gap(8.px)) {
                 val currentType = bookmark.takeIf { it.isSaved }?.type

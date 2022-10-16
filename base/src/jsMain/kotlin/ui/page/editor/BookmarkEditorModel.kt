@@ -20,6 +20,9 @@ class BookmarkEditorModel(
     var bookmark: Loadable<EditedBookmark> by mutableStateOf(Loadable.Loading())
         private set
 
+    var editedBlock: EditedBlock? by mutableStateOf(null)
+        private set
+
     init {
         scope.load(
             setter = { bookmark = it },
@@ -47,6 +50,10 @@ class BookmarkEditorModel(
         updateBookmark { it.copy(favorite = favorite) }
     }
 
+    fun updateTitle(title: String) {
+        updateBookmark { it.copy(title = title) }
+    }
+
     fun deleteBookmark(onDeletionComplete: () -> Unit) {
         scope.launch {
             val url = bookmark.value?.base?.url
@@ -60,4 +67,13 @@ class BookmarkEditorModel(
             onDeletionComplete()
         }
     }
+
+    fun requestEdit(block: EditedBlock?) {
+        editedBlock = block
+    }
+}
+
+enum class EditedBlock {
+    TITLE,
+
 }

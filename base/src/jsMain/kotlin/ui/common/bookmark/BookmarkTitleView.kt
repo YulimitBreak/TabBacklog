@@ -19,6 +19,7 @@ import org.jetbrains.compose.web.css.em
 import org.jetbrains.compose.web.css.percent
 import org.jetbrains.compose.web.css.px
 import org.jetbrains.compose.web.dom.Img
+import org.jetbrains.compose.web.dom.TextArea
 import ui.common.basecomponent.DivText
 
 @Composable
@@ -32,12 +33,7 @@ fun BookmarkTitleView(
         modifier.minWidth(200.px).maxWidth(400.px).flexWrap(FlexWrap.Nowrap).gap(16.px),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        if (!favicon.isNullOrBlank()) {
-            Img(src = favicon, attrs = Modifier.size(32.px).asAttributesBuilder())
-        } else {
-            FaFileLines(Modifier.fontSize(32.px).size(32.px))
-        }
-
+        Favicon(favicon)
         Column(
             Modifier.width(100.percent).gap(8.px),
             horizontalAlignment = Alignment.Start,
@@ -62,5 +58,35 @@ fun BookmarkTitleView(
             )
         }
 
+    }
+}
+
+@Composable
+fun BookmarkTitleEdit(
+    title: String,
+    favicon: String?,
+    onInput: (String) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        modifier = modifier.gap(16.px).flexWrap(FlexWrap.Nowrap),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Favicon(favicon)
+
+        TextArea(title, Modifier.fontSize(1.2.em).fillMaxWidth().height(4.8.em)
+            .styleProperty("resize", "none")
+            .asAttributesBuilder {
+                onInput { onInput(it.value) }
+            })
+    }
+}
+
+@Composable
+private fun Favicon(favicon: String?) {
+    if (!favicon.isNullOrBlank()) {
+        Img(src = favicon, attrs = Modifier.size(32.px).asAttributesBuilder())
+    } else {
+        FaFileLines(Modifier.fontSize(32.px).size(32.px))
     }
 }
