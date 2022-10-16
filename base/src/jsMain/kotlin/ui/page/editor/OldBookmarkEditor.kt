@@ -151,7 +151,7 @@ fun OldBookmarkEditor(
         }
 
         var timerState by rememberBookmarkTimerPanelState(
-            bookmark.deadline, bookmark.reminder, bookmark.expiration,
+            bookmark.deadline, bookmark.remindDate, bookmark.expirationDate,
         )
 
         fun onTimerStateChanged(state: BookmarkTimerPanelState) {

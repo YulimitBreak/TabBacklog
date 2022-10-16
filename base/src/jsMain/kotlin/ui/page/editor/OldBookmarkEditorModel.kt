@@ -123,8 +123,8 @@ class OldBookmarkEditorModel(
         updateBookmark {
             it.copy(
                 deadline = deadline,
-                reminder = reminder,
-                expiration = expiration,
+                remindDate = reminder,
+                expirationDate = expiration,
             )
         }
     }
