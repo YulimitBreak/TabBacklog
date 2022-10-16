@@ -11,6 +11,9 @@ import com.varabyte.kobweb.compose.ui.asAttributesBuilder
 import com.varabyte.kobweb.compose.ui.graphics.toCssColor
 import com.varabyte.kobweb.compose.ui.modifiers.*
 import com.varabyte.kobweb.silk.components.icons.fa.FaCheck
+import com.varabyte.kobweb.silk.components.icons.fa.FaEject
+import com.varabyte.kobweb.silk.components.icons.fa.FaEraser
+import com.varabyte.kobweb.silk.components.icons.fa.FaTrash
 import di.ModuleLocal
 import org.jetbrains.compose.web.css.*
 import org.jetbrains.compose.web.dom.TextInput
@@ -51,6 +54,18 @@ fun TagEditView(tags: List<String>, modifier: Modifier, onTagEditEvent: (TagEdit
                 })
             RowButton(onClick = { model.confirmTag(onTagEditEvent) }, Modifier.size(1.2.em)) {
                 FaCheck()
+            }
+            if (model.selectedTag == null) {
+                RowButton(onClick = { model.onTagInput("") }, Modifier.size(1.2.em)) {
+                    FaEraser()
+                }
+            } else {
+                RowButton(onClick = { model.deselectTag() }, Modifier.size(1.2.em)) {
+                    FaEject()
+                }
+                RowButton(onClick = { model.deleteSelectedTag(onTagEditEvent) }, Modifier.size(1.2.em)) {
+                    FaTrash()
+                }
             }
         }
     }

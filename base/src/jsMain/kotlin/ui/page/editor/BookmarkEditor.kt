@@ -160,7 +160,7 @@ fun BookmarkEditor(
                         },
                         Modifier.align(Alignment.End).margin(right = (-2).px)
                     ) {
-                        FaXmark()
+                        FaEraser()
                         Text("Clear")
                     }
                 }

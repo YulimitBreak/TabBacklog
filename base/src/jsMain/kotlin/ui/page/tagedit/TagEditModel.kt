@@ -32,6 +32,11 @@ class TagEditModel(
         editedTag = storedEditedTag
     }
 
+    fun deleteSelectedTag(onTagEditEvent: (TagEditEvent) -> Unit) {
+        onTagEditEvent(TagEditEvent.Delete(selectedTag ?: return))
+        deselectTag()
+    }
+
     fun onTagInput(input: String) {
         editedTag = input
     }
