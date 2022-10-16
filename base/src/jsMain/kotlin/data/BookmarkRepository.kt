@@ -18,7 +18,7 @@ import kotlinx.coroutines.flow.takeWhile
 import kotlinx.datetime.toLocalDate
 import kotlinx.datetime.toLocalDateTime
 
-class BookmarkRepository(val databaseHolder: DatabaseHolder) {
+class BookmarkRepository(private val databaseHolder: DatabaseHolder) {
 
     suspend fun loadBookmarkForActiveTab(): Bookmark {
         val tab = browser.tabs.query(QueryQueryInfo {
@@ -103,15 +103,6 @@ class BookmarkRepository(val databaseHolder: DatabaseHolder) {
             }.toSet()
             console.log("Found tags $tags")
             return@transaction bookmark.copy(tags = tags)
-        }
-    }
-
-    private suspend fun WriteTransaction.deleteBookmark(url: String) {
-        val bookmarkSchema = DbSchema<BookmarkSchema>()
-        val tagsSchema = DbSchema<TagSchema>()
-        objectStore(bookmarkSchema.storeName).delete(Key(url))
-        objectStore(tagsSchema.storeName).index(TagSchema.Url.name).openCursor(Key(url)).collect { cursor ->
-            cursor.delete()
         }
     }
 
