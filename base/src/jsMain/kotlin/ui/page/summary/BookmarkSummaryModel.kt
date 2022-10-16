@@ -24,6 +24,11 @@ class BookmarkSummaryModel(
     private fun CoroutineScope.loadBookmark(loader: suspend () -> Bookmark) =
         load(setter = { bookmark = it }, debounceTime = 200L, loader)
 
+    private fun CoroutineScope.updateBookmark(action: suspend (Bookmark) -> Bookmark) {
+        val bookmark = bookmark.value ?: return
+        loadBookmark { action(bookmark) }
+    }
+
     init {
         scope.loadBookmark {
             if (url == null) {
@@ -41,8 +46,8 @@ class BookmarkSummaryModel(
         }
     }
 
-    fun updateType(bookmark: Bookmark, type: BookmarkType) {
-        scope.loadBookmark {
+    fun updateType(type: BookmarkType) {
+        scope.updateBookmark { bookmark ->
             val newBookmark = if (bookmark.isSaved) {
                 bookmark.copy(type = type)
             } else {
@@ -53,8 +58,8 @@ class BookmarkSummaryModel(
         }
     }
 
-    fun deleteBookmark(bookmark: Bookmark) {
-        scope.loadBookmark {
+    fun deleteBookmark() {
+        scope.updateBookmark { bookmark ->
             bookmarkRepository.deleteBookmark(bookmark.url)
             bookmark.copy(
                 type = BookmarkType.BACKLOG,
@@ -63,32 +68,32 @@ class BookmarkSummaryModel(
         }
     }
 
-    fun updateFavorite(bookmark: Bookmark, isFavorite: Boolean) {
-        scope.loadBookmark {
+    fun updateFavorite(isFavorite: Boolean) {
+        scope.updateBookmark { bookmark ->
             val newBookmark = bookmark.copy(favorite = isFavorite)
             bookmarkRepository.saveBookmark(newBookmark)
             newBookmark
         }
     }
 
-    fun deleteReminder(bookmark: Bookmark) {
-        scope.loadBookmark {
+    fun deleteReminder() {
+        scope.updateBookmark { bookmark ->
             val newBookmark = bookmark.copy(remindDate = null)
             bookmarkRepository.saveBookmark(newBookmark)
             newBookmark
         }
     }
 
-    fun deleteDeadline(bookmark: Bookmark) {
-        scope.loadBookmark {
+    fun deleteDeadline() {
+        scope.updateBookmark { bookmark ->
             val newBookmark = bookmark.copy(deadline = null)
             bookmarkRepository.saveBookmark(newBookmark)
             newBookmark
         }
     }
 
-    fun deleteExpiration(bookmark: Bookmark) {
-        scope.loadBookmark {
+    fun deleteExpiration() {
+        scope.updateBookmark { bookmark ->
             val newBookmark = bookmark.copy(remindDate = null)
             bookmarkRepository.saveBookmark(newBookmark)
             newBookmark

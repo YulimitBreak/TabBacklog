@@ -54,12 +54,12 @@ fun BookmarkSummary(
                 Spacer()
                 if (bookmark.isSaved) {
                     RowButton(
-                        onClick = { model.updateFavorite(bookmark, !bookmark.favorite) },
+                        onClick = { model.updateFavorite(!bookmark.favorite) },
                     ) {
                         FaStar(style = if (bookmark.favorite) IconStyle.FILLED else IconStyle.OUTLINE)
                         Text("Favorite")
                     }
-                    RowButton(onClick = { model.deleteBookmark(bookmark) }) {
+                    RowButton(onClick = { model.deleteBookmark() }) {
                         FaTrash()
                         Text("Delete")
                     }
@@ -75,7 +75,7 @@ fun BookmarkSummary(
                 val currentType = bookmark.takeIf { it.isSaved }?.type
                 RowButton(
                     onClick = {
-                        model.updateType(bookmark, type = BookmarkType.LIBRARY)
+                        model.updateType(BookmarkType.LIBRARY)
                     }, modifier = if (currentType == BookmarkType.LIBRARY) {
                         SelectedBookmarkTypeModifier
                     } else {
@@ -91,7 +91,7 @@ fun BookmarkSummary(
                 }
                 RowButton(
                     onClick = {
-                        model.updateType(bookmark, BookmarkType.BACKLOG)
+                        model.updateType(BookmarkType.BACKLOG)
                     },
                     modifier = if (currentType == BookmarkType.BACKLOG) {
                         SelectedBookmarkTypeModifier
@@ -134,17 +134,17 @@ fun BookmarkSummary(
                 Column(Modifier.margin(left = 8.px).width(100.percent - 8.px)) {
                     if (bookmark.remindDate != null) {
                         TimerDisplay("Reminder", bookmark.remindDate, Modifier.fillMaxWidth(),
-                            onDelete = { model.deleteReminder(bookmark) }
+                            onDelete = { model.deleteReminder() }
                         )
                     }
                     if (bookmark.deadline != null) {
                         TimerDisplay("Deadline", bookmark.deadline, Modifier.fillMaxWidth(),
-                            onDelete = { model.deleteDeadline(bookmark) }
+                            onDelete = { model.deleteDeadline() }
                         )
                     }
                     if (bookmark.expirationDate != null) {
                         TimerDisplay("Expiration", bookmark.expirationDate, Modifier.fillMaxWidth(),
-                            onDelete = { model.deleteExpiration(bookmark) }
+                            onDelete = { model.deleteExpiration() }
                         )
                     }
                 }
