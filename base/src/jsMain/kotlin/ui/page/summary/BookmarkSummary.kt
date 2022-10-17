@@ -1,8 +1,6 @@
 package ui.page.summary
 
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.*
 import com.varabyte.kobweb.compose.css.FontWeight
 import com.varabyte.kobweb.compose.foundation.layout.Column
 import com.varabyte.kobweb.compose.foundation.layout.Row
@@ -39,8 +37,8 @@ fun BookmarkSummary(
 
     LoadableView(model.bookmark, modifier.minHeight(100.px)) { bookmark, m ->
         Column(m.gap(8.px).margin(bottom = 16.px)) {
-
-            Slider(0, 5, Modifier.width(100.percent)) {}
+            var sliderValue by remember { mutableStateOf(0) }
+            Slider(sliderValue, 5, Modifier.width(100.percent)) { sliderValue = it }
             Row(Modifier.fillMaxWidth().gap(8.px)) {
 
                 RowButton(onClick = { model.openManager() }) {

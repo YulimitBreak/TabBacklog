@@ -47,6 +47,13 @@ fun Slider(
                     .tabIndex(0)
                     .align(Alignment.CenterStart)
                     .margin(left = percent.percent - 8.px)
+                    .onKeyDown { event ->
+                        if (event.getNormalizedKey() == "ArrowLeft") {
+                            onValueChange((value - 1).coerceAtLeast(0))
+                        } else if (event.getNormalizedKey() == "ArrowRight") {
+                            onValueChange((value + 1).coerceAtMost(maxValue))
+                        }
+                    }
                     .asAttributesBuilder()
             )
         }
