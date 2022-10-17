@@ -18,10 +18,7 @@ import org.jetbrains.compose.web.css.minus
 import org.jetbrains.compose.web.css.percent
 import org.jetbrains.compose.web.css.px
 import org.jetbrains.compose.web.dom.Text
-import ui.common.basecomponent.DivText
-import ui.common.basecomponent.LoadableView
-import ui.common.basecomponent.RowButton
-import ui.common.basecomponent.TagListView
+import ui.common.basecomponent.*
 import ui.common.bookmark.BookmarkTitleView
 import ui.common.bookmark.BookmarkTypeBacklogButton
 import ui.common.bookmark.BookmarkTypeLibraryButton
@@ -42,6 +39,8 @@ fun BookmarkSummary(
 
     LoadableView(model.bookmark, modifier.minHeight(100.px)) { bookmark, m ->
         Column(m.gap(8.px).margin(bottom = 16.px)) {
+
+            Slider(0, 5, Modifier.width(100.percent)) {}
             Row(Modifier.fillMaxWidth().gap(8.px)) {
 
                 RowButton(onClick = { model.openManager() }) {

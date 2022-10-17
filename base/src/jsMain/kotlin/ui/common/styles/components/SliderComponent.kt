@@ -6,6 +6,7 @@ import com.varabyte.kobweb.compose.ui.modifiers.backgroundColor
 import com.varabyte.kobweb.compose.ui.modifiers.height
 import com.varabyte.kobweb.compose.ui.modifiers.size
 import com.varabyte.kobweb.silk.components.style.ComponentStyle
+import com.varabyte.kobweb.silk.components.style.focus
 import com.varabyte.kobweb.silk.components.style.hover
 import com.varabyte.kobweb.silk.theme.shapes.Circle
 import com.varabyte.kobweb.silk.theme.shapes.Rect
@@ -34,6 +35,10 @@ object SliderComponent {
         }
 
         hover {
+            Modifier.backgroundColor(Palette.Variable.color_accent.value())
+        }
+
+        focus {
             Modifier.backgroundColor(Palette.Variable.color_accent.value())
         }
     }
