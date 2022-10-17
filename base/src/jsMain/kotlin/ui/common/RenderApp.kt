@@ -17,6 +17,7 @@ import org.jetbrains.compose.web.renderComposable
 import org.w3c.dom.Element
 import ui.common.styles.Palette
 import ui.common.styles.components.BookmarkEditClickableArea
+import ui.common.styles.components.SliderComponent
 import ui.common.styles.components.TagComponent
 
 fun renderApp(
@@ -34,15 +35,20 @@ fun renderApp(
         warning = Colors.Crimson,
     )
     initSilk {
-        it.theme.palettes = it.theme.palettes.copy(
-            light = it.theme.palettes.light.copy(
-                background = defaultPalette.background,
-                color = defaultPalette.onBackground,
+        with(it.theme) {
+            palettes = palettes.copy(
+                light = palettes.light.copy(
+                    background = defaultPalette.background,
+                    color = defaultPalette.onBackground,
+                )
             )
-        )
-        it.theme.registerComponentStyle(TagComponent.Style)
-        it.theme.registerComponentVariants(TagComponent.Clickable, TagComponent.Selected)
-        it.theme.registerComponentStyle(BookmarkEditClickableArea.Style)
+            registerComponentStyle(TagComponent.Style)
+            registerComponentVariants(TagComponent.Clickable, TagComponent.Selected)
+            registerComponentStyle(BookmarkEditClickableArea.Style)
+            registerComponentStyle(SliderComponent.InactiveTrackStyle)
+            registerComponentStyle(SliderComponent.TrackStyle)
+            registerComponentStyle(SliderComponent.ThumbStyle)
+        }
         additionalInit(it)
     }
     try {
