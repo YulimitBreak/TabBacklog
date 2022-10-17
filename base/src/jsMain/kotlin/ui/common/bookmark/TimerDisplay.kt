@@ -14,7 +14,6 @@ import com.varabyte.kobweb.silk.components.icons.fa.FaXmark
 import com.varabyte.kobweb.silk.components.text.SpanText
 import common.DateUtils
 import kotlinx.datetime.LocalDate
-import org.jetbrains.compose.web.css.JustifyContent
 import org.jetbrains.compose.web.css.em
 import org.jetbrains.compose.web.css.percent
 import org.jetbrains.compose.web.css.px
@@ -27,8 +26,8 @@ fun TimerDisplay(
     modifier: Modifier,
     onDelete: (() -> Unit)? = null
 ) {
-    Row(modifier.gap(8.px).justifyContent(JustifyContent.Stretch), verticalAlignment = Alignment.CenterVertically) {
-        SpanText(title, modifier = Modifier.fontWeight(FontWeight.Bolder).textAlign(TextAlign.Center))
+    Row(modifier.gap(8.px).height(2.5.em), verticalAlignment = Alignment.CenterVertically) {
+        SpanText(title, modifier = Modifier.fontWeight(FontWeight.Bolder).width(25.percent))
         Spacer()
         SpanText(DateUtils.Formatter.DmySlash(date))
         SpanText(

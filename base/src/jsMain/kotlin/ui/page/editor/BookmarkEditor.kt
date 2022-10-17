@@ -47,7 +47,7 @@ fun BookmarkEditor(
     }
 
     LoadableView(model.bookmark, modifier = modifier.minHeight(300.px)) { bookmark, m ->
-        Column(m.gap(8.px)) {
+        Column(m.gap(8.px).padding(bottom = 8.px)) {
             Row(Modifier.fillMaxWidth().gap(8.px)) {
 
                 RowButton(onClick = onNavigateBack) {
@@ -184,7 +184,7 @@ fun BookmarkEditor(
                     model.editedBlock == BookmarkEditedBlock.TAGS -> {
                         TagEditView(
                             bookmark.tags,
-                            Modifier.margin(leftRight = 8.px).width(100.percent - 16.px)
+                            Modifier.margin(left = 8.px).width(100.percent - 8.px)
                         ) { event ->
                             model.onTagEvent(event)
                         }
@@ -205,6 +205,48 @@ fun BookmarkEditor(
                     }
                 }
             }
+
+            SpanText("Timers:")
+
+            @Composable
+            fun TimerBlock(
+                title: String,
+                description: String,
+                type: TimerType
+            ) {
+                SelectableTimerEditArea(
+                    title,
+                    description,
+                    model.editedBlock == type.block,
+                    model.getTimerTarget(type),
+                    Modifier
+                        .width(100.percent - 4.px)
+                        .margin(left = 4.px, top = (-2).px, bottom = (-2).px)
+                        .thenIf(model.editedBlock != type.block,
+                            BookmarkEditClickableArea.Style.toModifier()
+                                .onClick { model.requestEdit(type.block) }
+                        )
+                        .thenIf(model.editedBlock == type.block) {
+                            Modifier.border(2.px, LineStyle.Solid, Color.transparent)
+                        }
+                ) { model.onTimerEvent(type, it) }
+            }
+
+            TimerBlock(
+                "Reminder", "For tabs that you want to forget about until specific date", TimerType.REMINDER
+            )
+
+            TimerBlock(
+                "Deadline",
+                "For tabs related to tasks that you need to finish until specific date",
+                TimerType.DEADLINE
+            )
+
+            TimerBlock(
+                "Expiration",
+                "For tabs that you won't care after a specific date so they can be safely deleted",
+                TimerType.EXPIRATION
+            )
         }
     }
 }

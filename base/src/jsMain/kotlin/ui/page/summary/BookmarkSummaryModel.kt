@@ -98,7 +98,7 @@ class BookmarkSummaryModel(
 
     fun deleteExpiration() {
         scope.updateBookmark { bookmark ->
-            val newBookmark = bookmark.copy(remindDate = null)
+            val newBookmark = bookmark.copy(expirationDate = null)
             bookmarkRepository.saveBookmark(newBookmark)
             newBookmark
         }

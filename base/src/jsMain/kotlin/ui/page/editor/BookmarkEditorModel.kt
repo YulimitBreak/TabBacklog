@@ -11,6 +11,9 @@ import entity.core.Url
 import entity.core.load
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import kotlinx.datetime.LocalDate
+import ui.common.basecomponent.RelativeDateTarget
+import ui.common.bookmark.TimerDatePickerMode
 import ui.page.tagedit.TagEditEvent
 
 class BookmarkEditorModel(
@@ -24,6 +27,12 @@ class BookmarkEditorModel(
 
     var editedBlock: BookmarkEditedBlock? by mutableStateOf(null)
         private set
+
+    private val timerStates = mapOf(
+        TimerType.REMINDER to mutableStateOf<TimerState?>(null),
+        TimerType.DEADLINE to mutableStateOf<TimerState?>(null),
+        TimerType.EXPIRATION to mutableStateOf<TimerState?>(null),
+    )
 
     init {
         scope.load(
@@ -104,15 +113,60 @@ class BookmarkEditorModel(
         }
     }
 
+    private fun getTimerState(timerType: TimerType): TimerState {
+        val state = timerStates.getValue(timerType)
+        state.value?.let { return it }
+        fun generateState(date: LocalDate?): TimerState =
+            if (date != null) {
+                TimerState(date, 1, TimerDatePickerMode.SET)
+            } else {
+                TimerState(null, 1, TimerDatePickerMode.NONE)
+            }
+
+        return generateState(
+            when (timerType) {
+                TimerType.REMINDER -> bookmark.value?.remindDate
+                TimerType.DEADLINE -> bookmark.value?.deadline
+                TimerType.EXPIRATION -> bookmark.value?.expirationDate
+            }
+        )
+    }
+
+    fun getTimerTarget(type: TimerType) = getTimerState(type).toRelativeTimerTarget()
+
+    fun onTimerEvent(timerType: TimerType, event: SelectableTimerEditAreaEvent) {
+        val state = getTimerState(timerType)
+        timerStates.getValue(timerType).value = when (event) {
+            is SelectableTimerEditAreaEvent.OnCountChange -> state.copy(count = event.count.coerceAtLeast(1))
+            is SelectableTimerEditAreaEvent.OnDateSelect -> state.copy(rememberedDate = event.date)
+            is SelectableTimerEditAreaEvent.OnDelete -> {
+                state.copy(rememberedDate = null, selectedMode = TimerDatePickerMode.NONE).also {
+                    editedBlock = null
+                }
+            }
+
+            is SelectableTimerEditAreaEvent.OnModeChange -> state.copy(selectedMode = event.mode)
+        }
+    }
+
     fun requestEdit(block: BookmarkEditedBlock?) {
         editedBlock = block
     }
 
     fun saveBookmark(onComplete: () -> Unit) {
         scope.launch {
-            val editedBookmark = bookmark.value ?: kotlin.run {
+            var editedBookmark = bookmark.value ?: kotlin.run {
                 console.warn("Saving bookmark in unloaded state")
                 return@launch
+            }
+            timerStates[TimerType.REMINDER]?.value?.let {
+                editedBookmark = editedBookmark.copy(remindDate = it.toRelativeTimerTarget().resolve())
+            }
+            timerStates[TimerType.DEADLINE]?.value?.let {
+                editedBookmark = editedBookmark.copy(deadline = it.toRelativeTimerTarget().resolve())
+            }
+            timerStates[TimerType.EXPIRATION]?.value?.let {
+                editedBookmark = editedBookmark.copy(expirationDate = it.toRelativeTimerTarget().resolve())
             }
             bookmark = Loadable.Loading()
             bookmarkRepository.saveBookmark(editedBookmark.toImmutableBookmark())
@@ -126,4 +180,28 @@ enum class BookmarkEditedBlock {
     TITLE,
     COMMENT,
     TAGS,
+    REMINDER,
+    DEADLINE,
+    EXPIRATION,
+}
+
+enum class TimerType(val block: BookmarkEditedBlock) {
+    REMINDER(BookmarkEditedBlock.REMINDER),
+    DEADLINE(BookmarkEditedBlock.DEADLINE),
+    EXPIRATION(BookmarkEditedBlock.EXPIRATION),
+}
+
+private data class TimerState(
+    val rememberedDate: LocalDate?,
+    val count: Int,
+    val selectedMode: TimerDatePickerMode,
+) {
+    fun toRelativeTimerTarget() = when (selectedMode) {
+        TimerDatePickerMode.NONE -> RelativeDateTarget.None
+        TimerDatePickerMode.SET -> RelativeDateTarget.SetDate(rememberedDate)
+        TimerDatePickerMode.DAYS -> RelativeDateTarget.Counter.Days(count)
+        TimerDatePickerMode.WEEKS -> RelativeDateTarget.Counter.Weeks(count)
+        TimerDatePickerMode.MONTHS -> RelativeDateTarget.Counter.Months(count)
+        TimerDatePickerMode.YEARS -> RelativeDateTarget.Counter.Years(count)
+    }
 }

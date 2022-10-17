@@ -40,7 +40,7 @@ fun BookmarkSummary(
         remember(url) { appModule.createBookmarkSummaryModel(scope, url?.let { Url(it) }) }
 
     LoadableView(model.bookmark, modifier.minHeight(100.px)) { bookmark, m ->
-        Column(m.gap(8.px).margin(bottom = 16.px)) {
+        Column(m.gap(8.px).margin(bottom = 8.px)) {
             Row(Modifier.fillMaxWidth().gap(8.px)) {
 
                 RowButton(onClick = { model.openManager() }) {
@@ -105,7 +105,7 @@ fun BookmarkSummary(
 
             if (bookmark.hasTimers) {
                 SpanText("Timers:")
-                Column(Modifier.margin(left = 8.px).width(100.percent - 8.px)) {
+                Column(Modifier.margin(left = 8.px).gap(8.px).width(100.percent - 8.px)) {
                     if (bookmark.remindDate != null) {
                         TimerDisplay("Reminder", bookmark.remindDate, Modifier.fillMaxWidth(),
                             onDelete = { model.deleteReminder() }

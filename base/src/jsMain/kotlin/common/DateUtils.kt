@@ -22,7 +22,7 @@ object DateUtils {
                 months == -1 -> "Last month"
                 months < 0 -> "${months.absoluteValue} months ago"
                 weeks == 1 -> "Next week"
-                weeks > 0 -> "In $diff weeks"
+                weeks > 0 -> "In $weeks weeks"
                 weeks == -1 -> "Last week"
                 weeks < 0 -> "${weeks.absoluteValue} weeks ago"
                 days == 1 -> "Tomorrow"
