@@ -7,7 +7,6 @@ import com.varabyte.kobweb.compose.ui.Modifier
 import com.varabyte.kobweb.compose.ui.asAttributesBuilder
 import com.varabyte.kobweb.compose.ui.modifiers.*
 import com.varabyte.kobweb.silk.components.style.toModifier
-import com.varabyte.kobweb.silk.components.text.SpanText
 import common.coerceIn
 import kotlinx.browser.document
 import org.jetbrains.compose.web.attributes.Draggable
@@ -32,17 +31,12 @@ fun Slider(
     val percent = value * 100f / maxValue.coerceAtLeast(1)
     var sliderWidth by remember { mutableStateOf(1) }
     var sliderClientOffset by remember { mutableStateOf(0.0) }
-    var positionText by remember { mutableStateOf("") }
-
-    SpanText("client offset $sliderClientOffset")
-    SpanText(positionText)
 
     fun updatePositionByLocation(clientX: Int) {
         if (clientX == 0) return
         if (sliderWidth == 0) return
         val offsetX = clientX.toFloat() - sliderClientOffset
         val newPosition = ((offsetX / sliderWidth) * maxValue).roundToInt().coerceIn(0, maxValue)
-        positionText = "offsetX = $offsetX / sliderWidth = $sliderWidth = newPosition = $newPosition"
         if (newPosition != value) {
             onValueChange(newPosition)
         }

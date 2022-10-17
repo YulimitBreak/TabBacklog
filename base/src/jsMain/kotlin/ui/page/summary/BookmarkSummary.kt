@@ -1,6 +1,8 @@
 package ui.page.summary
 
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import com.varabyte.kobweb.compose.css.FontWeight
 import com.varabyte.kobweb.compose.foundation.layout.Column
 import com.varabyte.kobweb.compose.foundation.layout.Row
@@ -16,12 +18,14 @@ import org.jetbrains.compose.web.css.minus
 import org.jetbrains.compose.web.css.percent
 import org.jetbrains.compose.web.css.px
 import org.jetbrains.compose.web.dom.Text
-import ui.common.basecomponent.*
+import ui.common.basecomponent.DivText
+import ui.common.basecomponent.LoadableView
+import ui.common.basecomponent.RowButton
+import ui.common.basecomponent.TagListView
 import ui.common.bookmark.BookmarkTitleView
 import ui.common.bookmark.BookmarkTypeBacklogButton
 import ui.common.bookmark.BookmarkTypeLibraryButton
 import ui.common.bookmark.TimerDisplay
-
 
 @Composable
 fun BookmarkSummary(
@@ -37,8 +41,6 @@ fun BookmarkSummary(
 
     LoadableView(model.bookmark, modifier.minHeight(100.px)) { bookmark, m ->
         Column(m.gap(8.px).margin(bottom = 16.px)) {
-            var sliderValue by remember { mutableStateOf(0) }
-            Slider(sliderValue, 5, Modifier.width(100.percent)) { sliderValue = it }
             Row(Modifier.fillMaxWidth().gap(8.px)) {
 
                 RowButton(onClick = { model.openManager() }) {
