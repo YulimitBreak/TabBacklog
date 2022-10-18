@@ -1,4 +1,4 @@
-package ui.common.bookmark
+package ui.common.datepicker
 
 import androidx.compose.runtime.Composable
 import com.varabyte.kobweb.compose.css.FontWeight
@@ -16,8 +16,6 @@ import org.jetbrains.compose.web.css.em
 import org.jetbrains.compose.web.css.percent
 import org.jetbrains.compose.web.css.px
 import ui.common.basecomponent.EnumSlider
-import ui.common.basecomponent.RelativeDatePicker
-import ui.common.basecomponent.RelativeDateTarget
 
 @Composable
 fun TimerDatePicker(

@@ -1,4 +1,4 @@
-package ui.page.editor
+package ui.common.datepicker
 
 import androidx.compose.runtime.Composable
 import com.varabyte.kobweb.compose.css.FontWeight
@@ -14,9 +14,6 @@ import org.jetbrains.compose.web.css.em
 import org.jetbrains.compose.web.css.percent
 import org.jetbrains.compose.web.css.px
 import ui.common.basecomponent.DivText
-import ui.common.basecomponent.RelativeDateTarget
-import ui.common.bookmark.TimerDatePicker
-import ui.common.bookmark.TimerDatePickerMode
 import ui.common.bookmark.TimerDisplay
 
 @Composable

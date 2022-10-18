@@ -1,4 +1,4 @@
-package ui.common.basecomponent
+package ui.common.datepicker
 
 import androidx.compose.runtime.Composable
 import com.varabyte.kobweb.compose.css.TextAlign
@@ -20,6 +20,8 @@ import org.jetbrains.compose.web.attributes.min
 import org.jetbrains.compose.web.css.LineStyle
 import org.jetbrains.compose.web.css.px
 import org.jetbrains.compose.web.dom.DateInput
+import ui.common.basecomponent.ButtonCounter
+import ui.common.basecomponent.DivText
 import ui.common.styles.Palette
 
 @Composable

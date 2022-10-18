@@ -1,4 +1,4 @@
-package ui.common.basecomponent
+package ui.common.datepicker
 
 import common.DateUtils
 import entity.core.EnglishPlural
@@ -6,7 +6,6 @@ import entity.core.PluralText
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.plus
-import ui.common.bookmark.TimerDatePickerMode
 
 sealed class RelativeDateTarget(val mode: TimerDatePickerMode) {
 
