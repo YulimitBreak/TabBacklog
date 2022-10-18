@@ -42,10 +42,10 @@ fun BookmarkTitleView(
             DivText(
                 title,
                 modifier = Modifier.width(100.percent).title(title)
-                    .overflowWrap(OverflowWrap.BreakWord).overflow(Overflow.Hidden)
+                    .overflowWrap(OverflowWrap.Anywhere).overflow(Overflow.Hidden)
                     .styleProperty("text-overflow", "ellipsis")
                     .lineHeight(1.2.em)
-                    .maxHeight(2.4.em)
+                    .maxHeight(2.5.em)
             )
             DivText(
                 url,
