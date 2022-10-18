@@ -47,9 +47,7 @@ class BookmarkRepository(private val databaseHolder: DatabaseHolder) {
         val tagsSchema = DbSchema<TagSchema>()
         databaseHolder.database().writeTransaction(bookmarkSchema.storeName, tagsSchema.storeName) {
             objectStore(bookmarkSchema.storeName).delete(Key(url))
-            objectStore(tagsSchema.storeName).index(TagSchema.Url.name).openCursor(Key(url)).collect { cursor ->
-                cursor.delete()
-            }
+            deleteTags(url)
             deleteExpiredBookmarks()
         }
     }
@@ -61,6 +59,7 @@ class BookmarkRepository(private val databaseHolder: DatabaseHolder) {
         databaseHolder.database().writeTransaction(bookmarkSchema.storeName, tagsSchema.storeName) {
             val url = bookmark.url
             objectStore(bookmarkSchema.storeName).put(bookmarkSchema.generate(bookmark))
+            deleteTags(url)
             val tagsStore = objectStore(tagsSchema.storeName)
             bookmark.tags.forEach { tag ->
                 tagsStore.put(
@@ -110,7 +109,6 @@ class BookmarkRepository(private val databaseHolder: DatabaseHolder) {
 
     private suspend fun WriteTransaction.deleteExpiredBookmarks() {
         val bookmarkSchema = DbSchema<BookmarkSchema>()
-        val tagsSchema = DbSchema<TagSchema>()
         objectStore(bookmarkSchema.storeName).index(BookmarkSchema.ExpirationDate.name).openCursor()
             .takeWhile { cursor ->
                 val date = bookmarkSchema.extract(cursor.value) {
@@ -122,10 +120,15 @@ class BookmarkRepository(private val databaseHolder: DatabaseHolder) {
                 val url = bookmarkSchema.extract(cursor.value) {
                     BookmarkSchema.Url.value<String>()
                 }
-                objectStore(tagsSchema.storeName).index(TagSchema.Url.name).openCursor(Key(url)).collect { tagCursor ->
-                    tagCursor.delete()
-                }
+                deleteTags(url)
                 cursor.delete()
             }
+    }
+
+    private suspend fun WriteTransaction.deleteTags(url: String) {
+        val tagsSchema = DbSchema<TagSchema>()
+        objectStore(tagsSchema.storeName).index(TagSchema.Url.name).openCursor(Key(url)).collect { tagCursor ->
+            tagCursor.delete()
+        }
     }
 }
