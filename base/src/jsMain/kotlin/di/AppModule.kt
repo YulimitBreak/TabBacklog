@@ -26,4 +26,7 @@ class AppModule(
 
     @Create
     fun createTagEditModel(coroutineScope: CoroutineScope): TagEditModel
+
+    @Create
+    fun createBookmarkListModel(coroutineScope: CoroutineScope)
 }
