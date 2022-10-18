@@ -10,7 +10,7 @@ data class EditedBookmark(
     val deadline: LocalDate? = base.deadline,
     val remindDate: LocalDate? = base.remindDate,
     val expirationDate: LocalDate? = base.expirationDate,
-    val tags: List<String> = base.tags.toList(),
+    val tags: List<String> = base.tags,
     val favorite: Boolean = base.favorite,
     val comment: String = base.comment,
 ) {
@@ -22,7 +22,7 @@ data class EditedBookmark(
         deadline = deadline,
         remindDate = remindDate,
         expirationDate = expirationDate,
-        tags = tags.toSet(),
+        tags = tags,
         favorite = favorite,
         comment = comment,
         creationDate = DateUtils.now,

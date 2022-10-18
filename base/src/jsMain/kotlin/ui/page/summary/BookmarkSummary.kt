@@ -99,7 +99,7 @@ fun BookmarkSummary(
             if (bookmark.tags.isNotEmpty()) {
                 SpanText("Tags:")
                 TagListView(
-                    bookmark.tags.toList(), Modifier.margin(leftRight = 8.px).width(100.percent - 16.px),
+                    bookmark.tags, Modifier.margin(leftRight = 8.px).width(100.percent - 16.px),
                 )
             }
 

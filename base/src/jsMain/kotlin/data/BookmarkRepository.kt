@@ -99,7 +99,7 @@ class BookmarkRepository(private val databaseHolder: DatabaseHolder) {
                 tagsSchema.extract(entity) {
                     TagSchema.Tag.value<String>()
                 }
-            }.toSet()
+            }
             console.log("Found tags $tags")
             return@transaction bookmark.copy(tags = tags)
         }

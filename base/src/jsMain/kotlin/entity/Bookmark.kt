@@ -12,7 +12,7 @@ data class Bookmark(
     val deadline: LocalDate? = null,
     val remindDate: LocalDate? = null,
     val expirationDate: LocalDate? = null,
-    val tags: Set<String> = emptySet(),
+    val tags: List<String> = emptyList(),
     val favorite: Boolean = false,
     val comment: String = "",
 ) {
