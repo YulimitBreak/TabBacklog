@@ -6,7 +6,7 @@ import com.varabyte.kobweb.compose.ui.asAttributesBuilder
 import com.varabyte.kobweb.compose.ui.modifiers.classNames
 import org.jetbrains.compose.web.css.*
 import org.jetbrains.compose.web.dom.Div
-import ui.common.styles.Palette
+import ui.styles.Palette
 
 private object LoadingSpinnerStyleSheet : StyleSheet() {
     private val keyframes by keyframes {

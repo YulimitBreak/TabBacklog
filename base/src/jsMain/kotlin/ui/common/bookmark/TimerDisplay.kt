@@ -17,7 +17,7 @@ import kotlinx.datetime.LocalDate
 import org.jetbrains.compose.web.css.em
 import org.jetbrains.compose.web.css.percent
 import org.jetbrains.compose.web.css.px
-import ui.common.styles.Palette
+import ui.styles.Palette
 
 @Composable
 fun TimerDisplay(

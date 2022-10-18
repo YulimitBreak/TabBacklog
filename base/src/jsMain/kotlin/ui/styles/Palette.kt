@@ -1,4 +1,4 @@
-package ui.common.styles
+package ui.styles
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider

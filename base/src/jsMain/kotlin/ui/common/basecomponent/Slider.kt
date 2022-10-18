@@ -17,7 +17,7 @@ import org.jetbrains.compose.web.dom.Div
 import org.w3c.dom.DragEvent
 import org.w3c.dom.Image
 import org.w3c.dom.events.Event
-import ui.common.styles.components.SliderComponent
+import ui.styles.components.SliderComponent
 import kotlin.math.roundToInt
 
 @Composable

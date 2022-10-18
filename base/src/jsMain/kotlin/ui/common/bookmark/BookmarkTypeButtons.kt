@@ -1,20 +1,13 @@
 package ui.common.bookmark
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.ReadOnlyComposable
-import com.varabyte.kobweb.compose.css.FontWeight
 import com.varabyte.kobweb.compose.ui.Modifier
-import com.varabyte.kobweb.compose.ui.modifiers.backgroundColor
-import com.varabyte.kobweb.compose.ui.modifiers.color
-import com.varabyte.kobweb.compose.ui.modifiers.fontWeight
 import com.varabyte.kobweb.compose.ui.thenIf
 import com.varabyte.kobweb.silk.components.icons.fa.FaBookBookmark
 import com.varabyte.kobweb.silk.components.icons.fa.FaNoteSticky
-import com.varabyte.kobweb.silk.theme.SilkTheme
-import common.styleProperty
 import org.jetbrains.compose.web.dom.Text
 import ui.common.basecomponent.RowButton
-import ui.common.styles.Palette
+import ui.styles.Variants
 
 @Composable
 fun BookmarkTypeLibraryButton(
@@ -25,7 +18,7 @@ fun BookmarkTypeLibraryButton(
     RowButton(
         onClick = onClick,
         modifier = modifier
-            .thenIf(isInLibrary, SelectedBookmarkTypeModifier)
+            .thenIf(isInLibrary, Variants.Button.SelectedUnclickablePrimary.toModifier())
     ) {
         FaBookBookmark()
         if (isInLibrary) {
@@ -45,7 +38,7 @@ fun BookmarkTypeBacklogButton(
     RowButton(
         onClick = onClick,
         modifier = modifier
-            .thenIf(isInBacklog, SelectedBookmarkTypeModifier)
+            .thenIf(isInBacklog, Variants.Button.SelectedUnclickablePrimary.toModifier())
     ) {
         FaNoteSticky()
         if (isInBacklog) {
@@ -55,13 +48,3 @@ fun BookmarkTypeBacklogButton(
         }
     }
 }
-
-
-private val SelectedBookmarkTypeModifier
-    @Composable
-    @ReadOnlyComposable
-    get() = Modifier
-        .styleProperty("pointer-events", "none")
-        .backgroundColor(SilkTheme.palette.background)
-        .color(Palette.primaryColor)
-        .fontWeight(FontWeight.Lighter)

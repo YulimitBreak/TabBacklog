@@ -23,8 +23,8 @@ import org.jetbrains.compose.web.dom.Option
 import org.jetbrains.compose.web.dom.TextInput
 import ui.common.basecomponent.RowButton
 import ui.common.basecomponent.TagListView
-import ui.common.styles.Palette
-import ui.common.styles.components.TagComponent
+import ui.styles.Palette
+import ui.styles.components.TagComponent
 
 @Composable
 fun TagEditView(tags: List<String>, modifier: Modifier, onTagEditEvent: (TagEditEvent) -> Unit) {

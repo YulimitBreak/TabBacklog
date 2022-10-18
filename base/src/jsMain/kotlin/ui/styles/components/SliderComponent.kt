@@ -1,4 +1,4 @@
-package ui.common.styles.components
+package ui.styles.components
 
 import com.varabyte.kobweb.compose.ui.Modifier
 import com.varabyte.kobweb.compose.ui.graphics.Colors
@@ -13,7 +13,7 @@ import com.varabyte.kobweb.silk.theme.shapes.Rect
 import com.varabyte.kobweb.silk.theme.shapes.clip
 import org.jetbrains.compose.web.css.px
 import org.jetbrains.compose.web.css.value
-import ui.common.styles.Palette
+import ui.styles.Palette
 
 object SliderComponent {
 

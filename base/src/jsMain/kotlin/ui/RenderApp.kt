@@ -1,4 +1,4 @@
-package ui.common
+package ui
 
 import androidx.compose.runtime.Composable
 import com.varabyte.kobweb.compose.style.KobwebComposeStyleSheet
@@ -15,10 +15,11 @@ import org.jetbrains.compose.web.css.Style
 import org.jetbrains.compose.web.dom.*
 import org.jetbrains.compose.web.renderComposable
 import org.w3c.dom.Element
-import ui.common.styles.Palette
-import ui.common.styles.components.BookmarkEditClickableArea
-import ui.common.styles.components.SliderComponent
-import ui.common.styles.components.TagComponent
+import ui.styles.Palette
+import ui.styles.Variants
+import ui.styles.components.BookmarkEditClickableArea
+import ui.styles.components.SliderComponent
+import ui.styles.components.TagComponent
 
 fun renderApp(
     rootElementId: String,
@@ -41,6 +42,9 @@ fun renderApp(
                     background = defaultPalette.background,
                     color = defaultPalette.onBackground,
                 )
+            )
+            registerComponentVariants(
+                Variants.Button.SelectedUnclickablePrimary,
             )
             registerComponentStyle(TagComponent.Style)
             registerComponentVariants(TagComponent.Clickable, TagComponent.Selected)

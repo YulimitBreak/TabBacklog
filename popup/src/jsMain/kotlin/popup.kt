@@ -3,8 +3,8 @@ import androidx.compose.runtime.remember
 import di.AppModule
 import di.ModuleLocal
 import di.RepositoryModule
-import ui.common.renderApp
 import ui.popup.Popup
+import ui.renderApp
 
 fun main() {
 

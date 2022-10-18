@@ -13,7 +13,7 @@ import org.jetbrains.compose.web.dom.P
 import org.jetbrains.compose.web.dom.Text
 import ui.common.basecomponent.LoadableViewDelegate
 import ui.common.basecomponent.LoadingSpinner
-import ui.common.styles.Palette
+import ui.styles.Palette
 
 @Composable
 fun DefaultLocalProvider(content: @Composable () -> Unit) {

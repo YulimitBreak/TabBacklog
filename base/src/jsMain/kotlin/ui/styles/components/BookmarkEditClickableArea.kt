@@ -1,4 +1,4 @@
-package ui.common.styles.components
+package ui.styles.components
 
 import com.varabyte.kobweb.compose.css.Cursor
 import com.varabyte.kobweb.compose.css.UserSelect
@@ -13,7 +13,7 @@ import org.jetbrains.compose.web.css.Color
 import org.jetbrains.compose.web.css.LineStyle
 import org.jetbrains.compose.web.css.px
 import org.jetbrains.compose.web.css.value
-import ui.common.styles.Palette
+import ui.styles.Palette
 
 object BookmarkEditClickableArea {
     val Style = ComponentStyle("bookmark-edit-clickable-area") {

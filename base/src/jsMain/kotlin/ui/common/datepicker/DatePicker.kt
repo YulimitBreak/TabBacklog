@@ -22,7 +22,7 @@ import org.jetbrains.compose.web.css.px
 import org.jetbrains.compose.web.dom.DateInput
 import ui.common.basecomponent.ButtonCounter
 import ui.common.basecomponent.DivText
-import ui.common.styles.Palette
+import ui.styles.Palette
 
 @Composable
 fun DatePicker(

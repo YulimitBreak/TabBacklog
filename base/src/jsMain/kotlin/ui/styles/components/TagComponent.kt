@@ -1,4 +1,4 @@
-package ui.common.styles.components
+package ui.styles.components
 
 import com.varabyte.kobweb.compose.css.Cursor
 import com.varabyte.kobweb.compose.css.UserSelect
@@ -9,7 +9,7 @@ import com.varabyte.kobweb.silk.components.style.hover
 import org.jetbrains.compose.web.css.em
 import org.jetbrains.compose.web.css.px
 import org.jetbrains.compose.web.css.value
-import ui.common.styles.Palette
+import ui.styles.Palette
 
 object TagComponent {
     val Style = ComponentStyle("text-tag") {

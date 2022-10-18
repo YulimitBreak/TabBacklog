@@ -1,5 +1,5 @@
-import ui.common.renderApp
 import ui.manager.Manager
+import ui.renderApp
 
 fun main() {
 

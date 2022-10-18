@@ -18,7 +18,7 @@ fun RowButton(
 ) {
     Button(
         onClick = onClick,
-        modifier = modifier.padding(4.px)
+        modifier = Modifier.padding(4.px).then(modifier)
     ) {
         Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.gap(4.px)) {
             content()

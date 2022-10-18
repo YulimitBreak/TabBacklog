@@ -8,7 +8,7 @@ import com.varabyte.kobweb.compose.ui.modifiers.gap
 import com.varabyte.kobweb.silk.components.style.toModifier
 import com.varabyte.kobweb.silk.components.text.SpanText
 import org.jetbrains.compose.web.css.px
-import ui.common.styles.components.TagComponent
+import ui.styles.components.TagComponent
 
 @Composable
 fun TagListView(
