@@ -31,7 +31,7 @@ import ui.common.bookmark.BookmarkTitleEdit
 import ui.common.bookmark.BookmarkTitleView
 import ui.common.bookmark.BookmarkTypeBacklogButton
 import ui.common.bookmark.BookmarkTypeLibraryButton
-import ui.common.datepicker.SelectableTimerEditArea
+import ui.common.datepicker.TimerEditor
 import ui.common.styles.components.BookmarkEditClickableArea
 import ui.page.tagedit.TagEditView
 
@@ -215,7 +215,7 @@ fun BookmarkEditor(
                 description: String,
                 type: TimerType
             ) {
-                SelectableTimerEditArea(
+                TimerEditor(
                     title,
                     description,
                     model.editedBlock == type.block,
@@ -223,7 +223,8 @@ fun BookmarkEditor(
                     Modifier
                         .width(100.percent - 4.px)
                         .margin(left = 4.px, top = (-2).px, bottom = (-2).px)
-                        .thenIf(model.editedBlock != type.block,
+                        .thenIf(
+                            model.editedBlock != type.block,
                             BookmarkEditClickableArea.Style.toModifier()
                                 .onClick { model.requestEdit(type.block) }
                         )

@@ -13,8 +13,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
 import ui.common.datepicker.RelativeDateTarget
-import ui.common.datepicker.SelectableTimerEditAreaEvent
 import ui.common.datepicker.TimerDatePickerMode
+import ui.common.datepicker.TimerEditorEvent
 import ui.page.tagedit.TagEditEvent
 
 class BookmarkEditorModel(
@@ -135,18 +135,18 @@ class BookmarkEditorModel(
 
     fun getTimerTarget(type: TimerType) = getTimerState(type).toRelativeTimerTarget()
 
-    fun onTimerEvent(timerType: TimerType, event: SelectableTimerEditAreaEvent) {
+    fun onTimerEvent(timerType: TimerType, event: TimerEditorEvent) {
         val state = getTimerState(timerType)
         timerStates.getValue(timerType).value = when (event) {
-            is SelectableTimerEditAreaEvent.OnCountChange -> state.copy(count = event.count.coerceAtLeast(1))
-            is SelectableTimerEditAreaEvent.OnDateSelect -> state.copy(rememberedDate = event.date)
-            is SelectableTimerEditAreaEvent.OnDelete -> {
+            is TimerEditorEvent.OnCountChange -> state.copy(count = event.count.coerceAtLeast(1))
+            is TimerEditorEvent.OnDateSelect -> state.copy(rememberedDate = event.date)
+            is TimerEditorEvent.OnDelete -> {
                 state.copy(rememberedDate = null, selectedMode = TimerDatePickerMode.NONE).also {
                     editedBlock = null
                 }
             }
 
-            is SelectableTimerEditAreaEvent.OnModeChange -> state.copy(selectedMode = event.mode)
+            is TimerEditorEvent.OnModeChange -> state.copy(selectedMode = event.mode)
         }
     }
 

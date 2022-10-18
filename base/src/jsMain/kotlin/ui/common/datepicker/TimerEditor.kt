@@ -17,28 +17,28 @@ import ui.common.basecomponent.DivText
 import ui.common.bookmark.TimerDisplay
 
 @Composable
-fun SelectableTimerEditArea(
+fun TimerEditor(
     title: String,
     description: String,
     isSelected: Boolean,
     dateTarget: RelativeDateTarget,
     modifier: Modifier = Modifier,
-    onEvent: (SelectableTimerEditAreaEvent) -> Unit,
+    onEvent: (TimerEditorEvent) -> Unit,
 ) {
     val date = dateTarget.resolve()
     when {
         isSelected -> TimerDatePicker(title, dateTarget, modifier,
-            onCountChange = { onEvent(SelectableTimerEditAreaEvent.OnCountChange(it)) },
-            onDateSelect = { onEvent(SelectableTimerEditAreaEvent.OnDateSelect(it)) },
-            onModeChange = { onEvent(SelectableTimerEditAreaEvent.OnModeChange(it)) },
-            onDelete = { onEvent(SelectableTimerEditAreaEvent.OnDelete) }
+            onCountChange = { onEvent(TimerEditorEvent.OnCountChange(it)) },
+            onDateSelect = { onEvent(TimerEditorEvent.OnDateSelect(it)) },
+            onModeChange = { onEvent(TimerEditorEvent.OnModeChange(it)) },
+            onDelete = { onEvent(TimerEditorEvent.OnDelete) }
         )
 
         date != null -> TimerDisplay(
             title,
             date,
             modifier,
-            onDelete = { onEvent(SelectableTimerEditAreaEvent.OnDelete) })
+            onDelete = { onEvent(TimerEditorEvent.OnDelete) })
 
         else -> {
             Row(
@@ -56,9 +56,9 @@ fun SelectableTimerEditArea(
     }
 }
 
-sealed class SelectableTimerEditAreaEvent {
-    data class OnCountChange(val count: Int) : SelectableTimerEditAreaEvent()
-    data class OnDateSelect(val date: LocalDate?) : SelectableTimerEditAreaEvent()
-    data class OnModeChange(val mode: TimerDatePickerMode) : SelectableTimerEditAreaEvent()
-    object OnDelete : SelectableTimerEditAreaEvent()
+sealed class TimerEditorEvent {
+    data class OnCountChange(val count: Int) : TimerEditorEvent()
+    data class OnDateSelect(val date: LocalDate?) : TimerEditorEvent()
+    data class OnModeChange(val mode: TimerDatePickerMode) : TimerEditorEvent()
+    object OnDelete : TimerEditorEvent()
 }
