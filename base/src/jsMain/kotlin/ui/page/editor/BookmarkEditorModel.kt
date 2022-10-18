@@ -12,9 +12,8 @@ import entity.core.load
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
-import ui.common.datepicker.RelativeDateTarget
-import ui.common.datepicker.TimerDatePickerMode
-import ui.common.datepicker.TimerEditorEvent
+import ui.common.datepicker.DatePickerMode
+import ui.common.datepicker.DatePickerTarget
 import ui.page.tagedit.TagEditEvent
 
 class BookmarkEditorModel(
@@ -119,9 +118,9 @@ class BookmarkEditorModel(
         state.value?.let { return it }
         fun generateState(date: LocalDate?): TimerState =
             if (date != null) {
-                TimerState(date, 1, TimerDatePickerMode.SET)
+                TimerState(date, 1, DatePickerMode.SET)
             } else {
-                TimerState(null, 1, TimerDatePickerMode.NONE)
+                TimerState(null, 1, DatePickerMode.NONE)
             }
 
         return generateState(
@@ -141,7 +140,7 @@ class BookmarkEditorModel(
             is TimerEditorEvent.OnCountChange -> state.copy(count = event.count.coerceAtLeast(1))
             is TimerEditorEvent.OnDateSelect -> state.copy(rememberedDate = event.date)
             is TimerEditorEvent.OnDelete -> {
-                state.copy(rememberedDate = null, selectedMode = TimerDatePickerMode.NONE).also {
+                state.copy(rememberedDate = null, selectedMode = DatePickerMode.NONE).also {
                     editedBlock = null
                 }
             }
@@ -195,14 +194,14 @@ enum class TimerType(val block: BookmarkEditedBlock) {
 private data class TimerState(
     val rememberedDate: LocalDate?,
     val count: Int,
-    val selectedMode: TimerDatePickerMode,
+    val selectedMode: DatePickerMode,
 ) {
     fun toRelativeTimerTarget() = when (selectedMode) {
-        TimerDatePickerMode.NONE -> RelativeDateTarget.None
-        TimerDatePickerMode.SET -> RelativeDateTarget.SetDate(rememberedDate)
-        TimerDatePickerMode.DAYS -> RelativeDateTarget.Counter.Days(count)
-        TimerDatePickerMode.WEEKS -> RelativeDateTarget.Counter.Weeks(count)
-        TimerDatePickerMode.MONTHS -> RelativeDateTarget.Counter.Months(count)
-        TimerDatePickerMode.YEARS -> RelativeDateTarget.Counter.Years(count)
+        DatePickerMode.NONE -> DatePickerTarget.None
+        DatePickerMode.SET -> DatePickerTarget.SetDate(rememberedDate)
+        DatePickerMode.DAYS -> DatePickerTarget.Counter.Days(count)
+        DatePickerMode.WEEKS -> DatePickerTarget.Counter.Weeks(count)
+        DatePickerMode.MONTHS -> DatePickerTarget.Counter.Months(count)
+        DatePickerMode.YEARS -> DatePickerTarget.Counter.Years(count)
     }
 }

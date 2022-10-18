@@ -25,18 +25,18 @@ import ui.common.basecomponent.DivText
 import ui.common.styles.Palette
 
 @Composable
-fun RelativeDatePicker(
-    target: RelativeDateTarget,
+fun DatePicker(
+    target: DatePickerTarget,
     modifier: Modifier,
     onCountChange: (count: Int) -> Unit,
     onDateSelect: (date: LocalDate?) -> Unit,
 ) {
     when (target) {
-        RelativeDateTarget.None -> {
+        DatePickerTarget.None -> {
             DivText("None", modifier.textAlign(TextAlign.Center))
         }
 
-        is RelativeDateTarget.SetDate -> {
+        is DatePickerTarget.SetDate -> {
             Box(modifier, contentAlignment = Alignment.Center) {
                 DateInput(
                     value = target.date?.toString() ?: "",
@@ -55,7 +55,7 @@ fun RelativeDatePicker(
             }
         }
 
-        is RelativeDateTarget.Counter -> {
+        is DatePickerTarget.Counter -> {
             ButtonCounter(target.count, target.timeUnitName, modifier, onCountChange)
         }
     }

@@ -1,4 +1,4 @@
-package ui.common.datepicker
+package ui.page.editor
 
 import androidx.compose.runtime.Composable
 import com.varabyte.kobweb.compose.css.FontWeight
@@ -15,19 +15,22 @@ import org.jetbrains.compose.web.css.percent
 import org.jetbrains.compose.web.css.px
 import ui.common.basecomponent.DivText
 import ui.common.bookmark.TimerDisplay
+import ui.common.datepicker.DatePickerMode
+import ui.common.datepicker.DatePickerTarget
+import ui.common.datepicker.ModeSwitchingDatePicker
 
 @Composable
 fun TimerEditor(
     title: String,
     description: String,
     isSelected: Boolean,
-    dateTarget: RelativeDateTarget,
+    datePickerTarget: DatePickerTarget,
     modifier: Modifier = Modifier,
     onEvent: (TimerEditorEvent) -> Unit,
 ) {
-    val date = dateTarget.resolve()
+    val date = datePickerTarget.resolve()
     when {
-        isSelected -> TimerDatePicker(title, dateTarget, modifier,
+        isSelected -> ModeSwitchingDatePicker(title, datePickerTarget, modifier,
             onCountChange = { onEvent(TimerEditorEvent.OnCountChange(it)) },
             onDateSelect = { onEvent(TimerEditorEvent.OnDateSelect(it)) },
             onModeChange = { onEvent(TimerEditorEvent.OnModeChange(it)) },
@@ -59,6 +62,6 @@ fun TimerEditor(
 sealed class TimerEditorEvent {
     data class OnCountChange(val count: Int) : TimerEditorEvent()
     data class OnDateSelect(val date: LocalDate?) : TimerEditorEvent()
-    data class OnModeChange(val mode: TimerDatePickerMode) : TimerEditorEvent()
+    data class OnModeChange(val mode: DatePickerMode) : TimerEditorEvent()
     object OnDelete : TimerEditorEvent()
 }

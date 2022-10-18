@@ -18,13 +18,13 @@ import org.jetbrains.compose.web.css.px
 import ui.common.basecomponent.EnumSlider
 
 @Composable
-fun TimerDatePicker(
+fun ModeSwitchingDatePicker(
     title: String,
-    dateTarget: RelativeDateTarget,
+    datePickerTarget: DatePickerTarget,
     modifier: Modifier = Modifier,
     onCountChange: (Int) -> Unit,
     onDateSelect: (LocalDate?) -> Unit,
-    onModeChange: (TimerDatePickerMode) -> Unit,
+    onModeChange: (DatePickerMode) -> Unit,
     onDelete: () -> Unit
 ) {
     Row(
@@ -33,24 +33,16 @@ fun TimerDatePicker(
     ) {
         SpanText(title, modifier = Modifier.fontWeight(FontWeight.Bolder).width(25.percent))
         Spacer()
-        RelativeDatePicker(
-            dateTarget,
+        DatePicker(
+            datePickerTarget,
             modifier = Modifier.width(35.percent).fontSize(0.9.em),
             onCountChange,
             onDateSelect
         )
-        EnumSlider(dateTarget.mode, modifier = Modifier.width(20.percent), onModeChange)
+        EnumSlider(datePickerTarget.mode, modifier = Modifier.width(20.percent), onModeChange)
         Button(onClick = onDelete, Modifier.size(2.em)) {
             FaXmark(Modifier.fontSize(1.5.em))
         }
     }
 }
 
-enum class TimerDatePickerMode {
-    NONE,
-    SET,
-    DAYS,
-    WEEKS,
-    MONTHS,
-    YEARS,
-}
