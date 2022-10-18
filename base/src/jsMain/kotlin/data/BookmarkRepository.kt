@@ -95,11 +95,18 @@ class BookmarkRepository(private val databaseHolder: DatabaseHolder) {
                 )
             }
             console.log("Found bookmark: $bookmark")
-            val tags = objectStore(tagsSchema.storeName).index(TagSchema.Url.name).getAll(Key(url)).map { entity ->
+            val tagStore = objectStore(tagsSchema.storeName)
+            val tags = tagStore.index(TagSchema.Url.name).getAll(Key(url)).map { entity ->
                 tagsSchema.extract(entity) {
                     TagSchema.Tag.value<String>()
                 }
+            }.map { tag ->
+                tag to tagStore.index(TagSchema.Tag.name).count(Key(tag))
             }
+                .sortedByDescending { it.second }
+                .map { it.first }
+
+
             console.log("Found tags $tags")
             return@transaction bookmark.copy(tags = tags)
         }

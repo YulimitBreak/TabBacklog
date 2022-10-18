@@ -8,7 +8,8 @@ object Lib {
     }
 
     const val Time = "org.jetbrains.kotlinx:kotlinx-datetime:0.4.0"
-    const val IndexedDb = "com.juul.indexeddb:core:0.2.3"
+    // const val IndexedDb = "com.juul.indexeddb:core:0.2.3"
+    const val IndexedDb = "com.github.ShaggyDemiurge.indexeddb:core:05daf9b947"
 
     object Kobweb {
         private const val Version = "0.10.0"

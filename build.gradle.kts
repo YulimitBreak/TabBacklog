@@ -17,6 +17,7 @@ allprojects {
         mavenCentral()
         gradlePluginPortal()
         maven(url = buildsrc.Lib.Kobweb.Repo)
+        maven(url = "https://jitpack.io")
     }
 }
 
@@ -26,6 +27,7 @@ repositories {
     mavenCentral()
     gradlePluginPortal()
     maven(url = buildsrc.Lib.Kobweb.Repo)
+    maven(url = "https://jitpack.io")
 }
 
 kotlin {
