@@ -4,6 +4,7 @@ import dev.shustoff.dikt.Create
 import dev.shustoff.dikt.UseModules
 import entity.core.Url
 import kotlinx.coroutines.CoroutineScope
+import ui.page.bookmarklist.BookmarkListModel
 import ui.page.editor.BookmarkEditorModel
 import ui.page.summary.BookmarkSummaryModel
 import ui.page.tagedit.TagEditModel
@@ -28,5 +29,5 @@ class AppModule(
     fun createTagEditModel(coroutineScope: CoroutineScope): TagEditModel
 
     @Create
-    fun createBookmarkListModel(coroutineScope: CoroutineScope)
+    fun createBookmarkListModel(coroutineScope: CoroutineScope): BookmarkListModel
 }

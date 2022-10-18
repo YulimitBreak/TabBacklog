@@ -8,7 +8,7 @@ import com.varabyte.kobweb.compose.ui.Modifier
 import di.ModuleLocal
 
 @Composable
-fun BookmarkList(modifier: Modifier) {
+fun BookmarkList(modifier: Modifier = Modifier) {
 
     val appModule = ModuleLocal.App.current
     val scope = rememberCoroutineScope()
@@ -16,7 +16,7 @@ fun BookmarkList(modifier: Modifier) {
         appModule.createBookmarkListModel(scope)
     }
 
-    Column {
+    Column(modifier) {
 
     }
 }

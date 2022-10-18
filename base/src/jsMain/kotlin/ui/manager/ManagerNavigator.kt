@@ -31,7 +31,8 @@ fun ManagerNavigator(
 ) {
 
     Row(
-        modifier.role("navigation").borderBottom(4.px, LineStyle.Dashed, Palette.primaryColor.toCssColor()),
+        modifier.role("navigation").borderBottom(4.px, LineStyle.Dashed, Palette.primaryColor.toCssColor())
+            .padding(topBottom = 16.px),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Start
     ) {
