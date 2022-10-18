@@ -1,6 +1,7 @@
 package ui.manager
 
 import androidx.compose.runtime.Composable
+import com.varabyte.kobweb.compose.css.FontWeight
 import com.varabyte.kobweb.compose.css.TextAlign
 import com.varabyte.kobweb.compose.foundation.layout.Arrangement
 import com.varabyte.kobweb.compose.foundation.layout.Row
@@ -12,6 +13,7 @@ import com.varabyte.kobweb.compose.ui.modifiers.*
 import com.varabyte.kobweb.compose.ui.thenIf
 import com.varabyte.kobweb.silk.components.icons.fa.FaBookOpen
 import com.varabyte.kobweb.silk.components.icons.fa.FaLayerGroup
+import com.varabyte.kobweb.silk.components.icons.fa.FaRobot
 import com.varabyte.kobweb.silk.components.icons.fa.FaTags
 import com.varabyte.kobweb.silk.components.text.SpanText
 import org.jetbrains.compose.web.css.LineStyle
@@ -44,7 +46,10 @@ fun ManagerNavigator(
                 onClick = { onPageRequest(page) },
                 modifier.padding(leftRight = 16.px, topBottom = 8.px).textAlign(TextAlign.Center).fontSize(1.4.em)
                     .margin(left = 32.px)
-                    .thenIf(page == openedPage, Variants.Button.SelectedUnclickablePrimary.toModifier()),
+                    .thenIf(
+                        page == openedPage,
+                        Variants.Button.SelectedUnclickablePrimary.toModifier().fontWeight(FontWeight.Normal)
+                    ),
                 content
             )
         }
@@ -59,8 +64,13 @@ fun ManagerNavigator(
             SpanText("Tabs")
         }
 
-        PageButton(ManagerNavigationPage.AUTOTAG) {
+        PageButton(ManagerNavigationPage.TAG_LIST) {
             FaTags()
+            SpanText("Tag list")
+        }
+
+        PageButton(ManagerNavigationPage.AUTO_TAG) {
+            FaRobot()
             SpanText("Auto-tagging")
         }
     }

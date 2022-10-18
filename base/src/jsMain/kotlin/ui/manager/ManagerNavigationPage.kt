@@ -3,5 +3,6 @@ package ui.manager
 enum class ManagerNavigationPage {
     COLLECTION,
     TABS,
-    AUTOTAG
+    TAG_LIST,
+    AUTO_TAG
 }

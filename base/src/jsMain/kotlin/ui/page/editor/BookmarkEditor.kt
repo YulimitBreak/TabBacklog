@@ -46,7 +46,7 @@ fun BookmarkEditor(
         appModule.createBookmarkEditorModel(scope, url?.let(::Url))
     }
 
-    LoadableView(model.bookmark, modifier = modifier.minHeight(400.px)) { bookmark, m ->
+    LoadableView(model.bookmark, modifier = modifier.minHeight(350.px)) { bookmark, m ->
         Column(m.gap(8.px).padding(bottom = 8.px)) {
             Row(Modifier.fillMaxWidth().gap(8.px)) {
 
