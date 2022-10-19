@@ -29,6 +29,7 @@ fun Manager() {
                 ManagerNavigationPage.COLLECTION ->
                     CollectionView(Modifier.fillMaxSize())
 
+                ManagerNavigationPage.TODO -> {}
                 ManagerNavigationPage.TABS -> {}
                 ManagerNavigationPage.TAG_LIST -> {}
                 ManagerNavigationPage.AUTO_TAG -> {}

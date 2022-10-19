@@ -11,10 +11,7 @@ import com.varabyte.kobweb.compose.ui.Modifier
 import com.varabyte.kobweb.compose.ui.graphics.toCssColor
 import com.varabyte.kobweb.compose.ui.modifiers.*
 import com.varabyte.kobweb.compose.ui.thenIf
-import com.varabyte.kobweb.silk.components.icons.fa.FaBookOpen
-import com.varabyte.kobweb.silk.components.icons.fa.FaLayerGroup
-import com.varabyte.kobweb.silk.components.icons.fa.FaRobot
-import com.varabyte.kobweb.silk.components.icons.fa.FaTags
+import com.varabyte.kobweb.silk.components.icons.fa.*
 import com.varabyte.kobweb.silk.components.text.SpanText
 import org.jetbrains.compose.web.css.LineStyle
 import org.jetbrains.compose.web.css.em
@@ -58,6 +55,11 @@ fun ManagerNavigator(
         PageButton(ManagerNavigationPage.COLLECTION) {
             FaBookOpen()
             SpanText("Collection")
+        }
+
+        PageButton(ManagerNavigationPage.TODO) {
+            FaClipboardCheck()
+            SpanText("To-do List")
         }
 
         PageButton(ManagerNavigationPage.TABS) {
