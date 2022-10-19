@@ -32,7 +32,9 @@ fun BookmarkList(modifier: Modifier = Modifier) {
                 .minHeight(20.percent).maxHeight(50.percent)
                 .border(1.px, LineStyle.Solid, Palette.Local.current.onBackground.toCssColor()),
             onSelect = {},
-            onLoadMore = {}
+            onLoadMore = {
+                console.log("Load more!")
+            }
         )
     }
 }
