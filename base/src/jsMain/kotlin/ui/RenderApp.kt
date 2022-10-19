@@ -19,6 +19,7 @@ import ui.styles.Palette
 import ui.styles.Variants
 import ui.styles.components.BookmarkEditClickableArea
 import ui.styles.components.SliderComponent
+import ui.styles.components.TableContentComponent
 import ui.styles.components.TagComponent
 
 fun renderApp(
@@ -52,6 +53,7 @@ fun renderApp(
             registerComponentStyle(SliderComponent.InactiveTrackStyle)
             registerComponentStyle(SliderComponent.TrackStyle)
             registerComponentStyle(SliderComponent.ThumbStyle)
+            registerComponentStyle(TableContentComponent.Style)
         }
         additionalInit(it)
     }
