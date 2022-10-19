@@ -39,9 +39,9 @@ fun CollectionView(modifier: Modifier = Modifier) {
                     .boxShadow(
                         offsetX = 0.px,
                         offsetY = 5.px,
-                        blurRadius = 10.px,
-                        spreadRadius = 4.px,
-                        Colors.DarkGray
+                        blurRadius = 8.px,
+                        spreadRadius = 2.px,
+                        Colors.Gray
                     ),
                 onEditRequest = {})
         }

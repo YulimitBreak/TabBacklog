@@ -14,6 +14,8 @@ import entity.Bookmark
 import entity.BookmarkType
 import entity.error.UnsupportedTabException
 import kotlinx.coroutines.await
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.takeWhile
 import kotlinx.datetime.toLocalDate
 import kotlinx.datetime.toLocalDateTime
@@ -110,6 +112,11 @@ class BookmarkRepository(private val databaseHolder: DatabaseHolder) {
             console.log("Found tags $tags")
             return@transaction bookmark.copy(tags = tags)
         }
+    }
+
+    // TODO query params
+    fun readBookmarks(): Flow<Bookmark> = flow {
+
     }
 
     private suspend fun WriteTransaction.deleteExpiredBookmarks() {
