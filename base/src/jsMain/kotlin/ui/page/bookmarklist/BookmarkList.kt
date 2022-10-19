@@ -6,6 +6,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import com.varabyte.kobweb.compose.css.Overflow
 import com.varabyte.kobweb.compose.foundation.layout.Box
 import com.varabyte.kobweb.compose.foundation.layout.Column
+import com.varabyte.kobweb.compose.foundation.layout.Row
 import com.varabyte.kobweb.compose.ui.Alignment
 import com.varabyte.kobweb.compose.ui.Modifier
 import com.varabyte.kobweb.compose.ui.graphics.toCssColor
@@ -14,6 +15,7 @@ import di.ModuleLocal
 import org.jetbrains.compose.web.css.*
 import ui.common.basecomponent.DivText
 import ui.common.basecomponent.LoadingTable
+import ui.common.basecomponent.TagListView
 import ui.common.bookmark.BookmarkTitleView
 import ui.styles.Palette
 
@@ -43,7 +45,10 @@ fun BookmarkList(modifier: Modifier = Modifier) {
                 model.requestMoreBookmarks()
             }.takeIf { !model.bookmarkListState.reachedEnd }
         ) { bookmark ->
-            BookmarkTitleView(bookmark.title, bookmark.favicon, bookmark.url, Modifier.fillMaxWidth())
+            Row(Modifier.fillMaxWidth()) {
+                BookmarkTitleView(bookmark.title, bookmark.favicon, bookmark.url, Modifier.fillMaxWidth())
+                TagListView(bookmark.tags, modifier = Modifier.fillMaxWidth())
+            }
         }
     }
 }

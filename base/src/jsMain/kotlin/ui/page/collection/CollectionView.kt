@@ -32,7 +32,8 @@ fun CollectionView(modifier: Modifier = Modifier) {
         }
 
         Box(contentAlignment = Alignment.CenterStart, modifier = Modifier.fillMaxHeight()) {
-            BookmarkSummary(
+
+        BookmarkSummary(
                 modifier = Modifier
                     .borderRadius(8.px)
                     .padding(16.px)

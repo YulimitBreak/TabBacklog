@@ -3,6 +3,7 @@ package data
 import browser.tabs.QueryQueryInfo
 import browser.tabs.Tab
 import com.juul.indexeddb.Key
+import com.juul.indexeddb.Transaction
 import com.juul.indexeddb.WriteTransaction
 import common.DateUtils
 import data.database.core.DatabaseHolder
@@ -15,9 +16,7 @@ import entity.Bookmark
 import entity.BookmarkType
 import entity.error.UnsupportedTabException
 import kotlinx.coroutines.await
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.takeWhile
+import kotlinx.coroutines.flow.*
 import kotlinx.datetime.toLocalDate
 
 class BookmarkRepository(private val databaseHolder: DatabaseHolder) {
@@ -84,24 +83,20 @@ class BookmarkRepository(private val databaseHolder: DatabaseHolder) {
             val bookmarkEntity = objectStore(bookmarkSchema.storeName).get(Key(url)) ?: return@transaction null
             val bookmark = bookmarkSchema.extractObject(bookmarkEntity)
             console.log("Found bookmark: $bookmark")
-            val tagStore = objectStore(tagsSchema.storeName)
-            val tags = tagStore.index(TagSchema.Url.name).getAll(Key(url)).map { entity ->
-                tagsSchema.extract<String>(entity, TagSchema.Tag)
-            }.map { tag ->
-                tag to tagStore.index(TagSchema.Tag.name).count(Key(tag))
-            }
-                .sortedByDescending { it.second }
-                .map { it.first }
-
-
-            console.log("Found tags $tags")
-            return@transaction bookmark.copy(tags = tags)
+            return@transaction bookmark.copy(tags = getTags(url))
         }
     }
 
     // TODO query params
     fun readBookmarks(): Flow<Bookmark> = flow {
-
+        val bookmarkSchema = DbSchema<BookmarkSchema>()
+        val tagsSchema = DbSchema<TagSchema>()
+        databaseHolder.database().transaction(bookmarkSchema.storeName, tagsSchema.storeName) {
+            objectStore(bookmarkSchema.storeName).openCursor().map { cursor ->
+                val bookmark = bookmarkSchema.extractObject(cursor.value)
+                bookmark.copy(tags = getTags(bookmark.url)).also { console.log("Emitting bookmark ${bookmark.title}") }
+            }
+        }.let { emitAll(it) }
     }
 
     private suspend fun WriteTransaction.deleteExpiredBookmarks() {
@@ -123,5 +118,17 @@ class BookmarkRepository(private val databaseHolder: DatabaseHolder) {
         objectStore(tagsSchema.storeName).index(TagSchema.Url.name).openCursor(Key(url)).collect { tagCursor ->
             tagCursor.delete()
         }
+    }
+
+    private suspend fun Transaction.getTags(url: String): List<String> {
+        val tagsSchema = DbSchema<TagSchema>()
+        val tagStore = objectStore(tagsSchema.storeName)
+        return tagStore.index(TagSchema.Url.name).getAll(Key(url)).map { entity ->
+            tagsSchema.extract<String>(entity, TagSchema.Tag)
+        }.map { tag ->
+            tag to tagStore.index(TagSchema.Tag.name).count(Key(tag))
+        }
+            .sortedByDescending { it.second }
+            .map { it.first }
     }
 }

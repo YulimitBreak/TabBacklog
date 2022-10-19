@@ -6,6 +6,9 @@ import com.juul.indexeddb.deleteDatabase
 import com.juul.indexeddb.openDatabase
 import data.database.schema.BookmarkSchema
 import data.database.schema.TagSchema
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
 
 class DatabaseHolder {
 
@@ -23,9 +26,21 @@ class DatabaseHolder {
 
     private var database: Database? = null
 
-    suspend fun database() = database
-        ?: openDatabaseInstance().also { database = it }
+    tailrec suspend fun database(): Database {
+        database?.let { return it }
+        if (databaseOpeningJob?.isActive == true) {
+            databaseOpeningJob?.join()
+            return database()
+        }
+        coroutineScope {
+            databaseOpeningJob = launch {
+                openDatabaseInstance().also { database = it }
+            }
+        }
+        return database()
+    }
 
+    private var databaseOpeningJob: Job? = null
 
     private suspend fun openDatabaseInstance(): Database {
         console.log("Opening database")
