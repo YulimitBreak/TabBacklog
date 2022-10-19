@@ -13,6 +13,8 @@ import com.varabyte.kobweb.compose.ui.modifiers.*
 import di.ModuleLocal
 import org.jetbrains.compose.web.css.*
 import ui.common.basecomponent.DivText
+import ui.common.basecomponent.LoadingTable
+import ui.common.bookmark.BookmarkTitleView
 import ui.styles.Palette
 
 @Composable
@@ -31,17 +33,17 @@ fun BookmarkList(modifier: Modifier = Modifier) {
             DivText("Search will be here")
         }
 
-        BookmarkTable(
-            model.numberListState.list,
-            model.numberListState.isLoading,
+        LoadingTable(
+            model.bookmarkListState.list,
+            model.bookmarkListState.isLoading,
             Modifier.margin(leftRight = 16.px, topBottom = 16.px).width(100.percent - 32.px)
                 .minHeight(20.percent).height(100.percent - 32.px)
                 .border(1.px, LineStyle.Solid, Palette.Local.current.onBackground.toCssColor()),
-            onSelect = {},
             onLoadMore = {
-                console.log("Loading more numbers after ${model.numberListState.list.lastOrNull()}")
-                model.requestMoreNumbers()
-            }.takeIf { !model.numberListState.reachedEnd }
-        )
+                model.requestMoreBookmarks()
+            }.takeIf { !model.bookmarkListState.reachedEnd }
+        ) { bookmark ->
+            BookmarkTitleView(bookmark.title, bookmark.favicon, bookmark.url, Modifier.fillMaxWidth())
+        }
     }
 }

@@ -1,4 +1,4 @@
-package ui.page.bookmarklist
+package ui.common.basecomponent
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -10,20 +10,17 @@ import com.varabyte.kobweb.compose.ui.Modifier
 import com.varabyte.kobweb.compose.ui.attrsModifier
 import com.varabyte.kobweb.compose.ui.modifiers.*
 import com.varabyte.kobweb.silk.components.style.toModifier
-import entity.Bookmark
 import org.jetbrains.compose.web.css.px
 import org.w3c.dom.HTMLElement
-import ui.common.basecomponent.DivText
-import ui.common.basecomponent.LoadingSpinner
 import ui.styles.components.TableContentComponent
 
 @Composable
-fun BookmarkTable(
-    values: List<Int>,
+fun <T> LoadingTable(
+    values: List<T>,
     isLoading: Boolean,
     modifier: Modifier,
-    onSelect: (Bookmark) -> Unit,
-    onLoadMore: (() -> Unit)?
+    onLoadMore: (() -> Unit)?,
+    itemContent: @Composable (T) -> Unit
 ) {
 
     fun HTMLElement.checkLoadMore() {
@@ -53,7 +50,7 @@ fun BookmarkTable(
             }
     ) {
         for (i in values) {
-            DivText(i.toString(), Modifier.fillMaxWidth())
+            itemContent(i)
         }
 
         if (isLoading) {

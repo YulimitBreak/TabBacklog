@@ -9,8 +9,6 @@ import data.BookmarkRepository
 import entity.Bookmark
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.ReceiveChannel
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 
 class BookmarkListModel(
@@ -22,21 +20,6 @@ class BookmarkListModel(
         private set
 
     private var bookmarkChannel: ReceiveChannel<Bookmark> = bookmarkRepository.readBookmarks().produce(coroutineScope)
-
-    var numberListState by mutableStateOf(NumberListState(emptyList(), isLoading = false, reachedEnd = false))
-    private var numberChannel: ReceiveChannel<Int> = flow {
-        var i = 1
-        while (true) {
-            delay(100)
-            console.log("Emitting $i")
-            emit(i)
-            i += 1
-        }
-    }.produce(coroutineScope)
-
-    init {
-        // requestMoreNumbers()
-    }
 
     fun requestMoreBookmarks() {
         coroutineScope.launch {
@@ -50,24 +33,9 @@ class BookmarkListModel(
         }
     }
 
-    fun requestMoreNumbers() {
-        coroutineScope.launch {
-            numberListState = numberListState.copy(isLoading = true)
-            val newValues = numberChannel.receive(BOOKMARK_PAGE_SIZE)
-            numberListState = numberListState.copy(
-                list = numberListState.list + newValues,
-                isLoading = false,
-                reachedEnd = newValues.size < BOOKMARK_PAGE_SIZE
-            )
-        }
-    }
-
-
     data class BookmarkListState(val list: List<Bookmark>, val isLoading: Boolean, val reachedEnd: Boolean)
 
-    data class NumberListState(val list: List<Int>, val isLoading: Boolean, val reachedEnd: Boolean)
-
     companion object {
-        private const val BOOKMARK_PAGE_SIZE = 10
+        private const val BOOKMARK_PAGE_SIZE = 50
     }
 }
