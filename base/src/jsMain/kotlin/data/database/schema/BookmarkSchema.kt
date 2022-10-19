@@ -1,9 +1,13 @@
 package data.database.schema
 
 import data.database.core.DbField.Index
+import data.database.core.DbSchema
 import data.database.core.EntityDbField
 import data.database.core.saveAsString
 import entity.Bookmark
+import entity.BookmarkType
+import kotlinx.datetime.toLocalDate
+import kotlinx.datetime.toLocalDateTime
 
 @Suppress("unused")
 enum class BookmarkSchema(
@@ -23,4 +27,19 @@ enum class BookmarkSchema(
     ;
 
     override val storeName: String = "bookmarks"
+}
+
+fun DbSchema<BookmarkSchema>.extractObject(source: dynamic) = extract(source) {
+    Bookmark(
+        BookmarkSchema.Url.value(),
+        BookmarkSchema.Title.value(),
+        BookmarkSchema.Favicon.value(),
+        BookmarkSchema.Type.value<String>().let { BookmarkType.valueOf(it) },
+        BookmarkSchema.CreationDate.value<String?>()?.toLocalDateTime(),
+        BookmarkSchema.Deadline.value<String?>()?.toLocalDate(),
+        BookmarkSchema.RemindDate.value<String?>()?.toLocalDate(),
+        BookmarkSchema.ExpirationDate.value<String?>()?.toLocalDate(),
+        favorite = BookmarkSchema.Favorite.value(),
+        comment = BookmarkSchema.Comment.value() ?: ""
+    )
 }

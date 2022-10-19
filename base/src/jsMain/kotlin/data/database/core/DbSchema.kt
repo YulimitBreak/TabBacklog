@@ -73,6 +73,10 @@ value class DbSchema<Field : DbField>(val fields: List<Field>) {
         return scope.f(map)
     }
 
+    fun <T> extract(source: dynamic, field: Field): T = extract(source) {
+        field.value()
+    }
+
     interface ExtractScope<Field : DbField> {
         fun <T> Field.value(): T
     }

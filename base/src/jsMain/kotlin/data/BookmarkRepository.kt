@@ -10,6 +10,7 @@ import data.database.core.DbSchema
 import data.database.core.generate
 import data.database.schema.BookmarkSchema
 import data.database.schema.TagSchema
+import data.database.schema.extractObject
 import entity.Bookmark
 import entity.BookmarkType
 import entity.error.UnsupportedTabException
@@ -18,7 +19,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.takeWhile
 import kotlinx.datetime.toLocalDate
-import kotlinx.datetime.toLocalDateTime
 
 class BookmarkRepository(private val databaseHolder: DatabaseHolder) {
 
@@ -82,26 +82,11 @@ class BookmarkRepository(private val databaseHolder: DatabaseHolder) {
         val tagsSchema = DbSchema<TagSchema>()
         return databaseHolder.database().transaction(bookmarkSchema.storeName, tagsSchema.storeName) {
             val bookmarkEntity = objectStore(bookmarkSchema.storeName).get(Key(url)) ?: return@transaction null
-            val bookmark = bookmarkSchema.extract(bookmarkEntity) { map ->
-                Bookmark(
-                    BookmarkSchema.Url.value(),
-                    BookmarkSchema.Title.value(),
-                    BookmarkSchema.Favicon.value(),
-                    BookmarkSchema.Type.value<String>().let { BookmarkType.valueOf(it) },
-                    BookmarkSchema.CreationDate.value<String?>()?.toLocalDateTime(),
-                    BookmarkSchema.Deadline.value<String?>()?.toLocalDate(),
-                    BookmarkSchema.RemindDate.value<String?>()?.toLocalDate(),
-                    BookmarkSchema.ExpirationDate.value<String?>()?.toLocalDate(),
-                    favorite = BookmarkSchema.Favorite.value(),
-                    comment = BookmarkSchema.Comment.value() ?: ""
-                )
-            }
+            val bookmark = bookmarkSchema.extractObject(bookmarkEntity)
             console.log("Found bookmark: $bookmark")
             val tagStore = objectStore(tagsSchema.storeName)
             val tags = tagStore.index(TagSchema.Url.name).getAll(Key(url)).map { entity ->
-                tagsSchema.extract(entity) {
-                    TagSchema.Tag.value<String>()
-                }
+                tagsSchema.extract<String>(entity, TagSchema.Tag)
             }.map { tag ->
                 tag to tagStore.index(TagSchema.Tag.name).count(Key(tag))
             }
@@ -123,15 +108,11 @@ class BookmarkRepository(private val databaseHolder: DatabaseHolder) {
         val bookmarkSchema = DbSchema<BookmarkSchema>()
         objectStore(bookmarkSchema.storeName).index(BookmarkSchema.ExpirationDate.name).openCursor()
             .takeWhile { cursor ->
-                val date = bookmarkSchema.extract(cursor.value) {
-                    BookmarkSchema.ExpirationDate.value<String>().toLocalDate()
-                }
+                val date = bookmarkSchema.extract<String>(cursor.value, BookmarkSchema.ExpirationDate).toLocalDate()
                 date.toEpochDays() < DateUtils.today.toEpochDays()
             }
             .collect { cursor ->
-                val url = bookmarkSchema.extract(cursor.value) {
-                    BookmarkSchema.Url.value<String>()
-                }
+                val url = bookmarkSchema.extract<String>(cursor.value, BookmarkSchema.Url)
                 deleteTags(url)
                 cursor.delete()
             }
