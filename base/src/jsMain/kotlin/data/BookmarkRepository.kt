@@ -9,6 +9,7 @@ import common.DateUtils
 import data.database.core.DatabaseHolder
 import data.database.core.DbSchema
 import data.database.core.generate
+import data.database.core.paginate
 import data.database.schema.BookmarkSchema
 import data.database.schema.TagSchema
 import data.database.schema.extractObject
@@ -91,8 +92,8 @@ class BookmarkRepository(private val databaseHolder: DatabaseHolder) {
     fun readBookmarks(): Flow<Bookmark> = flow {
         val bookmarkSchema = DbSchema<BookmarkSchema>()
         val tagsSchema = DbSchema<TagSchema>()
-        databaseHolder.database().transaction(bookmarkSchema.storeName, tagsSchema.storeName) {
-            objectStore(bookmarkSchema.storeName).openCursor().map { cursor ->
+        databaseHolder.database().paginate(bookmarkSchema.storeName, tagsSchema.storeName) { advance ->
+            objectStore(bookmarkSchema.storeName).openCursor(cursorStart = advance).map { cursor ->
                 val bookmark = bookmarkSchema.extractObject(cursor.value)
                 bookmark.copy(tags = getTags(bookmark.url)).also { console.log("Emitting bookmark ${bookmark.title}") }
             }

@@ -19,17 +19,12 @@ class BookmarkListModel(
     var bookmarkListState by mutableStateOf(BookmarkListState(emptyList(), isLoading = false, reachedEnd = false))
         private set
 
-    private var bookmarkChannel: ReceiveChannel<Bookmark>? = null
-
-    private suspend fun bookmarkChannel() =
-        bookmarkChannel ?: bookmarkRepository.readBookmarks().produce(coroutineScope)?.also {
-            bookmarkChannel = it
-        }
+    private var bookmarkChannel: ReceiveChannel<Bookmark> = bookmarkRepository.readBookmarks().produce(coroutineScope)
 
     fun requestMoreBookmarks() {
         coroutineScope.launch {
             bookmarkListState = bookmarkListState.copy(isLoading = true)
-            val newValues = bookmarkChannel().receive(BOOKMARK_PAGE_SIZE)
+            val newValues = bookmarkChannel.receive(BOOKMARK_PAGE_SIZE)
             console.log("Received bookmarks ${newValues.map { it.title }}")
             bookmarkListState = bookmarkListState.copy(
                 list = bookmarkListState.list + newValues,
