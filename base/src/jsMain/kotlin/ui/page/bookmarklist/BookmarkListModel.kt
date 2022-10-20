@@ -21,11 +21,14 @@ class BookmarkListModel(
 
     private var bookmarkChannel: ReceiveChannel<Bookmark> = bookmarkRepository.readBookmarks().produce(coroutineScope)
 
+    // TODO multiselect
+    var selectedBookmark: Bookmark? by mutableStateOf(null)
+        private set
+
     fun requestMoreBookmarks() {
         coroutineScope.launch {
             bookmarkListState = bookmarkListState.copy(isLoading = true)
             val newValues = bookmarkChannel.receive(BOOKMARK_PAGE_SIZE)
-            console.log("Received bookmarks ${newValues.map { it.title }}")
             bookmarkListState = bookmarkListState.copy(
                 list = bookmarkListState.list + newValues,
                 isLoading = false,
@@ -34,9 +37,13 @@ class BookmarkListModel(
         }
     }
 
+    fun selectBookmark(bookmark: Bookmark) {
+        this.selectedBookmark = bookmark
+    }
+
     data class BookmarkListState(val list: List<Bookmark>, val isLoading: Boolean, val reachedEnd: Boolean)
 
     companion object {
-        private const val BOOKMARK_PAGE_SIZE = 10
+        private const val BOOKMARK_PAGE_SIZE = 5
     }
 }

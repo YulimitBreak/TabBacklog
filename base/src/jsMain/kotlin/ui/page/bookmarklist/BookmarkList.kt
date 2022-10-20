@@ -11,6 +11,7 @@ import com.varabyte.kobweb.compose.ui.Alignment
 import com.varabyte.kobweb.compose.ui.Modifier
 import com.varabyte.kobweb.compose.ui.graphics.toCssColor
 import com.varabyte.kobweb.compose.ui.modifiers.*
+import com.varabyte.kobweb.compose.ui.thenIf
 import di.ModuleLocal
 import org.jetbrains.compose.web.css.*
 import ui.common.basecomponent.DivText
@@ -18,13 +19,14 @@ import ui.common.basecomponent.LoadingTable
 import ui.common.basecomponent.TagListView
 import ui.common.bookmark.BookmarkTitleView
 import ui.styles.Palette
+import ui.styles.primaryColors
 
 @Composable
 fun BookmarkList(modifier: Modifier = Modifier) {
 
     val appModule = ModuleLocal.App.current
     val scope = rememberCoroutineScope()
-    val model = remember() {
+    val model: BookmarkListModel = remember() {
         appModule.createBookmarkListModel(scope)
     }
 
@@ -45,7 +47,11 @@ fun BookmarkList(modifier: Modifier = Modifier) {
                 model.requestMoreBookmarks()
             }.takeIf { !model.bookmarkListState.reachedEnd }
         ) { bookmark ->
-            Row(Modifier.fillMaxWidth()) {
+            Row(Modifier.fillMaxWidth()
+                .thenIf(bookmark == model.selectedBookmark, Modifier.primaryColors())
+                .onClick {
+                    model.selectBookmark(bookmark)
+                }) {
                 BookmarkTitleView(bookmark.title, bookmark.favicon, bookmark.url, Modifier.fillMaxWidth())
                 TagListView(bookmark.tags, modifier = Modifier.fillMaxWidth())
             }
