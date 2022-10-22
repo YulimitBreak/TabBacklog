@@ -5,6 +5,7 @@ plugins {
     kotlin("multiplatform") version "1.7.10"
     id("org.jetbrains.compose") version "1.2.0"
     id("io.github.sergeshustoff.dikt") version "1.0.2"
+    id("io.kotest.multiplatform") version "5.5.1"
 }
 
 group = "com.gmail.ivkhegay.tablibrary"
