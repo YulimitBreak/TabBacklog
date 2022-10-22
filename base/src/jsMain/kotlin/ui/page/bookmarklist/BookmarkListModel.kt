@@ -44,6 +44,6 @@ class BookmarkListModel(
     data class BookmarkListState(val list: List<Bookmark>, val isLoading: Boolean, val reachedEnd: Boolean)
 
     companion object {
-        private const val BOOKMARK_PAGE_SIZE = 5
+        private const val BOOKMARK_PAGE_SIZE = 10
     }
 }

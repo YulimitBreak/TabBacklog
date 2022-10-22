@@ -92,13 +92,16 @@ class BookmarkRepository(private val databaseHolder: DatabaseHolder) {
     fun readBookmarks(): Flow<Bookmark> = flow {
         val bookmarkSchema = DbSchema<BookmarkSchema>()
         val tagsSchema = DbSchema<TagSchema>()
-        databaseHolder.database().paginate(bookmarkSchema.storeName, tagsSchema.storeName) { advance ->
-            objectStore(bookmarkSchema.storeName).openCursor(cursorStart = advance).map { cursor ->
-                val bookmark = bookmarkSchema.extractObject(cursor.value)
-                bookmark.copy(tags = getTags(bookmark.url)).also { console.log("Emitting bookmark ${bookmark.title}") }
+        databaseHolder.database().paginate(bookmarkSchema.storeName) {
+            bookmarkSchema.extractObject(it.value).also { console.log("Emitting ${it.title}[${it.url}]") }
+        }.map { bookmark ->
+            databaseHolder.database().transaction(tagsSchema.storeName) {
+                bookmark.copy(tags = getTags(bookmark.url))
             }
-        }.let { emitAll(it) }
+        }
+            .let { emitAll(it) }
     }
+
 
     private suspend fun WriteTransaction.deleteExpiredBookmarks() {
         val bookmarkSchema = DbSchema<BookmarkSchema>()
@@ -124,6 +127,7 @@ class BookmarkRepository(private val databaseHolder: DatabaseHolder) {
     private suspend fun Transaction.getTags(url: String): List<String> {
         val tagsSchema = DbSchema<TagSchema>()
         val tagStore = objectStore(tagsSchema.storeName)
+        console.log("Searching tags for $url")
         return tagStore.index(TagSchema.Url.name).getAll(Key(url)).map { entity ->
             tagsSchema.extract<String>(entity, TagSchema.Tag)
         }.map { tag ->
