@@ -9,9 +9,9 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 
 class AppDatabaseHolder(
-    val databaseName: String,
-    val version: Int,
-    val schema: List<DbSchema<*>>,
+    private val databaseName: String,
+    private val version: Int,
+    private val schema: List<DbSchema<*>>,
 ) : DatabaseHolder {
 
     companion object {
