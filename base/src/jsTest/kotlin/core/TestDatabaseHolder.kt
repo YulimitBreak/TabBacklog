@@ -1,3 +1,5 @@
+package core
+
 import com.juul.indexeddb.Database
 import com.juul.indexeddb.openDatabase
 import data.database.core.DatabaseHolder
@@ -43,10 +45,12 @@ class TestDatabaseHolder(
     }
 
     suspend fun deleteDatabase() {
-        database?.close()
         try {
+            database?.close()
             com.juul.indexeddb.deleteDatabase(databaseName)
-        } catch (_: Exception) {
+        } catch (e: Exception) {
+            console.error("error while deleting database")
+            e.printStackTrace()
         }
     }
 }
