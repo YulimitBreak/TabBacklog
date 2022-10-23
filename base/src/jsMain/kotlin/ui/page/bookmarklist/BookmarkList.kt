@@ -6,7 +6,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import com.varabyte.kobweb.compose.css.Overflow
 import com.varabyte.kobweb.compose.foundation.layout.Box
 import com.varabyte.kobweb.compose.foundation.layout.Column
-import com.varabyte.kobweb.compose.foundation.layout.Row
 import com.varabyte.kobweb.compose.ui.Alignment
 import com.varabyte.kobweb.compose.ui.Modifier
 import com.varabyte.kobweb.compose.ui.graphics.toCssColor
@@ -16,8 +15,7 @@ import di.ModuleLocal
 import org.jetbrains.compose.web.css.*
 import ui.common.basecomponent.DivText
 import ui.common.basecomponent.LoadingTable
-import ui.common.basecomponent.TagListView
-import ui.common.bookmark.BookmarkTitleView
+import ui.common.bookmark.BookmarkTableView
 import ui.styles.Palette
 import ui.styles.primaryColors
 
@@ -47,14 +45,16 @@ fun BookmarkList(modifier: Modifier = Modifier) {
                 model.requestMoreBookmarks()
             }.takeIf { !model.bookmarkListState.reachedEnd }
         ) { bookmark ->
-            Row(Modifier.fillMaxWidth()
-                .thenIf(bookmark == model.selectedBookmark, Modifier.primaryColors())
-                .onClick {
-                    model.selectBookmark(bookmark)
-                }) {
-                BookmarkTitleView(bookmark.title, bookmark.favicon, bookmark.url, Modifier.fillMaxWidth())
-                TagListView(bookmark.tags, modifier = Modifier.fillMaxWidth())
-            }
+            BookmarkTableView(
+                bookmark.title,
+                bookmark.favicon,
+                bookmark.url,
+                bookmark.favorite,
+                bookmark.tags,
+                modifier = Modifier.padding(topBottom = 4.px, leftRight = 8.px).width(100.percent - 16.px)
+                    .thenIf(model.selectedBookmark == bookmark, Modifier.primaryColors())
+                    .onClick { model.selectBookmark(bookmark) }
+            )
         }
     }
 }

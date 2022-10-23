@@ -12,13 +12,11 @@ import com.varabyte.kobweb.compose.ui.Alignment
 import com.varabyte.kobweb.compose.ui.Modifier
 import com.varabyte.kobweb.compose.ui.asAttributesBuilder
 import com.varabyte.kobweb.compose.ui.modifiers.*
-import com.varabyte.kobweb.silk.components.icons.fa.FaFileLines
 import common.styleProperty
 import org.jetbrains.compose.web.css.FlexWrap
 import org.jetbrains.compose.web.css.em
 import org.jetbrains.compose.web.css.percent
 import org.jetbrains.compose.web.css.px
-import org.jetbrains.compose.web.dom.Img
 import org.jetbrains.compose.web.dom.TextArea
 import ui.common.basecomponent.DivText
 
@@ -33,7 +31,7 @@ fun BookmarkTitleView(
         modifier.minWidth(200.px).maxWidth(400.px).flexWrap(FlexWrap.Nowrap).gap(16.px),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Favicon(favicon)
+        Favicon(favicon, 32.px)
         Column(
             Modifier.width(100.percent).gap(8.px),
             horizontalAlignment = Alignment.Start,
@@ -72,7 +70,7 @@ fun BookmarkTitleEdit(
         modifier = modifier.gap(16.px).flexWrap(FlexWrap.Nowrap),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Favicon(favicon)
+        Favicon(favicon, 32.px)
 
         TextArea(title, Modifier.lineHeight(1.2.em).fillMaxWidth().height(3.6.em)
             .styleProperty("resize", "none")
@@ -82,11 +80,3 @@ fun BookmarkTitleEdit(
     }
 }
 
-@Composable
-private fun Favicon(favicon: String?) {
-    if (!favicon.isNullOrBlank()) {
-        Img(src = favicon, attrs = Modifier.size(32.px).asAttributesBuilder())
-    } else {
-        FaFileLines(Modifier.fontSize(32.px).size(32.px))
-    }
-}
