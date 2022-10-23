@@ -3,15 +3,26 @@ package di
 import data.BookmarkRepository
 import data.TabsRepository
 import data.TagRepository
+import data.database.core.AppDatabaseHolder
 import data.database.core.DatabaseHolder
+import data.database.core.DbSchema
+import data.database.schema.BookmarkSchema
+import data.database.schema.TagSchema
 import dev.shustoff.dikt.Create
 
 
 @Suppress("unused", "UNUSED_PARAMETER", "KotlinRedundantDiagnosticSuppress")
 class RepositoryModule {
 
-    val databaseHolder by lazy {
-        DatabaseHolder()
+    val databaseHolder: DatabaseHolder by lazy {
+        AppDatabaseHolder(
+            "TabBacklog",
+            1,
+            listOf(
+                DbSchema<BookmarkSchema>(),
+                DbSchema<TagSchema>(),
+            )
+        )
     }
 
     // Doing it like this because @CreateSingle causes compilation issues

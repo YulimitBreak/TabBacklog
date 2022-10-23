@@ -2,6 +2,7 @@ plugins {
     kotlin("multiplatform")
     id("io.github.sergeshustoff.dikt")
     id("org.jetbrains.compose")
+    id("io.kotest.multiplatform")
 }
 
 repositories {
@@ -43,6 +44,14 @@ kotlin {
                 implementation(buildsrc.Lib.Kobweb.Silk)
                 implementation(buildsrc.Lib.Kobweb.SilkFaIcons)
                 implementation(buildsrc.Lib.Routing)
+            }
+        }
+        val jsTest by getting {
+            dependencies {
+                implementation(kotlin("test-js"))
+
+                implementation(buildsrc.Lib.Kotest.Assertions)
+                implementation(buildsrc.Lib.Kotest.PropertyTesting)
             }
         }
     }

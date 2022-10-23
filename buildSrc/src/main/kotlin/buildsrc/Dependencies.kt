@@ -21,4 +21,11 @@ object Lib {
     }
 
     const val Routing = "app.softwork:routing-compose:0.2.9"
+
+    object Kotest {
+        private const val Version = "5.5.1"
+        // const val Core = "io.kotest:kotest-framework-engine:$Version" // using kotlin.test instead
+        const val Assertions = "io.kotest:kotest-assertions-core:$Version"
+        const val PropertyTesting = "io.kotest:kotest-property:$Version"
+    }
 }
