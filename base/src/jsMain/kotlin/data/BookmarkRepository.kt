@@ -1,6 +1,5 @@
 package data
 
-import browser.tabs.QueryQueryInfo
 import browser.tabs.Tab
 import com.juul.indexeddb.Key
 import com.juul.indexeddb.Transaction
@@ -16,17 +15,13 @@ import data.database.schema.extractObject
 import entity.Bookmark
 import entity.BookmarkType
 import entity.error.UnsupportedTabException
-import kotlinx.coroutines.await
 import kotlinx.coroutines.flow.*
 import kotlinx.datetime.toLocalDate
 
-class BookmarkRepository(private val databaseHolder: DatabaseHolder) {
+class BookmarkRepository(private val databaseHolder: DatabaseHolder, private val browserInteractor: BrowserInteractor) {
 
     suspend fun loadBookmarkForActiveTab(): Bookmark {
-        val tab = browser.tabs.query(QueryQueryInfo {
-            active = true
-            currentWindow = true
-        }).await().first()
+        val tab = browserInteractor.getCurrentTab()
         return tab.url?.let { loadBookmark(it) } ?: createNewBookmark(tab)
     }
 
@@ -112,8 +107,8 @@ class BookmarkRepository(private val databaseHolder: DatabaseHolder) {
             }
             .collect { cursor ->
                 val url = bookmarkSchema.extract<String>(cursor.value, BookmarkSchema.Url)
-                deleteTags(url)
                 cursor.delete()
+                deleteTags(url)
             }
     }
 

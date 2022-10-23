@@ -1,8 +1,6 @@
 package di
 
-import data.BookmarkRepository
-import data.TabsRepository
-import data.TagRepository
+import data.*
 import data.database.core.AppDatabaseHolder
 import data.database.core.DatabaseHolder
 import data.database.core.DbSchema
@@ -23,6 +21,10 @@ class RepositoryModule {
                 DbSchema<TagSchema>(),
             )
         )
+    }
+
+    val browserInteractor: BrowserInteractor by lazy {
+        PolyfillBrowserInteractor()
     }
 
     // Doing it like this because @CreateSingle causes compilation issues
