@@ -5,7 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import common.DateUtils
 import data.BookmarkRepository
-import data.TabsRepository
+import data.BrowserInteractor
 import entity.Bookmark
 import entity.BookmarkType
 import entity.core.Loadable
@@ -19,7 +19,7 @@ class BookmarkSummaryModel(
     private val url: Url?,
     private val scope: CoroutineScope,
     private val bookmarkRepository: BookmarkRepository,
-    private val tabsRepository: TabsRepository,
+    private val browserInteractor: BrowserInteractor,
 ) {
 
     var bookmark by mutableStateOf<Loadable<Bookmark>>(Loadable.Loading<Bookmark>())
@@ -45,7 +45,7 @@ class BookmarkSummaryModel(
 
     fun openManager() {
         scope.launch {
-            tabsRepository.openManager()
+            browserInteractor.openManager()
             window.close()
         }
     }

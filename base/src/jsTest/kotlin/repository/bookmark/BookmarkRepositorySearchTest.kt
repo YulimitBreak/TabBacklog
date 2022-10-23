@@ -1,4 +1,4 @@
-package repository
+package repository.bookmark
 
 class BookmarkRepositorySearchTest {
     // TODO

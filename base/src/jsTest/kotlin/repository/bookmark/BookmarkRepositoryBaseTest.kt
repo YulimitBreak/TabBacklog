@@ -1,4 +1,4 @@
-package repository
+package repository.bookmark
 
 import browser.tabs.Tab
 import com.juul.indexeddb.Key
@@ -38,7 +38,7 @@ abstract class BookmarkRepositoryBaseTest {
         LocalDateTime(getFullYear(), getMonth(), this.getDate(), getHours(), getMinutes(), getSeconds())
 
     val tagArb = arbitrary { Arb.string(minSize = 3, maxSize = 20).bind() }
-    val tags = tagArb.samples().take(20).map { it.value }.toList()
+    val tags = tagArb.take(20).toList()
 
     val bookmarkArb = arbitrary {
         Bookmark(
@@ -105,6 +105,10 @@ abstract class BookmarkRepositoryBaseTest {
                 override suspend fun getCurrentTab(): Tab {
                     throw IllegalStateException("Can't test this with unit tests")
                 }
+
+                override fun openManager() {
+                    throw IllegalStateException("Can't test this with unit tests")
+                }
             }
         )
 
@@ -150,8 +154,7 @@ abstract class BookmarkRepositoryBaseTest {
             holder.deleteDatabase()
         }
         holder.database().writeTransaction(bookmarkSchema.storeName, tagSchema.storeName) {
-            val samples = bookmarkArb.samples().take(40).map { it.value }
-            samples.forEach { bookmark ->
+            bookmarkArb.take(40).forEach { bookmark ->
                 saveBookmark(bookmark, withTags = true)
             }
         }

@@ -1,4 +1,4 @@
-package repository
+package repository.bookmark
 
 import common.DateUtils
 import core.runTest
@@ -7,8 +7,8 @@ import io.kotest.assertions.withClue
 import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.shouldNotHave
 import io.kotest.property.Arb
-import io.kotest.property.RandomSource
 import io.kotest.property.arbitrary.int
+import io.kotest.property.arbitrary.single
 import io.kotest.property.checkAll
 import kotlinx.datetime.DatePeriod
 import kotlinx.datetime.minus
@@ -73,7 +73,7 @@ class BookmarkRepositoryOperationsTest : BookmarkRepositoryBaseTest() {
         val holder = openDatabase()
         val repository = repository(holder)
         checkAll(30, Arb.int(1, 365), bookmarkArb) { daysAgoExpired, newBookmark ->
-            val expiredBookmark = bookmarkArb.sample(RandomSource.default()).value.copy(
+            val expiredBookmark = bookmarkArb.single().copy(
                 expirationDate = DateUtils.today - DatePeriod(days = daysAgoExpired)
             )
             holder.database().writeTransaction(bookmarkSchema.storeName) {
@@ -114,7 +114,7 @@ class BookmarkRepositoryOperationsTest : BookmarkRepositoryBaseTest() {
         val holder = openDatabase()
         val repository = repository(holder)
         checkAll(30, Arb.int(1, 365)) { daysAgoExpired ->
-            val expiredBookmark = bookmarkArb.sample(RandomSource.default()).value.copy(
+            val expiredBookmark = bookmarkArb.single().copy(
                 expirationDate = DateUtils.today - DatePeriod(days = daysAgoExpired)
             )
             val randomBookmark = holder.database().writeTransaction(bookmarkSchema.storeName) {

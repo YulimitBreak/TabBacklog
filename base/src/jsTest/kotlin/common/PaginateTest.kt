@@ -13,6 +13,7 @@ import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.property.Arb
 import io.kotest.property.arbitrary.int
 import io.kotest.property.arbitrary.string
+import io.kotest.property.arbitrary.take
 import io.kotest.property.checkAll
 import kotlinx.coroutines.flow.toList
 import kotlin.test.Test
@@ -111,7 +112,7 @@ class PaginateTest {
         val database = holder.database()
         val schema = DbSchema<Schema>()
         database.writeTransaction(schema.storeName) {
-            val strings = Arb.string(minSize = 2).samples().take(size).map { it.value }
+            val strings = Arb.string(minSize = 2).take(size)
             val store = objectStore(schema.storeName)
             strings.forEachIndexed { index, s ->
                 store.put(schema.generate(mapOf(Schema.STRING to s, Schema.ID to index)))
