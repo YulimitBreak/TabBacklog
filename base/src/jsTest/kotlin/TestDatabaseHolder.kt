@@ -31,16 +31,19 @@ class TestDatabaseHolder(
 
     private suspend fun openDatabaseInstance(): Database {
         deleteDatabase()
-        return openDatabase(databaseName, 1) { database, _, _ ->
-            schema.forEach { schema ->
-                with(schema) {
-                    createObjectStore(database)
+        return openDatabase(databaseName, 1) { database, oldVersion, newVersion ->
+            if (oldVersion < 1) {
+                schema.forEach { schema ->
+                    with(schema) {
+                        createObjectStore(database)
+                    }
                 }
             }
         }
     }
 
     suspend fun deleteDatabase() {
+        database?.close()
         try {
             com.juul.indexeddb.deleteDatabase(databaseName)
         } catch (_: Exception) {
