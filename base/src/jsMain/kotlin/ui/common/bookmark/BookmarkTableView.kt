@@ -28,7 +28,7 @@ fun BookmarkTableView(
     url: String,
     isFavorite: Boolean,
     tags: List<String>,
-    onTagClick: ((String) -> Unit)? = null,
+    tagModifier: @Composable (tag: String) -> Modifier = { Modifier },
     modifier: Modifier = Modifier,
 ) {
     Row(modifier = modifier.gap(8.px).flexWrap(FlexWrap.Nowrap), verticalAlignment = Alignment.CenterVertically) {
@@ -71,10 +71,7 @@ fun BookmarkTableView(
                         key(tag) {
                             SpanText(
                                 tag,
-                                TagComponent.Style.toModifier(TagComponent.Clickable.takeIf { onTagClick != null })
-                                    .let {
-                                        if (onTagClick != null) it.onClick { onTagClick(tag) } else it
-                                    }
+                                TagComponent.Style.toModifier().then(tagModifier(tag))
                             )
                         }
                     }

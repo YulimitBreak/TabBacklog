@@ -53,7 +53,7 @@ fun BookmarkList(modifier: Modifier = Modifier) {
                 bookmark.tags,
                 modifier = Modifier.padding(topBottom = 4.px, leftRight = 8.px).width(100.percent - 16.px)
                     .thenIf(model.selectedBookmark == bookmark, Modifier.primaryColors())
-                    .onClick { model.selectBookmark(bookmark) }
+                    .onClick { model.selectBookmark(bookmark) },
             )
         }
     }
