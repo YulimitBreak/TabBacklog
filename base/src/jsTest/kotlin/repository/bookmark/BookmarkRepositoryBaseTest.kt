@@ -1,6 +1,5 @@
 package repository.bookmark
 
-import browser.tabs.Tab
 import com.juul.indexeddb.Key
 import com.juul.indexeddb.Transaction
 import com.juul.indexeddb.WriteTransaction
@@ -100,16 +99,8 @@ abstract class BookmarkRepositoryBaseTest {
     fun repository(holder: DatabaseHolder): BookmarkRepository =
         BookmarkRepository(
             holder,
-            // TODO mocking
-            object : BrowserInteractor {
-                override suspend fun getCurrentTab(): Tab {
-                    throw IllegalStateException("Can't test this with unit tests")
-                }
-
-                override fun openManager() {
-                    throw IllegalStateException("Can't test this with unit tests")
-                }
-            }
+            // TODO mocking when libraries available
+            js("{}").unsafeCast<BrowserInteractor>()
         )
 
 
