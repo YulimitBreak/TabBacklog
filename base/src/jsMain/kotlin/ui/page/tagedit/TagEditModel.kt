@@ -1,5 +1,6 @@
 package ui.page.tagedit
 
+import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -12,7 +13,10 @@ import kotlinx.coroutines.launch
 class TagEditModel(
     private val scope: CoroutineScope,
     private val tagRepository: TagRepository,
+    onTagEditEventState: State<OnTagEditEvent>,
 ) {
+
+    private val onTagEditEvent by onTagEditEventState
 
     var selectedTag: String? by mutableStateOf(null)
         private set
@@ -52,7 +56,7 @@ class TagEditModel(
         editedTag = input
     }
 
-    fun confirmTag(onTagEditEvent: (TagEditEvent) -> Unit) {
+    fun confirmTag() {
         val editedTag = editedTag
         val selectedTag = selectedTag
         if (editedTag.isBlank()) {
@@ -84,6 +88,10 @@ class TagEditModel(
             if (!isActive) return@launch
             suggestedTags = tags
         }
+    }
+
+    fun interface OnTagEditEvent {
+        operator fun invoke(event: TagEditEvent): Unit
     }
 }
 

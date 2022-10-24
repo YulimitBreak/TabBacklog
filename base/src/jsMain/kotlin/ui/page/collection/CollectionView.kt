@@ -27,7 +27,14 @@ fun CollectionView(modifier: Modifier = Modifier) {
                     .margin(topBottom = 32.px)
                     .height(100.percent - 64.px)
                     .borderRadius(8.px)
-                    .boxShadow(offsetX = 0.px, offsetY = 5.px, blurRadius = 10.px, spreadRadius = 4.px, Colors.DarkGray)
+                    .boxShadow(
+                        offsetX = 0.px,
+                        offsetY = 5.px,
+                        blurRadius = 10.px,
+                        spreadRadius = 4.px,
+                        Colors.DarkGray
+                    ),
+                onBookmarkSelect = {}
             )
         }
 

@@ -1,5 +1,6 @@
 package di
 
+import androidx.compose.runtime.State
 import dev.shustoff.dikt.Create
 import dev.shustoff.dikt.UseModules
 import entity.core.Url
@@ -20,14 +21,24 @@ class AppModule(
     fun createPopupBaseModel(coroutineScope: CoroutineScope): PopupBaseModel
 
     @Create
-    fun createBookmarkEditorModel(coroutineScope: CoroutineScope, url: Url?): BookmarkEditorModel
+    fun createBookmarkEditorModel(
+        coroutineScope: CoroutineScope,
+        url: Url?,
+        onNavigateBackState: State<BookmarkEditorModel.OnNavigateBack>
+    ): BookmarkEditorModel
 
     @Create
     fun createBookmarkSummaryModel(coroutineScope: CoroutineScope, url: Url?): BookmarkSummaryModel
 
     @Create
-    fun createTagEditModel(coroutineScope: CoroutineScope): TagEditModel
+    fun createTagEditModel(
+        coroutineScope: CoroutineScope,
+        onTagEditEventState: State<TagEditModel.OnTagEditEvent>,
+    ): TagEditModel
 
     @Create
-    fun createBookmarkListModel(coroutineScope: CoroutineScope): BookmarkListModel
+    fun createBookmarkListModel(
+        coroutineScope: CoroutineScope,
+        onBookmarkSelect: State<BookmarkListModel.OnBookmarkSelect>
+    ): BookmarkListModel
 }

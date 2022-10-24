@@ -3,6 +3,7 @@ package ui.page.editor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
 import com.varabyte.kobweb.compose.css.FontStyle
 import com.varabyte.kobweb.compose.css.FontWeight
 import com.varabyte.kobweb.compose.foundation.layout.Column
@@ -42,8 +43,9 @@ fun BookmarkEditor(
 ) {
     val appModule = ModuleLocal.App.current
     val scope = rememberCoroutineScope()
+    val onNavigateBackState = rememberUpdatedState(BookmarkEditorModel.OnNavigateBack(onNavigateBack))
     val model = remember(url) {
-        appModule.createBookmarkEditorModel(scope, url?.let(::Url))
+        appModule.createBookmarkEditorModel(scope, url?.let(::Url), onNavigateBackState)
     }
 
     LoadableView(model.bookmark, modifier = modifier.minHeight(350.px)) { bookmark, m ->
@@ -63,7 +65,7 @@ fun BookmarkEditor(
                     Text("Favorite")
                 }
                 if (!bookmark.isNew) {
-                    RowButton(onClick = { model.deleteBookmark(onNavigateBack) }) {
+                    RowButton(onClick = { model.deleteBookmark() }) {
                         FaTrash()
                         Text("Delete")
                     }
@@ -109,7 +111,7 @@ fun BookmarkEditor(
                 Spacer()
 
                 RowButton(onClick = {
-                    model.saveBookmark(onNavigateBack)
+                    model.saveBookmark()
                 }) {
                     FaFloppyDisk(style = IconStyle.FILLED)
                     Text("Save")

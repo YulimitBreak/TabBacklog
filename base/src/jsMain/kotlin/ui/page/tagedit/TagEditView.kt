@@ -1,9 +1,6 @@
 package ui.page.tagedit
 
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.key
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.*
 import com.varabyte.kobweb.compose.foundation.layout.Column
 import com.varabyte.kobweb.compose.foundation.layout.Row
 import com.varabyte.kobweb.compose.ui.Alignment
@@ -31,8 +28,8 @@ fun TagEditView(tags: List<String>, modifier: Modifier, onTagEditEvent: (TagEdit
 
     val appModule = ModuleLocal.App.current
     val scope = rememberCoroutineScope()
-    val model: TagEditModel =
-        remember { appModule.createTagEditModel(scope) }
+    val onTagEditEventState = rememberUpdatedState(TagEditModel.OnTagEditEvent(onTagEditEvent))
+    val model: TagEditModel = remember { appModule.createTagEditModel(scope, onTagEditEventState) }
 
     Datalist(attrs = {
         id(SUGGESTION_DATA_LIST_ID)
@@ -65,7 +62,7 @@ fun TagEditView(tags: List<String>, modifier: Modifier, onTagEditEvent: (TagEdit
                 .borderBottom(1.px, LineStyle.Dashed, Palette.primaryColor.toCssColor())
                 .onKeyDown {
                     if (it.getNormalizedKey() == "Enter") {
-                        model.confirmTag(onTagEditEvent)
+                        model.confirmTag()
                     }
                 }
                 .asAttributesBuilder {
@@ -79,11 +76,11 @@ fun TagEditView(tags: List<String>, modifier: Modifier, onTagEditEvent: (TagEdit
                     onInput {
                         model.onTagInput(it.value)
                         if (!userInput) {
-                            model.confirmTag(onTagEditEvent)
+                            model.confirmTag()
                         }
                     }
                 })
-            RowButton(onClick = { model.confirmTag(onTagEditEvent) }, Modifier.size(1.2.em)) {
+            RowButton(onClick = { model.confirmTag() }, Modifier.size(1.2.em)) {
                 FaCheck()
             }
             if (model.selectedTag == null) {

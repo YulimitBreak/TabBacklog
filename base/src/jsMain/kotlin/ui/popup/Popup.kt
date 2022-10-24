@@ -1,7 +1,6 @@
 package ui.popup
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import app.softwork.routingcompose.HashRouter
 import app.softwork.routingcompose.Router
@@ -18,7 +17,7 @@ import ui.page.summary.BookmarkSummary
 fun Popup() {
     val scope = rememberCoroutineScope()
     val appModule = ModuleLocal.App.current
-    val model: PopupBaseModel = remember { appModule.createPopupBaseModel(scope) }
+    // val model: PopupBaseModel = remember { appModule.createPopupBaseModel(scope) }
 
     DefaultLocalProvider {
         Main(attrs = Modifier.fillMaxWidth().asAttributesBuilder()) {

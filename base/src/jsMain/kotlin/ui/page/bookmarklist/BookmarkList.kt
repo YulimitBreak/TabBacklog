@@ -3,6 +3,7 @@ package ui.page.bookmarklist
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
 import com.varabyte.kobweb.compose.css.Overflow
 import com.varabyte.kobweb.compose.foundation.layout.Box
 import com.varabyte.kobweb.compose.foundation.layout.Column
@@ -12,6 +13,7 @@ import com.varabyte.kobweb.compose.ui.graphics.toCssColor
 import com.varabyte.kobweb.compose.ui.modifiers.*
 import com.varabyte.kobweb.compose.ui.thenIf
 import di.ModuleLocal
+import entity.Bookmark
 import org.jetbrains.compose.web.css.*
 import ui.common.basecomponent.DivText
 import ui.common.basecomponent.LoadingTable
@@ -20,12 +22,13 @@ import ui.styles.Palette
 import ui.styles.primaryColors
 
 @Composable
-fun BookmarkList(modifier: Modifier = Modifier) {
+fun BookmarkList(modifier: Modifier = Modifier, onBookmarkSelect: (Bookmark) -> Unit) {
 
     val appModule = ModuleLocal.App.current
     val scope = rememberCoroutineScope()
+    val onBookmarkSelectState = rememberUpdatedState(BookmarkListModel.OnBookmarkSelect(onBookmarkSelect))
     val model: BookmarkListModel = remember() {
-        appModule.createBookmarkListModel(scope)
+        appModule.createBookmarkListModel(scope, onBookmarkSelectState)
     }
 
     Column(modifier.overflow(Overflow.Hidden)) {

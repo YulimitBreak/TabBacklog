@@ -1,5 +1,6 @@
 package ui.page.editor
 
+import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -20,7 +21,10 @@ class BookmarkEditorModel(
     private val url: Url?,
     private val scope: CoroutineScope,
     private val bookmarkRepository: BookmarkRepository,
+    onNavigateBackState: State<OnNavigateBack>,
 ) {
+
+    private val onNavigateBack by onNavigateBackState
 
     var bookmark: Loadable<EditedBookmark> by mutableStateOf(Loadable.Loading())
         private set
@@ -69,7 +73,7 @@ class BookmarkEditorModel(
         updateBookmark { it.copy(comment = comment) }
     }
 
-    fun deleteBookmark(onDeletionComplete: () -> Unit) {
+    fun deleteBookmark() {
         scope.launch {
             val url = bookmark.value?.base?.url
                 ?: url?.url
@@ -79,7 +83,7 @@ class BookmarkEditorModel(
                 }
             bookmark = Loadable.Loading()
             bookmarkRepository.deleteBookmark(url)
-            onDeletionComplete()
+            onNavigateBack()
         }
     }
 
@@ -153,7 +157,7 @@ class BookmarkEditorModel(
         editedBlock = block
     }
 
-    fun saveBookmark(onComplete: () -> Unit) {
+    fun saveBookmark() {
         scope.launch {
             var editedBookmark = bookmark.value ?: kotlin.run {
                 console.warn("Saving bookmark in unloaded state")
@@ -170,8 +174,12 @@ class BookmarkEditorModel(
             }
             bookmark = Loadable.Loading()
             bookmarkRepository.saveBookmark(editedBookmark.toImmutableBookmark())
-            onComplete()
+            onNavigateBack()
         }
+    }
+
+    fun interface OnNavigateBack {
+        operator fun invoke()
     }
 
 }
