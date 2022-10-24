@@ -53,6 +53,8 @@ fun CollectionView(modifier: Modifier = Modifier) {
                     modifier = Modifier
                         .borderRadius(8.px)
                         .padding(16.px)
+                        .width(70.percent)
+                        .minWidth(300.px)
                         .boxShadow(
                             offsetX = 0.px,
                             offsetY = 5.px,
