@@ -7,6 +7,7 @@ import androidx.compose.runtime.setValue
 import common.produce
 import common.receive
 import data.BookmarkRepository
+import data.BrowserInteractor
 import entity.Bookmark
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.ReceiveChannel
@@ -15,6 +16,7 @@ import kotlinx.coroutines.launch
 class BookmarkListModel(
     private val coroutineScope: CoroutineScope,
     private val bookmarkRepository: BookmarkRepository,
+    private val browserInteractor: BrowserInteractor,
     onBookmarkSelectState: State<OnBookmarkSelect>,
 ) {
 
@@ -44,6 +46,10 @@ class BookmarkListModel(
     fun selectBookmark(bookmark: Bookmark) {
         this.selectedBookmark = bookmark
         onBookmarkSelect(bookmark)
+    }
+
+    fun openBookmark(bookmark: Bookmark) {
+        browserInteractor.openBookmark(bookmark.url)
     }
 
     data class BookmarkListState(val list: List<Bookmark>, val isLoading: Boolean, val reachedEnd: Boolean)

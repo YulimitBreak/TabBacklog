@@ -3,7 +3,7 @@ package di
 import androidx.compose.runtime.State
 import dev.shustoff.dikt.Create
 import dev.shustoff.dikt.UseModules
-import entity.core.Url
+import entity.SingleBookmarkTarget
 import kotlinx.coroutines.CoroutineScope
 import ui.page.bookmarklist.BookmarkListModel
 import ui.page.editor.BookmarkEditorModel
@@ -23,12 +23,14 @@ class AppModule(
     @Create
     fun createBookmarkEditorModel(
         coroutineScope: CoroutineScope,
-        url: Url?,
+        target: SingleBookmarkTarget,
         onNavigateBackState: State<BookmarkEditorModel.OnNavigateBack>
     ): BookmarkEditorModel
 
     @Create
-    fun createBookmarkSummaryModel(coroutineScope: CoroutineScope, url: Url?): BookmarkSummaryModel
+    fun createBookmarkSummaryModel(
+        coroutineScope: CoroutineScope, target: SingleBookmarkTarget
+    ): BookmarkSummaryModel
 
     @Create
     fun createTagEditModel(

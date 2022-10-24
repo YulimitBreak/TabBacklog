@@ -1,6 +1,6 @@
 package ui.page.collection
 
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import com.varabyte.kobweb.compose.css.Overflow
 import com.varabyte.kobweb.compose.foundation.layout.Box
 import com.varabyte.kobweb.compose.foundation.layout.Row
@@ -8,6 +8,8 @@ import com.varabyte.kobweb.compose.ui.Alignment
 import com.varabyte.kobweb.compose.ui.Modifier
 import com.varabyte.kobweb.compose.ui.graphics.Colors
 import com.varabyte.kobweb.compose.ui.modifiers.*
+import entity.Bookmark
+import entity.SingleBookmarkTarget
 import org.jetbrains.compose.web.css.FlexWrap
 import org.jetbrains.compose.web.css.minus
 import org.jetbrains.compose.web.css.percent
@@ -17,6 +19,8 @@ import ui.page.summary.BookmarkSummary
 
 @Composable
 fun CollectionView(modifier: Modifier = Modifier) {
+
+    var selectedBookmark by remember { mutableStateOf<Bookmark?>(null) }
 
     Row(modifier.role("main").overflowX(Overflow.Auto).gap(32.px).flexWrap(FlexWrap.Nowrap)) {
         Box(Modifier.fillMaxHeight().minWidth(50.percent), contentAlignment = Alignment.CenterEnd) {
@@ -34,24 +38,30 @@ fun CollectionView(modifier: Modifier = Modifier) {
                         spreadRadius = 4.px,
                         Colors.DarkGray
                     ),
-                onBookmarkSelect = {}
+                onBookmarkSelect = {
+                    selectedBookmark = it
+                }
             )
         }
 
         Box(contentAlignment = Alignment.CenterStart, modifier = Modifier.fillMaxHeight()) {
 
-        BookmarkSummary(
-                modifier = Modifier
-                    .borderRadius(8.px)
-                    .padding(16.px)
-                    .boxShadow(
-                        offsetX = 0.px,
-                        offsetY = 5.px,
-                        blurRadius = 8.px,
-                        spreadRadius = 2.px,
-                        Colors.Gray
-                    ),
-                onEditRequest = {})
+            val bookmark = selectedBookmark
+            if (bookmark != null) {
+                BookmarkSummary(
+                    target = SingleBookmarkTarget.Url(bookmark.url),
+                    modifier = Modifier
+                        .borderRadius(8.px)
+                        .padding(16.px)
+                        .boxShadow(
+                            offsetX = 0.px,
+                            offsetY = 5.px,
+                            blurRadius = 8.px,
+                            spreadRadius = 2.px,
+                            Colors.Gray
+                        ),
+                    onEditRequest = {})
+            }
         }
     }
 }

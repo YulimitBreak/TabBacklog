@@ -8,6 +8,7 @@ import com.varabyte.kobweb.compose.ui.Modifier
 import com.varabyte.kobweb.compose.ui.asAttributesBuilder
 import com.varabyte.kobweb.compose.ui.modifiers.fillMaxWidth
 import di.ModuleLocal
+import entity.SingleBookmarkTarget
 import org.jetbrains.compose.web.dom.Main
 import ui.common.DefaultLocalProvider
 import ui.page.editor.BookmarkEditor
@@ -25,7 +26,7 @@ fun Popup() {
                 val router = Router.current
                 route("/") {
                     BookmarkSummary(
-                        url = null,
+                        target = SingleBookmarkTarget.CurrentTab,
                         onEditRequest = { router.navigate("/edit") },
                         modifier = Modifier.fillMaxWidth()
                     )
@@ -33,7 +34,7 @@ fun Popup() {
 
                 route("/edit") {
                     BookmarkEditor(
-                        url = null,
+                        target = SingleBookmarkTarget.CurrentTab,
                         onNavigateBack = { router.navigate("/") },
                         modifier = Modifier.fillMaxWidth()
                     )

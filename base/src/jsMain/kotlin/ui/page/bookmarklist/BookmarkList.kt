@@ -5,10 +5,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import com.varabyte.kobweb.compose.css.Overflow
+import com.varabyte.kobweb.compose.css.UserSelect
 import com.varabyte.kobweb.compose.foundation.layout.Box
 import com.varabyte.kobweb.compose.foundation.layout.Column
 import com.varabyte.kobweb.compose.ui.Alignment
 import com.varabyte.kobweb.compose.ui.Modifier
+import com.varabyte.kobweb.compose.ui.attrsModifier
 import com.varabyte.kobweb.compose.ui.graphics.toCssColor
 import com.varabyte.kobweb.compose.ui.modifiers.*
 import com.varabyte.kobweb.compose.ui.thenIf
@@ -56,7 +58,11 @@ fun BookmarkList(modifier: Modifier = Modifier, onBookmarkSelect: (Bookmark) -> 
                 bookmark.tags,
                 modifier = Modifier.padding(topBottom = 4.px, leftRight = 8.px).width(100.percent - 16.px)
                     .thenIf(model.selectedBookmark == bookmark, Modifier.primaryColors())
-                    .onClick { model.selectBookmark(bookmark) },
+                    .userSelect(UserSelect.None)
+                    .onClick { model.selectBookmark(bookmark) }
+                    .attrsModifier {
+                        onDoubleClick { model.openBookmark(bookmark) }
+                    },
             )
         }
     }

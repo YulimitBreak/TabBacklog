@@ -20,7 +20,7 @@ import com.varabyte.kobweb.silk.components.text.SpanText
 import common.styleProperty
 import di.ModuleLocal
 import entity.BookmarkType
-import entity.core.Url
+import entity.SingleBookmarkTarget
 import org.jetbrains.compose.web.css.*
 import org.jetbrains.compose.web.dom.Text
 import org.jetbrains.compose.web.dom.TextArea
@@ -37,15 +37,15 @@ import ui.styles.components.BookmarkEditClickableArea
 
 @Composable
 fun BookmarkEditor(
-    url: String?,
+    target: SingleBookmarkTarget,
     onNavigateBack: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val appModule = ModuleLocal.App.current
     val scope = rememberCoroutineScope()
     val onNavigateBackState = rememberUpdatedState(BookmarkEditorModel.OnNavigateBack(onNavigateBack))
-    val model = remember(url) {
-        appModule.createBookmarkEditorModel(scope, url?.let(::Url), onNavigateBackState)
+    val model = remember(target) {
+        appModule.createBookmarkEditorModel(scope, target, onNavigateBackState)
     }
 
     LoadableView(model.bookmark, modifier = modifier.minHeight(350.px)) { bookmark, m ->

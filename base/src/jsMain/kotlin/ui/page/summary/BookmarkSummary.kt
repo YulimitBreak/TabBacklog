@@ -13,7 +13,7 @@ import com.varabyte.kobweb.silk.components.icons.fa.*
 import com.varabyte.kobweb.silk.components.text.SpanText
 import di.ModuleLocal
 import entity.BookmarkType
-import entity.core.Url
+import entity.SingleBookmarkTarget
 import org.jetbrains.compose.web.css.minus
 import org.jetbrains.compose.web.css.percent
 import org.jetbrains.compose.web.css.px
@@ -29,7 +29,7 @@ import ui.common.bookmark.TimerDisplay
 
 @Composable
 fun BookmarkSummary(
-    url: String? = null,
+    target: SingleBookmarkTarget,
     onEditRequest: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -37,7 +37,7 @@ fun BookmarkSummary(
     val scope = rememberCoroutineScope()
 
     val model: BookmarkSummaryModel =
-        remember(url) { appModule.createBookmarkSummaryModel(scope, url?.let { Url(it) }) }
+        remember(target) { appModule.createBookmarkSummaryModel(scope, target) }
 
     LoadableView(model.bookmark, modifier.minHeight(100.px)) { bookmark, m ->
         Column(m.gap(8.px).margin(bottom = 8.px)) {

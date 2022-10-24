@@ -16,4 +16,11 @@ class PolyfillBrowserInteractor : BrowserInteractor {
             this.url = "manager.html"
         })
     }
+
+    override fun openBookmark(url: String) {
+        browser.tabs.create(CreateCreateProperties {
+            this.url = url
+            this.active = true
+        })
+    }
 }
