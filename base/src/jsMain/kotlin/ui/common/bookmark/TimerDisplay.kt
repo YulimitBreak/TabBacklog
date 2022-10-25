@@ -22,11 +22,13 @@ import ui.styles.Palette
 @Composable
 fun TimerDisplay(
     title: String,
+    icon: @Composable () -> Unit,
     date: LocalDate,
     modifier: Modifier,
     onDelete: (() -> Unit)? = null
 ) {
     Row(modifier.gap(8.px).height(2.5.em), verticalAlignment = Alignment.CenterVertically) {
+        icon()
         SpanText(title, modifier = Modifier.fontWeight(FontWeight.Bolder).width(25.percent))
         Spacer()
         SpanText(DateUtils.Formatter.DmySlash(date))

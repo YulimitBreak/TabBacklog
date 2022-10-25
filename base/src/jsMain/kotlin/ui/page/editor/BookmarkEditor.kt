@@ -33,6 +33,9 @@ import ui.common.bookmark.BookmarkTitleView
 import ui.common.bookmark.BookmarkTypeBacklogButton
 import ui.common.bookmark.BookmarkTypeLibraryButton
 import ui.page.tagedit.TagEditView
+import ui.styles.brand.DeadlineTimerIcon
+import ui.styles.brand.ExpirationTimerIcon
+import ui.styles.brand.ReminderTimerIcon
 import ui.styles.components.BookmarkEditClickableArea
 
 @Composable
@@ -214,16 +217,18 @@ fun BookmarkEditor(
             fun TimerBlock(
                 title: String,
                 description: String,
+                icon: @Composable () -> Unit,
                 type: TimerType
             ) {
                 TimerEditor(
                     title,
                     description,
+                    icon,
                     model.editedBlock == type.block,
                     model.getTimerTarget(type),
                     Modifier
-                        .width(100.percent - 4.px)
-                        .margin(left = 4.px, top = (-2).px, bottom = (-2).px)
+                        .width(100.percent - 6.px)
+                        .margin(left = 6.px, top = (-2).px, bottom = (-2).px)
                         .thenIf(
                             model.editedBlock != type.block,
                             BookmarkEditClickableArea.Style.toModifier()
@@ -236,18 +241,23 @@ fun BookmarkEditor(
             }
 
             TimerBlock(
-                "Reminder", "For tabs that you want to forget about until specific date", TimerType.REMINDER
+                "Reminder",
+                "For tabs that you want to forget about until specific date",
+                { ReminderTimerIcon() },
+                TimerType.REMINDER
             )
 
             TimerBlock(
                 "Deadline",
                 "For tabs related to tasks that you need to finish until specific date",
+                { DeadlineTimerIcon() },
                 TimerType.DEADLINE
             )
 
             TimerBlock(
                 "Expiration",
                 "For tabs that you won't care after a specific date so they can be safely deleted",
+                { ExpirationTimerIcon() },
                 TimerType.EXPIRATION
             )
         }

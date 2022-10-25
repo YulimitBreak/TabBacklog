@@ -23,6 +23,7 @@ import ui.common.datepicker.ModeSwitchingDatePicker
 fun TimerEditor(
     title: String,
     description: String,
+    icon: @Composable () -> Unit,
     isSelected: Boolean,
     datePickerTarget: DatePickerTarget,
     modifier: Modifier = Modifier,
@@ -30,7 +31,7 @@ fun TimerEditor(
 ) {
     val date = datePickerTarget.resolve()
     when {
-        isSelected -> ModeSwitchingDatePicker(title, datePickerTarget, modifier,
+        isSelected -> ModeSwitchingDatePicker(title, icon, datePickerTarget, modifier,
             onCountChange = { onEvent(TimerEditorEvent.OnCountChange(it)) },
             onDateSelect = { onEvent(TimerEditorEvent.OnDateSelect(it)) },
             onModeChange = { onEvent(TimerEditorEvent.OnModeChange(it)) },
@@ -39,6 +40,7 @@ fun TimerEditor(
 
         date != null -> TimerDisplay(
             title,
+            icon,
             date,
             modifier,
             onDelete = { onEvent(TimerEditorEvent.OnDelete) })
@@ -49,6 +51,7 @@ fun TimerEditor(
                     .title(description),
                 verticalAlignment = Alignment.CenterVertically
             ) {
+                icon()
                 SpanText(
                     title,
                     modifier = Modifier.fontWeight(FontWeight.Bolder).width(25.percent)

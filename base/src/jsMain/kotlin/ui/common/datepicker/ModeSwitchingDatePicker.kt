@@ -20,6 +20,7 @@ import ui.common.basecomponent.EnumSlider
 @Composable
 fun ModeSwitchingDatePicker(
     title: String,
+    icon: @Composable () -> Unit,
     datePickerTarget: DatePickerTarget,
     modifier: Modifier = Modifier,
     onCountChange: (Int) -> Unit,
@@ -31,6 +32,7 @@ fun ModeSwitchingDatePicker(
         modifier.gap(8.px).height(2.5.em).flexWrap(FlexWrap.Nowrap),
         verticalAlignment = Alignment.CenterVertically
     ) {
+        icon()
         SpanText(title, modifier = Modifier.fontWeight(FontWeight.Bolder).width(25.percent))
         Spacer()
         DatePicker(

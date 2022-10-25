@@ -56,6 +56,7 @@ fun BookmarkList(modifier: Modifier = Modifier, onBookmarkSelect: (Bookmark) -> 
                     .thenIf(model.selectedBookmark == bookmark, Modifier.primaryColors())
                     .userSelect(UserSelect.None)
                     .onClick { model.selectBookmark(bookmark) }
+                    .thenIf(bookmark.comment.isNotBlank(), Modifier.title(bookmark.comment))
                     .attrsModifier {
                         onDoubleClick { model.openBookmark(bookmark) }
                     },

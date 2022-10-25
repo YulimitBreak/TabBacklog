@@ -1,6 +1,7 @@
 package ui.styles.components
 
 import com.varabyte.kobweb.compose.css.Cursor
+import com.varabyte.kobweb.compose.css.TextAlign
 import com.varabyte.kobweb.compose.css.UserSelect
 import com.varabyte.kobweb.compose.ui.Modifier
 import com.varabyte.kobweb.compose.ui.modifiers.*
@@ -19,6 +20,7 @@ object TagComponent {
                 .color(Palette.Variable.color_onPrimary.value())
                 .userSelect(UserSelect.None)
                 .borderRadius(4.px)
+                .textAlign(TextAlign.Center)
         }
 
     }

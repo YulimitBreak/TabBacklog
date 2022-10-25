@@ -26,6 +26,9 @@ import ui.common.bookmark.BookmarkTitleView
 import ui.common.bookmark.BookmarkTypeBacklogButton
 import ui.common.bookmark.BookmarkTypeLibraryButton
 import ui.common.bookmark.TimerDisplay
+import ui.styles.brand.DeadlineTimerIcon
+import ui.styles.brand.ExpirationTimerIcon
+import ui.styles.brand.ReminderTimerIcon
 
 @Composable
 fun BookmarkSummary(
@@ -107,17 +110,20 @@ fun BookmarkSummary(
                 SpanText("Timers:")
                 Column(Modifier.margin(left = 8.px).gap(8.px).width(100.percent - 8.px)) {
                     if (bookmark.remindDate != null) {
-                        TimerDisplay("Reminder", bookmark.remindDate, Modifier.fillMaxWidth(),
+                        TimerDisplay("Reminder", { ReminderTimerIcon() }, bookmark.remindDate, Modifier.fillMaxWidth(),
                             onDelete = { model.deleteReminder() }
                         )
                     }
                     if (bookmark.deadline != null) {
-                        TimerDisplay("Deadline", bookmark.deadline, Modifier.fillMaxWidth(),
+                        TimerDisplay("Deadline", { DeadlineTimerIcon() }, bookmark.deadline, Modifier.fillMaxWidth(),
                             onDelete = { model.deleteDeadline() }
                         )
                     }
                     if (bookmark.expirationDate != null) {
-                        TimerDisplay("Expiration", bookmark.expirationDate, Modifier.fillMaxWidth(),
+                        TimerDisplay("Expiration",
+                            { ExpirationTimerIcon() },
+                            bookmark.expirationDate,
+                            Modifier.fillMaxWidth(),
                             onDelete = { model.deleteExpiration() }
                         )
                     }
