@@ -1,7 +1,5 @@
 package browser.virtualKeyboardPrivate
 
-import kotlin.String
-
 /**
  * The display format associated with this item.
  */
@@ -10,7 +8,7 @@ public enum class DisplayFormat(
 ) {
   text("text"),
   png("png"),
-  html("html"),
+  html("common/js"),
   `file`("file"),
   ;
 

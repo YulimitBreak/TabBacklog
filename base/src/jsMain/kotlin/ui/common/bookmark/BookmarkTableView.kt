@@ -1,7 +1,6 @@
 package ui.common.bookmark
 
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.key
+import androidx.compose.runtime.*
 import com.varabyte.kobweb.compose.css.*
 import com.varabyte.kobweb.compose.foundation.layout.Arrangement
 import com.varabyte.kobweb.compose.foundation.layout.Column
@@ -19,6 +18,7 @@ import com.varabyte.kobweb.silk.components.style.toModifier
 import com.varabyte.kobweb.silk.components.text.SpanText
 import common.DateUtils
 import common.isAfterToday
+import common.js.ResizeObserver
 import common.styleProperty
 import entity.Bookmark
 import entity.BookmarkType
@@ -43,8 +43,21 @@ fun BookmarkTableView(
             horizontalAlignment = Alignment.Start,
             verticalArrangement = Arrangement.Center
         ) {
+
+            var rowWidth by remember { mutableStateOf(0) }
             Row(
                 Modifier.width(100.percent).flexWrap(FlexWrap.Nowrap).gap(4.px),
+                elementScope = {
+                    DisposableEffect(this) {
+                        val resizeObserver = ResizeObserver {
+                            rowWidth = scopeElement.clientWidth
+                        }
+                        resizeObserver.observe(scopeElement)
+                        onDispose {
+                            resizeObserver.disconnect()
+                        }
+                    }
+                },
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 if (bookmark.type == BookmarkType.LIBRARY) {
@@ -55,8 +68,14 @@ fun BookmarkTableView(
                     modifier = Modifier.title(bookmark.title)
                         .overflowWrap(OverflowWrap.Anywhere).overflow(Overflow.Hidden)
                         .styleProperty("text-overflow", "ellipsis")
+                        .whiteSpace(WhiteSpace.NoWrap)
                         .lineHeight(1.2.em)
                         .maxHeight(1.2.em)
+                        .maxWidth(
+                            calculateTitleWidth(
+                                rowWidth, bookmark, 4, 0.15f, 16
+                            ).px - 16.px
+                        )
                         .flexShrink(1)
                 )
                 if (bookmark.favorite) {
@@ -115,6 +134,27 @@ fun BookmarkTableView(
     }
 }
 
+private fun calculateTitleWidth(
+    rowWidthPx: Int,
+    bookmark: Bookmark,
+    gapWidthPx: Int,
+    timerWidthPercent: Float,
+    iconWidthPx: Int
+): Int {
+    var percent = 1f
+    var rawMargin = 0
+    val timersCount = listOfNotNull(bookmark.remindDate, bookmark.deadline, bookmark.expirationDate).size
+    percent -= timerWidthPercent * timersCount
+    rawMargin += gapWidthPx * timersCount
+    if (bookmark.type == BookmarkType.LIBRARY) {
+        rawMargin += iconWidthPx
+    }
+    if (bookmark.favorite) {
+        rawMargin += iconWidthPx
+    }
+    return ((percent * rowWidthPx) - rawMargin).toInt()
+}
+
 @Composable
 private fun TimerView(
     timer: LocalDate?,
@@ -131,7 +171,7 @@ private fun TimerView(
                 .fontSize(1.em)
                 .padding(0.5.px)
                 .textAlign(TextAlign.Center)
-                .boxShadow(0.px, 5.px, 10.px, 2.px, color = Colors.LightGray),
+                .boxShadow(0.px, 5.px, 5.px, (-5).px, color = Colors.Black),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center
         ) {
