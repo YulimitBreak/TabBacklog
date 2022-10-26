@@ -17,7 +17,7 @@ class PolyfillBrowserInteractor : BrowserInteractor {
         })
     }
 
-    override fun openBookmark(url: String) {
+    override fun openPage(url: String) {
         browser.tabs.create(CreateCreateProperties {
             this.url = url
             this.active = true

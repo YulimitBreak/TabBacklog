@@ -8,19 +8,25 @@ import com.varabyte.kobweb.compose.ui.Alignment
 import com.varabyte.kobweb.compose.ui.Modifier
 import com.varabyte.kobweb.compose.ui.graphics.Colors
 import com.varabyte.kobweb.compose.ui.modifiers.*
+import com.varabyte.kobweb.silk.components.icons.fa.FaFileArrowUp
+import data.BrowserInteractor
 import entity.Bookmark
 import entity.SingleBookmarkTarget
 import org.jetbrains.compose.web.css.FlexWrap
 import org.jetbrains.compose.web.css.minus
 import org.jetbrains.compose.web.css.percent
 import org.jetbrains.compose.web.css.px
+import org.jetbrains.compose.web.dom.Text
+import ui.common.basecomponent.RowButton
 import ui.page.bookmarklist.BookmarkList
+import ui.page.editor.BookmarkEditor
 import ui.page.summary.BookmarkSummary
 
 @Composable
 fun CollectionView(modifier: Modifier = Modifier) {
 
     var selectedBookmark by remember { mutableStateOf<Bookmark?>(null) }
+    var editMode by remember { mutableStateOf(false) }
 
     Row(modifier.role("main").overflowX(Overflow.Auto).gap(32.px).flexWrap(FlexWrap.Nowrap)) {
         Box(Modifier.fillMaxHeight().minWidth(50.percent), contentAlignment = Alignment.CenterEnd) {
@@ -39,6 +45,7 @@ fun CollectionView(modifier: Modifier = Modifier) {
                         Colors.DarkGray
                     ),
                 onBookmarkSelect = {
+                    editMode = false
                     selectedBookmark = it
                 }
             )
@@ -48,21 +55,36 @@ fun CollectionView(modifier: Modifier = Modifier) {
 
             val bookmark = selectedBookmark
             if (bookmark != null) {
-                BookmarkSummary(
-                    target = SingleBookmarkTarget.Url(bookmark.url),
-                    modifier = Modifier
-                        .borderRadius(8.px)
-                        .padding(16.px)
-                        .width(70.percent)
-                        .minWidth(300.px)
-                        .boxShadow(
-                            offsetX = 0.px,
-                            offsetY = 5.px,
-                            blurRadius = 8.px,
-                            spreadRadius = 2.px,
-                            Colors.Gray
-                        ),
-                    onEditRequest = {})
+                val bookmarkViewModifier = Modifier
+                    .borderRadius(8.px)
+                    .padding(16.px)
+                    .width(400.px)
+                    .boxShadow(
+                        offsetX = 0.px,
+                        offsetY = 5.px,
+                        blurRadius = 8.px,
+                        spreadRadius = 2.px,
+                        Colors.Gray
+                    )
+                if (!editMode) {
+                    BookmarkSummary(
+                        target = SingleBookmarkTarget.Url(bookmark.url),
+                        modifier = bookmarkViewModifier,
+                        firstButton = {
+                            val browserInteractor = BrowserInteractor.Local.current
+                            RowButton(onClick = { browserInteractor.openPage(bookmark.url) }) {
+                                FaFileArrowUp()
+                                Text("Open")
+                            }
+                        },
+                        onEditRequest = { editMode = true })
+                } else {
+                    BookmarkEditor(
+                        target = SingleBookmarkTarget.Url(bookmark.url),
+                        modifier = bookmarkViewModifier,
+                        onNavigateBack = { editMode = false }
+                    )
+                }
             }
         }
     }

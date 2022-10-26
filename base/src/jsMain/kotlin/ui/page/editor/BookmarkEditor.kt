@@ -18,7 +18,7 @@ import com.varabyte.kobweb.silk.components.icons.fa.*
 import com.varabyte.kobweb.silk.components.style.toModifier
 import com.varabyte.kobweb.silk.components.text.SpanText
 import common.styleProperty
-import di.ModuleLocal
+import di.AppModule
 import entity.BookmarkType
 import entity.SingleBookmarkTarget
 import org.jetbrains.compose.web.css.*
@@ -44,7 +44,7 @@ fun BookmarkEditor(
     onNavigateBack: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val appModule = ModuleLocal.App.current
+    val appModule = AppModule.Local.current
     val scope = rememberCoroutineScope()
     val onNavigateBackState = rememberUpdatedState(BookmarkEditorModel.OnNavigateBack(onNavigateBack))
     val model = remember(target) {
@@ -52,7 +52,7 @@ fun BookmarkEditor(
     }
 
     LoadableView(model.bookmark, modifier = modifier.minHeight(350.px)) { bookmark, m ->
-        Column(m.gap(8.px).padding(bottom = 8.px)) {
+        Column(Modifier.gap(8.px).padding(bottom = 8.px).then(m)) {
             Row(Modifier.fillMaxWidth().gap(8.px)) {
 
                 RowButton(onClick = onNavigateBack) {

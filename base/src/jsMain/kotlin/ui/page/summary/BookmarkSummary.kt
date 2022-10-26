@@ -9,9 +9,12 @@ import com.varabyte.kobweb.compose.foundation.layout.Row
 import com.varabyte.kobweb.compose.foundation.layout.Spacer
 import com.varabyte.kobweb.compose.ui.Modifier
 import com.varabyte.kobweb.compose.ui.modifiers.*
-import com.varabyte.kobweb.silk.components.icons.fa.*
+import com.varabyte.kobweb.silk.components.icons.fa.FaPencil
+import com.varabyte.kobweb.silk.components.icons.fa.FaStar
+import com.varabyte.kobweb.silk.components.icons.fa.FaTrash
+import com.varabyte.kobweb.silk.components.icons.fa.IconStyle
 import com.varabyte.kobweb.silk.components.text.SpanText
-import di.ModuleLocal
+import di.AppModule
 import entity.BookmarkType
 import entity.SingleBookmarkTarget
 import org.jetbrains.compose.web.css.minus
@@ -34,9 +37,10 @@ import ui.styles.brand.ReminderTimerIcon
 fun BookmarkSummary(
     target: SingleBookmarkTarget,
     onEditRequest: () -> Unit,
+    firstButton: @Composable () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
-    val appModule = ModuleLocal.App.current
+    val appModule = AppModule.Local.current
     val scope = rememberCoroutineScope()
 
     val model: BookmarkSummaryModel =
@@ -46,10 +50,7 @@ fun BookmarkSummary(
         Column(m.gap(8.px).margin(bottom = 8.px)) {
             Row(Modifier.fillMaxWidth().gap(8.px)) {
 
-                RowButton(onClick = { model.openManager() }) {
-                    FaListCheck()
-                    Text("Open manager")
-                }
+                firstButton()
 
                 Spacer()
                 if (bookmark.isSaved) {

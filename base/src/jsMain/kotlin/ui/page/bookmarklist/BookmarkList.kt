@@ -14,7 +14,7 @@ import com.varabyte.kobweb.compose.ui.attrsModifier
 import com.varabyte.kobweb.compose.ui.graphics.toCssColor
 import com.varabyte.kobweb.compose.ui.modifiers.*
 import com.varabyte.kobweb.compose.ui.thenIf
-import di.ModuleLocal
+import di.AppModule
 import entity.Bookmark
 import org.jetbrains.compose.web.css.*
 import ui.common.basecomponent.DivText
@@ -26,7 +26,7 @@ import ui.styles.primaryColors
 @Composable
 fun BookmarkList(modifier: Modifier = Modifier, onBookmarkSelect: (Bookmark) -> Unit) {
 
-    val appModule = ModuleLocal.App.current
+    val appModule = AppModule.Local.current
     val scope = rememberCoroutineScope()
     val onBookmarkSelectState = rememberUpdatedState(BookmarkListModel.OnBookmarkSelect(onBookmarkSelect))
     val model: BookmarkListModel = remember() {

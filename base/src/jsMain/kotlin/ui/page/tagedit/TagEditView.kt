@@ -12,7 +12,7 @@ import com.varabyte.kobweb.silk.components.icons.fa.FaCheck
 import com.varabyte.kobweb.silk.components.icons.fa.FaEject
 import com.varabyte.kobweb.silk.components.icons.fa.FaEraser
 import com.varabyte.kobweb.silk.components.icons.fa.FaTrash
-import di.ModuleLocal
+import di.AppModule
 import org.jetbrains.compose.web.attributes.list
 import org.jetbrains.compose.web.css.*
 import org.jetbrains.compose.web.dom.Datalist
@@ -26,7 +26,7 @@ import ui.styles.components.TagComponent
 @Composable
 fun TagEditView(tags: List<String>, modifier: Modifier, onTagEditEvent: (TagEditEvent) -> Unit) {
 
-    val appModule = ModuleLocal.App.current
+    val appModule = AppModule.Local.current
     val scope = rememberCoroutineScope()
     val onTagEditEventState = rememberUpdatedState(TagEditModel.OnTagEditEvent(onTagEditEvent))
     val model: TagEditModel = remember { appModule.createTagEditModel(scope, onTagEditEventState) }

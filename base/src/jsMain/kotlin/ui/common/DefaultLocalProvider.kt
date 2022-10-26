@@ -9,6 +9,8 @@ import com.varabyte.kobweb.compose.ui.Modifier
 import com.varabyte.kobweb.compose.ui.asAttributesBuilder
 import com.varabyte.kobweb.compose.ui.modifiers.color
 import com.varabyte.kobweb.compose.ui.modifiers.textAlign
+import data.BrowserInteractor
+import di.AppModule
 import org.jetbrains.compose.web.dom.P
 import org.jetbrains.compose.web.dom.Text
 import ui.common.basecomponent.LoadableViewDelegate
@@ -18,7 +20,8 @@ import ui.styles.Palette
 @Composable
 fun DefaultLocalProvider(content: @Composable () -> Unit) {
     CompositionLocalProvider(
-        LoadableViewDelegate.Local providesDefault DefaultLoadableViewDelegate()
+        LoadableViewDelegate.Local providesDefault DefaultLoadableViewDelegate(),
+        BrowserInteractor.Local providesDefault AppModule.Local.current.repositoryModule.browserInteractor,
     ) {
         content()
     }

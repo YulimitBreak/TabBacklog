@@ -1,9 +1,11 @@
 package di
 
 import androidx.compose.runtime.State
+import androidx.compose.runtime.staticCompositionLocalOf
 import dev.shustoff.dikt.Create
 import dev.shustoff.dikt.UseModules
 import entity.SingleBookmarkTarget
+import entity.error.CompositionLocalError
 import kotlinx.coroutines.CoroutineScope
 import ui.page.bookmarklist.BookmarkListModel
 import ui.page.editor.BookmarkEditorModel
@@ -43,4 +45,10 @@ class AppModule(
         coroutineScope: CoroutineScope,
         onBookmarkSelect: State<BookmarkListModel.OnBookmarkSelect>
     ): BookmarkListModel
+
+    companion object {
+        val Local = staticCompositionLocalOf<AppModule> {
+            throw CompositionLocalError("AppModule")
+        }
+    }
 }

@@ -49,7 +49,7 @@ class BookmarkListModel(
     }
 
     fun openBookmark(bookmark: Bookmark) {
-        browserInteractor.openBookmark(bookmark.url)
+        browserInteractor.openPage(bookmark.url)
     }
 
     data class BookmarkListState(val list: List<Bookmark>, val isLoading: Boolean, val reachedEnd: Boolean)
