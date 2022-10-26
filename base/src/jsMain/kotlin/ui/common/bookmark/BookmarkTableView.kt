@@ -121,7 +121,7 @@ fun BookmarkTableView(
                         .styleProperty("text-overflow", "ellipsis")
                 )
                 Spacer()
-                bookmark.tags.take(3).forEach { tag ->
+                bookmark.tags.take(4).forEach { tag ->
                     key(tag) {
                         SpanText(
                             tag,

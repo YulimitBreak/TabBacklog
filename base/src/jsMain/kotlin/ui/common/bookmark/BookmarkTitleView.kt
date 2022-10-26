@@ -13,10 +13,7 @@ import com.varabyte.kobweb.compose.ui.Modifier
 import com.varabyte.kobweb.compose.ui.asAttributesBuilder
 import com.varabyte.kobweb.compose.ui.modifiers.*
 import common.styleProperty
-import org.jetbrains.compose.web.css.FlexWrap
-import org.jetbrains.compose.web.css.em
-import org.jetbrains.compose.web.css.percent
-import org.jetbrains.compose.web.css.px
+import org.jetbrains.compose.web.css.*
 import org.jetbrains.compose.web.dom.TextArea
 import ui.common.basecomponent.DivText
 
@@ -40,6 +37,9 @@ fun BookmarkTitleView(
             DivText(
                 title,
                 modifier = Modifier.width(100.percent).title(title)
+                    .display(DisplayStyle("-webkit-box"))
+                    .styleProperty("-webkit-line-clamp", 2)
+                    .styleProperty("-webkit-box-orient", "vertical")
                     .overflowWrap(OverflowWrap.Anywhere).overflow(Overflow.Hidden)
                     .styleProperty("text-overflow", "ellipsis")
                     .lineHeight(1.2.em)
