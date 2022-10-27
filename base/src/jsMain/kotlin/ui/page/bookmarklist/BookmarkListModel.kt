@@ -42,14 +42,14 @@ class BookmarkListModel(
                     )
                 } else if (changedBookmark != null) {
                     // New value was added
-                    refreshForNewEntry(changedUrl)
+                    addNewEntry(changedBookmark)
                 }
             }
         }
     }
 
-    private fun refreshForNewEntry(searchedUrl: String) {
-        // TODO
+    private fun addNewEntry(bookmark: Bookmark) {
+        // TODO add bookmark into list if it matches search parameters, in correct place according to sorting method
     }
 
     fun requestMoreBookmarks() {
