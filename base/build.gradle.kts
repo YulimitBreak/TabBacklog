@@ -26,6 +26,11 @@ kotlin {
             distribution {
                 directory = File("$projectDir/../build/distributions/")
             }
+            testTask {
+                useMocha {
+                    timeout = "30s"
+                }
+            }
         }
     }
     sourceSets {
