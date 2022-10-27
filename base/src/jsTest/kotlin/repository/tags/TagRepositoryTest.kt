@@ -1,8 +1,8 @@
 package repository.tags
 
 import com.juul.indexeddb.Key
-import core.CleanupTestScope
 import core.TestDatabaseHolder
+import core.onCleanup
 import core.runTest
 import data.TagRepository
 import data.database.core.DatabaseHolder
@@ -15,8 +15,11 @@ import io.kotest.matchers.string.shouldStartWith
 import io.kotest.property.Arb
 import io.kotest.property.arbitrary.*
 import io.kotest.property.checkAll
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.TestScope
 import kotlin.test.Test
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class TagRepositoryTest {
 
     private val tagSchema = DbSchema<TagSchema>()
@@ -51,7 +54,7 @@ class TagRepositoryTest {
         holder,
     )
 
-    private suspend fun CleanupTestScope.openDatabase(): Pair<DatabaseHolder, Map<String, Int>> {
+    private suspend fun TestScope.openDatabase(): Pair<DatabaseHolder, Map<String, Int>> {
         val holder = TestDatabaseHolder(
             "test_database",
             listOf(tagSchema)

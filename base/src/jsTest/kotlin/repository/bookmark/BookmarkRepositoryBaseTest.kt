@@ -5,8 +5,8 @@ import com.juul.indexeddb.Transaction
 import com.juul.indexeddb.WriteTransaction
 import common.DateUtils
 import common.TestBrowserInteractor
-import core.CleanupTestScope
 import core.TestDatabaseHolder
+import core.onCleanup
 import data.BookmarkRepository
 import data.database.core.DatabaseHolder
 import data.database.core.DbSchema
@@ -21,12 +21,15 @@ import io.kotest.matchers.MatcherResult
 import io.kotest.matchers.shouldBe
 import io.kotest.property.Arb
 import io.kotest.property.arbitrary.*
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.TestScope
 import kotlinx.datetime.DatePeriod
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.plus
 import kotlin.js.Date
 
+@OptIn(ExperimentalCoroutinesApi::class)
 abstract class BookmarkRepositoryBaseTest {
 
     val bookmarkSchema = DbSchema<BookmarkSchema>()
@@ -136,7 +139,7 @@ abstract class BookmarkRepositoryBaseTest {
         }
     }
 
-    internal suspend fun CleanupTestScope.openDatabase(): TestDatabaseHolder {
+    internal suspend fun TestScope.openDatabase(): TestDatabaseHolder {
         val holder = TestDatabaseHolder(
             "test_database",
             listOf(bookmarkSchema, tagSchema)

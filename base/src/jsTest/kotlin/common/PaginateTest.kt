@@ -1,8 +1,8 @@
 package common
 
 import com.juul.indexeddb.Cursor
-import core.CleanupTestScope
 import core.TestDatabaseHolder
+import core.onCleanup
 import core.runTest
 import data.database.core.DbField
 import data.database.core.DbSchema
@@ -15,9 +15,12 @@ import io.kotest.property.arbitrary.int
 import io.kotest.property.arbitrary.string
 import io.kotest.property.arbitrary.take
 import io.kotest.property.checkAll
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.toList
+import kotlinx.coroutines.test.TestScope
 import kotlin.test.Test
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class PaginateTest {
 
     private enum class Schema(override val index: DbField.Index?) : DbField {
@@ -104,7 +107,7 @@ class PaginateTest {
         }
     }
 
-    private suspend fun CleanupTestScope.setupDatabase(size: Int): TestDatabaseHolder {
+    private suspend fun TestScope.setupDatabase(size: Int): TestDatabaseHolder {
         val holder = TestDatabaseHolder("paginate_test_database_size_$size", listOf(DbSchema<Schema>()))
         onCleanup {
             holder.deleteDatabase()

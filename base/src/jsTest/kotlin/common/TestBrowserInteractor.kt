@@ -21,7 +21,6 @@ class TestBrowserInteractor : BrowserInteractor {
     private val updateFlow = MutableSharedFlow<String>()
 
     override suspend fun sendUpdateMessage(url: String) {
-        console.log("Sending message that $url has received an update")
         updateFlow.emit(url)
     }
 

@@ -3,6 +3,7 @@ package common
 import com.juul.indexeddb.Database
 import com.juul.indexeddb.Key
 import com.juul.indexeddb.deleteDatabase
+import core.onCleanup
 import core.runTest
 import data.database.core.*
 import io.kotest.assertions.throwables.shouldThrowAny
@@ -13,6 +14,7 @@ import io.kotest.property.Arb
 import io.kotest.property.arbitrary.int
 import io.kotest.property.arbitrary.string
 import io.kotest.property.checkAll
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
 import kotlinx.datetime.DatePeriod
 import kotlinx.datetime.LocalDate
@@ -20,6 +22,7 @@ import kotlinx.datetime.plus
 import kotlinx.datetime.toLocalDate
 import kotlin.test.Test
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class AppDatabaseHolderTest {
 
     private data class Entity(val id: Int, val title: String, val date: LocalDate?)
