@@ -3,9 +3,9 @@ package repository.bookmark
 import com.juul.indexeddb.Key
 import com.juul.indexeddb.Transaction
 import com.juul.indexeddb.WriteTransaction
-import common.DateUtils
 import common.TestBrowserInteractor
 import core.TestDatabaseHolder
+import core.bookmarkArbitrary
 import core.onCleanup
 import data.BookmarkRepository
 import data.database.core.DatabaseHolder
@@ -20,14 +20,12 @@ import io.kotest.matchers.Matcher
 import io.kotest.matchers.MatcherResult
 import io.kotest.matchers.shouldBe
 import io.kotest.property.Arb
-import io.kotest.property.arbitrary.*
+import io.kotest.property.arbitrary.string
+import io.kotest.property.arbitrary.take
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestScope
-import kotlinx.datetime.DatePeriod
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
-import kotlinx.datetime.plus
-import kotlin.js.Date
 
 @OptIn(ExperimentalCoroutinesApi::class)
 abstract class BookmarkRepositoryBaseTest {
@@ -35,31 +33,9 @@ abstract class BookmarkRepositoryBaseTest {
     val bookmarkSchema = DbSchema<BookmarkSchema>()
     val tagSchema = DbSchema<TagSchema>()
 
-    fun Date.toLocalDate() = LocalDate(getFullYear(), getMonth(), getDate())
-    fun Date.toLocalDateTime() =
-        LocalDateTime(getFullYear(), getMonth(), this.getDate(), getHours(), getMinutes(), getSeconds())
+    val tags = Arb.string(minSize = 3, maxSize = 20).take(20).toList()
 
-    val tagArb = arbitrary { Arb.string(minSize = 3, maxSize = 20).bind() }
-    val tags = tagArb.take(20).toList()
-
-    val bookmarkArb = arbitrary {
-        Bookmark(
-            url = "http://" + Arb.domain().bind(),
-            title = Arb.string().bind(),
-            favicon = Arb.domain().orNull(0.1).bind()?.let {
-                "http://$it"
-            },
-            type = Arb.enum<BookmarkType>().bind(),
-            creationDate = Arb.datetime().bind().toLocalDateTime(),
-            deadline = Arb.date().orNull(0.8).bind()?.toLocalDate(),
-            remindDate = Arb.date().orNull(0.5).bind()?.toLocalDate(),
-            expirationDate = Arb.int(min = 0, max = 365 * 10).orNull(0.9).bind()
-                ?.let { DateUtils.today + DatePeriod(days = it) },
-            tags = Arb.subsequence(tags).bind(),
-            favorite = Arb.boolean().bind(),
-            comment = Arb.string().bind()
-        )
-    }
+    val bookmarkArb = bookmarkArbitrary(tags = tags)
 
     fun bookmarkTagInvariantMatcher(target: Bookmark?) = Matcher<Bookmark?> { source ->
         MatcherResult(

@@ -19,8 +19,8 @@ enum class BookmarkSchema(
     Favicon(Bookmark::favicon),
     Type(saveAsString(Bookmark::type), Index.Field()),
     CreationDate(saveAsString(Bookmark::creationDate), Index.Field()),
-    Deadline(saveAsString(Bookmark::deadline), Index.Field()),
     RemindDate(saveAsString(Bookmark::remindDate), Index.Field()),
+    Deadline(saveAsString(Bookmark::deadline), Index.Field()),
     ExpirationDate(saveAsString(Bookmark::expirationDate), Index.Field()),
     Favorite(Bookmark::favorite, Index.Field()),
     Comment(Bookmark::comment)
@@ -36,8 +36,8 @@ fun DbSchema<BookmarkSchema>.extractObject(source: dynamic) = extract(source) {
         BookmarkSchema.Favicon.value(),
         BookmarkSchema.Type.value<String>().let { BookmarkType.valueOf(it) },
         BookmarkSchema.CreationDate.value<String?>()?.toLocalDateTime(),
-        BookmarkSchema.Deadline.value<String?>()?.toLocalDate(),
         BookmarkSchema.RemindDate.value<String?>()?.toLocalDate(),
+        BookmarkSchema.Deadline.value<String?>()?.toLocalDate(),
         BookmarkSchema.ExpirationDate.value<String?>()?.toLocalDate(),
         favorite = BookmarkSchema.Favorite.value(),
         comment = BookmarkSchema.Comment.value() ?: ""
