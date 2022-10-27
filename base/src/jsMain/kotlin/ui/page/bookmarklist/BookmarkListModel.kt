@@ -28,8 +28,29 @@ class BookmarkListModel(
     private var bookmarkChannel: ReceiveChannel<Bookmark> = bookmarkRepository.readBookmarks().produce(coroutineScope)
 
     // TODO multiselect
-    var selectedBookmark: Bookmark? by mutableStateOf(null)
+    var selectedBookmarkUrl: String? by mutableStateOf(null)
         private set
+
+    init {
+        coroutineScope.launch {
+            browserInteractor.subscribeToDbUpdates().collect { changedUrl ->
+                val changedBookmark = bookmarkRepository.loadBookmark(changedUrl)
+                if (bookmarkListState.list.any { it.url == changedUrl }) {
+                    // Old value was changed or deleted
+                    bookmarkListState = bookmarkListState.copy(
+                        list = bookmarkListState.list.mapNotNull { if (it.url == changedUrl) changedBookmark else it }
+                    )
+                } else if (changedBookmark != null) {
+                    // New value was added
+                    refreshForNewEntry(changedUrl)
+                }
+            }
+        }
+    }
+
+    private fun refreshForNewEntry(searchedUrl: String) {
+        // TODO
+    }
 
     fun requestMoreBookmarks() {
         coroutineScope.launch {
@@ -44,7 +65,7 @@ class BookmarkListModel(
     }
 
     fun selectBookmark(bookmark: Bookmark) {
-        this.selectedBookmark = bookmark
+        this.selectedBookmarkUrl = bookmark.url
         onBookmarkSelect(bookmark)
     }
 

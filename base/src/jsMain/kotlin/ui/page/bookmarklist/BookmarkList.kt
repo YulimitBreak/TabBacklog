@@ -1,9 +1,6 @@
 package ui.page.bookmarklist
 
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.*
 import com.varabyte.kobweb.compose.css.Overflow
 import com.varabyte.kobweb.compose.css.UserSelect
 import com.varabyte.kobweb.compose.foundation.layout.Box
@@ -50,17 +47,19 @@ fun BookmarkList(modifier: Modifier = Modifier, onBookmarkSelect: (Bookmark) -> 
                 model.requestMoreBookmarks()
             }.takeIf { !model.bookmarkListState.reachedEnd }
         ) { bookmark ->
-            BookmarkTableView(
-                bookmark,
-                modifier = Modifier.padding(topBottom = 4.px, leftRight = 8.px).width(100.percent - 16.px)
-                    .thenIf(model.selectedBookmark == bookmark, Modifier.primaryColors())
-                    .userSelect(UserSelect.None)
-                    .onClick { model.selectBookmark(bookmark) }
-                    .thenIf(bookmark.comment.isNotBlank(), Modifier.title(bookmark.comment))
-                    .attrsModifier {
-                        onDoubleClick { model.openBookmark(bookmark) }
-                    },
-            )
+            key(bookmark.url) {
+                BookmarkTableView(
+                    bookmark,
+                    modifier = Modifier.padding(topBottom = 4.px, leftRight = 8.px).width(100.percent - 16.px)
+                        .thenIf(model.selectedBookmarkUrl == bookmark.url, Modifier.primaryColors())
+                        .userSelect(UserSelect.None)
+                        .onClick { model.selectBookmark(bookmark) }
+                        .thenIf(bookmark.comment.isNotBlank(), Modifier.title(bookmark.comment))
+                        .attrsModifier {
+                            onDoubleClick { model.openBookmark(bookmark) }
+                        },
+                )
+            }
         }
     }
 }

@@ -70,10 +70,10 @@ fun BookmarkTableView(
                         .styleProperty("text-overflow", "ellipsis")
                         .whiteSpace(WhiteSpace.NoWrap)
                         .lineHeight(1.2.em)
-                        .maxHeight(1.2.em)
+                        .height(1.4.em)
                         .maxWidth(
                             calculateTitleWidth(
-                                rowWidth, bookmark, 4, 0.15f, 16
+                                rowWidth, bookmark, 4, 80, 16
                             ).px - 16.px
                         )
                         .flexShrink(1)
@@ -85,13 +85,13 @@ fun BookmarkTableView(
                 TimerView(
                     bookmark.remindDate,
                     "Reminder",
-                    Modifier.minWidth(15.percent)
+                    Modifier.minWidth(80.px)
                         .backgroundColor(Color.green).color(Color.white)
                 ) { ReminderTimerIcon() }
                 TimerView(
                     bookmark.deadline,
                     "Deadline",
-                    Modifier.minWidth(15.percent)
+                    Modifier.minWidth(80.px)
                         .thenIf(
                             bookmark.deadline?.isAfterToday() == true,
                             Modifier.backgroundColor(Color.orange).color(Color.white)
@@ -104,7 +104,7 @@ fun BookmarkTableView(
                 TimerView(
                     bookmark.expirationDate,
                     "Expiration",
-                    Modifier.minWidth(15.percent).backgroundColor(Color.black).color(Color.white)
+                    Modifier.minWidth(80.px).backgroundColor(Color.black).color(Color.white)
                 ) { ExpirationTimerIcon() }
             }
             Row(
@@ -134,17 +134,18 @@ fun BookmarkTableView(
     }
 }
 
+@Suppress("CanBeVal")
 private fun calculateTitleWidth(
     rowWidthPx: Int,
     bookmark: Bookmark,
     gapWidthPx: Int,
-    timerWidthPercent: Float,
+    timerWidthPx: Int,
     iconWidthPx: Int
 ): Int {
     var percent = 1f
     var rawMargin = 0
     val timersCount = listOfNotNull(bookmark.remindDate, bookmark.deadline, bookmark.expirationDate).size
-    percent -= timerWidthPercent * timersCount
+    rawMargin += timerWidthPx * timersCount
     rawMargin += gapWidthPx * timersCount
     if (bookmark.type == BookmarkType.LIBRARY) {
         rawMargin += iconWidthPx
