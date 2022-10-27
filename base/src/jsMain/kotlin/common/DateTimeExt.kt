@@ -2,10 +2,6 @@ package common
 
 import kotlinx.datetime.LocalDate
 
-fun LocalDate.isBefore(other: LocalDate) = this.toEpochDays() < other.toEpochDays()
+fun LocalDate.isBeforeToday() = this < DateUtils.today
 
-fun LocalDate.isAfter(other: LocalDate) = this.toEpochDays() > other.toEpochDays()
-
-fun LocalDate.isBeforeToday() = isBefore(DateUtils.today)
-
-fun LocalDate.isAfterToday() = isAfter(DateUtils.today)
+fun LocalDate.isAfterToday() = this > DateUtils.today
