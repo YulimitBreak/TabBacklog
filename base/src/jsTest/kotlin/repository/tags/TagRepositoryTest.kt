@@ -1,8 +1,8 @@
 package repository.tags
 
 import com.juul.indexeddb.Key
+import core.CleanupTestScope
 import core.TestDatabaseHolder
-import core.TestScope
 import core.runTest
 import data.TagRepository
 import data.database.core.DatabaseHolder
@@ -51,7 +51,7 @@ class TagRepositoryTest {
         holder,
     )
 
-    private suspend fun TestScope.openDatabase(): Pair<DatabaseHolder, Map<String, Int>> {
+    private suspend fun CleanupTestScope.openDatabase(): Pair<DatabaseHolder, Map<String, Int>> {
         val holder = TestDatabaseHolder(
             "test_database",
             listOf(tagSchema)

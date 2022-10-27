@@ -1,8 +1,8 @@
 package common
 
 import com.juul.indexeddb.Cursor
+import core.CleanupTestScope
 import core.TestDatabaseHolder
-import core.TestScope
 import core.runTest
 import data.database.core.DbField
 import data.database.core.DbSchema
@@ -104,7 +104,7 @@ class PaginateTest {
         }
     }
 
-    private suspend fun TestScope.setupDatabase(size: Int): TestDatabaseHolder {
+    private suspend fun CleanupTestScope.setupDatabase(size: Int): TestDatabaseHolder {
         val holder = TestDatabaseHolder("paginate_test_database_size_$size", listOf(DbSchema<Schema>()))
         onCleanup {
             holder.deleteDatabase()

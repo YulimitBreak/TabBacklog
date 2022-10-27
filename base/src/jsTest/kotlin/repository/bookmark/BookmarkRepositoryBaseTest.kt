@@ -4,10 +4,10 @@ import com.juul.indexeddb.Key
 import com.juul.indexeddb.Transaction
 import com.juul.indexeddb.WriteTransaction
 import common.DateUtils
+import common.TestBrowserInteractor
+import core.CleanupTestScope
 import core.TestDatabaseHolder
-import core.TestScope
 import data.BookmarkRepository
-import data.BrowserInteractor
 import data.database.core.DatabaseHolder
 import data.database.core.DbSchema
 import data.database.core.generate
@@ -100,7 +100,7 @@ abstract class BookmarkRepositoryBaseTest {
         BookmarkRepository(
             holder,
             // TODO mocking when libraries available
-            js("{}").unsafeCast<BrowserInteractor>()
+            TestBrowserInteractor()
         )
 
 
@@ -136,7 +136,7 @@ abstract class BookmarkRepositoryBaseTest {
         }
     }
 
-    internal suspend fun TestScope.openDatabase(): TestDatabaseHolder {
+    internal suspend fun CleanupTestScope.openDatabase(): TestDatabaseHolder {
         val holder = TestDatabaseHolder(
             "test_database",
             listOf(bookmarkSchema, tagSchema)

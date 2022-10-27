@@ -49,7 +49,7 @@ kotlin {
         val jsTest by getting {
             dependencies {
                 implementation(kotlin("test-js"))
-
+                implementation(buildsrc.Lib.Kotlin.CoroutinesTest)
                 implementation(buildsrc.Lib.Kotest.Assertions)
                 implementation(buildsrc.Lib.Kotest.PropertyTesting)
             }
