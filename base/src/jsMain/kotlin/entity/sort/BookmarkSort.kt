@@ -14,10 +14,15 @@ abstract class BookmarkSort : CombinableComparator<Bookmark> {
     fun sort(list: List<Bookmark>) = list.sortedWith(this)
 
     companion object {
-        fun combine(vararg sort: (parent: BookmarkSort?) -> BookmarkSort) =
-            sort.foldRight<_, BookmarkSort?>(null) { op, acc ->
-                op(acc)
-            }
+        fun combine(
+            first: (parent: BookmarkSort?) -> BookmarkSort,
+            vararg rest: (parent: BookmarkSort?) -> BookmarkSort
+        ) =
+            first(
+                rest.foldRight<_, BookmarkSort?>(null) { op, acc ->
+                    op(acc)
+                }
+            )
     }
 }
 
