@@ -107,16 +107,14 @@ sealed class SortType : BookmarkSort() {
     ) : SortType() {
 
 
-        private fun Bookmark.checkReminder(isReached: Boolean): Boolean {
-            return remindDate != null && (remindDate.isAfterToday() == !isReached)
+        private fun isLess(first: LocalDate?, second: LocalDate?): Boolean = when {
+            first != null && second != null -> first < second
+            first != null && second == null -> !first.isAfterToday() // if first is reached, it goes before null
+            first == null && second != null -> second.isAfterToday() // if second is not reached it goes after null
+            else -> false // null equals null
         }
 
-        override fun isLess(first: Bookmark, second: Bookmark): Boolean = when {
-            first.remindDate != null && second.remindDate != null -> first.remindDate < second.remindDate
-            first.checkReminder(isReached = true) -> true
-            second.checkReminder(isReached = false) -> true
-            else -> false
-        }
+        override fun isLess(first: Bookmark, second: Bookmark): Boolean = isLess(first.remindDate, second.remindDate)
 
         override fun isEqual(first: Bookmark, second: Bookmark): Boolean = first.remindDate == second.remindDate
     }
