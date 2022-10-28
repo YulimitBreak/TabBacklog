@@ -36,7 +36,6 @@ internal class Cleanup : CoroutineContext.Element {
     }
 
     suspend fun execute() {
-        println("Executing cleanup for ${callbacks.size} elements")
         callbacks.asReversed().forEach { it.invoke() }
     }
 

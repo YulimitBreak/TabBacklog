@@ -4,6 +4,7 @@ import com.juul.indexeddb.Cursor
 import core.TestDatabaseHolder
 import core.onCleanup
 import core.runTest
+import core.timeLimit
 import data.database.core.DbField
 import data.database.core.DbSchema
 import data.database.core.paginate
@@ -38,7 +39,7 @@ class PaginateTest {
         val holder = setupDatabase(dbSize)
 
         withClue("Forwards pagination") {
-            checkAll(20, Arb.int(min = dbSize / 4, max = dbSize * 2)) { pageSize ->
+            checkAll(timeLimit, Arb.int(min = dbSize / 4, max = dbSize * 2)) { pageSize ->
 
                 val schema = DbSchema<Schema>()
                 val result = holder.database()

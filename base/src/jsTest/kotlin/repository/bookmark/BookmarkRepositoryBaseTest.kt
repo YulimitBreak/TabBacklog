@@ -5,7 +5,7 @@ import com.juul.indexeddb.Transaction
 import com.juul.indexeddb.WriteTransaction
 import common.TestBrowserInteractor
 import core.TestDatabaseHolder
-import core.bookmarkArbitrary
+import core.bookmarkArb
 import core.onCleanup
 import data.BookmarkRepository
 import data.database.core.DatabaseHolder
@@ -35,7 +35,7 @@ abstract class BookmarkRepositoryBaseTest {
 
     val tags = Arb.string(minSize = 3, maxSize = 20).take(20).toList()
 
-    val bookmarkArb = bookmarkArbitrary(tags = tags)
+    val bookmarkArb = bookmarkArb(tags = tags)
 
     fun bookmarkTagInvariantMatcher(target: Bookmark?) = Matcher<Bookmark?> { source ->
         MatcherResult(

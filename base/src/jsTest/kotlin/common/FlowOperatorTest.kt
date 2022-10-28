@@ -1,6 +1,7 @@
 package common
 
 import core.runTest
+import core.timeLimit
 import io.kotest.assertions.withClue
 import io.kotest.matchers.collections.shouldBeSameSizeAs
 import io.kotest.matchers.collections.shouldBeSortedWith
@@ -27,7 +28,7 @@ class FlowOperatorTest {
     fun throttleList() = runTest {
         data class Entry(val value: Int, val time: Long)
 
-        checkAll(100, Arb.long(50, 200), Arb.list(Arb.numericFloat(0f, 2f), 1..50)) { period, delayList ->
+        checkAll(timeLimit, Arb.long(50, 200), Arb.list(Arb.numericFloat(0f, 2f), 1..50)) { period, delayList ->
             val testFlow = flow {
                 delayList.forEachIndexed { index, ratio ->
                     delay((period * ratio).toLong())

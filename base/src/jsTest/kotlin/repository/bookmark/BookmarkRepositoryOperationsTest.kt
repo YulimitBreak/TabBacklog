@@ -2,6 +2,7 @@ package repository.bookmark
 
 import common.DateUtils
 import core.runTest
+import core.timeLimit
 import data.database.schema.extractObject
 import io.kotest.assertions.withClue
 import io.kotest.matchers.nulls.shouldBeNull
@@ -10,19 +11,22 @@ import io.kotest.property.Arb
 import io.kotest.property.arbitrary.int
 import io.kotest.property.arbitrary.single
 import io.kotest.property.checkAll
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.datetime.DatePeriod
 import kotlinx.datetime.minus
 import kotlin.test.Test
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class BookmarkRepositoryOperationsTest : BookmarkRepositoryBaseTest() {
 
     // TODO tag sorting after #5 implemented
+    // TODO check that updating sends an event
 
     @Test
     fun saveBookmark() = runTest {
         val holder = openDatabase()
         val repository = repository(holder)
-        checkAll(30, bookmarkArb) { bookmark ->
+        checkAll(timeLimit, bookmarkArb) { bookmark ->
             repository.saveBookmark(bookmark)
 
             val result = holder.database().transaction(bookmarkSchema.storeName, tagSchema.storeName) {
@@ -39,7 +43,7 @@ class BookmarkRepositoryOperationsTest : BookmarkRepositoryBaseTest() {
         val holder = openDatabase()
         val repository = repository(holder)
 
-        checkAll(30, bookmarkArb) { bookmarkSource ->
+        checkAll(timeLimit, bookmarkArb) { bookmarkSource ->
             val randomBookmark = holder.database().transaction(bookmarkSchema.storeName, tagSchema.storeName) {
                 bookmarkSchema.extractObject(objectStore(bookmarkSchema.storeName).getAll().random()).let {
                     it.copy(tags = getTags(it.url))
@@ -72,7 +76,7 @@ class BookmarkRepositoryOperationsTest : BookmarkRepositoryBaseTest() {
     fun saveBookmark_deleteExpired() = runTest {
         val holder = openDatabase()
         val repository = repository(holder)
-        checkAll(30, Arb.int(1, 365), bookmarkArb) { daysAgoExpired, newBookmark ->
+        checkAll(timeLimit, Arb.int(1, 365), bookmarkArb) { daysAgoExpired, newBookmark ->
             val expiredBookmark = bookmarkArb.single().copy(
                 expirationDate = DateUtils.today - DatePeriod(days = daysAgoExpired)
             )
@@ -138,7 +142,7 @@ class BookmarkRepositoryOperationsTest : BookmarkRepositoryBaseTest() {
         val holder = openDatabase()
         val repository = repository(holder)
 
-        checkAll(30, bookmarkArb) { bookmark ->
+        checkAll(timeLimit, bookmarkArb) { bookmark ->
             holder.database().writeTransaction(bookmarkSchema.storeName, tagSchema.storeName) {
                 saveBookmark(bookmark, withTags = true)
             }
@@ -154,7 +158,7 @@ class BookmarkRepositoryOperationsTest : BookmarkRepositoryBaseTest() {
         val holder = openDatabase()
         val repository = repository(holder)
 
-        checkAll(bookmarkArb) { bookmark ->
+        checkAll(timeLimit, bookmarkArb) { bookmark ->
             val result = repository.loadBookmark(bookmark.url)
             result.shouldBeNull()
         }

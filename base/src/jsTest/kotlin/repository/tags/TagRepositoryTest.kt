@@ -4,6 +4,7 @@ import com.juul.indexeddb.Key
 import core.TestDatabaseHolder
 import core.onCleanup
 import core.runTest
+import core.timeLimit
 import data.TagRepository
 import data.database.core.DatabaseHolder
 import data.database.core.DbSchema
@@ -31,7 +32,7 @@ class TagRepositoryTest {
         val (holder, sortedTags) = openDatabase()
         val repository = repository(holder)
 
-        checkAll(100, Arb.element(sortedTags.keys), Arb.int(1..5)) { selectedTag, firstLetters ->
+        checkAll(timeLimit, Arb.element(sortedTags.keys), Arb.int(1..5)) { selectedTag, firstLetters ->
             val prompt = selectedTag.take(firstLetters)
             val result = repository.fetchTagAutocomplete(prompt)
             result shouldHaveAtMostSize 6

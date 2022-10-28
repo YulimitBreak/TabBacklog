@@ -5,6 +5,7 @@ import com.juul.indexeddb.Key
 import com.juul.indexeddb.deleteDatabase
 import core.onCleanup
 import core.runTest
+import core.timeLimit
 import data.database.core.*
 import io.kotest.assertions.throwables.shouldThrowAny
 import io.kotest.assertions.withClue
@@ -21,6 +22,7 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.plus
 import kotlinx.datetime.toLocalDate
 import kotlin.test.Test
+import kotlin.time.Duration.Companion.seconds
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class AppDatabaseHolderTest {
@@ -58,7 +60,7 @@ class AppDatabaseHolderTest {
         }
 
         withClue("Can't access store name that doesn't exist") {
-            checkAll<String>(10) { storeName ->
+            checkAll<String>(timeLimit(0.5.seconds)) { storeName ->
                 shouldThrowAny {
                     database.transaction(storeName) {}
                 }
@@ -66,7 +68,7 @@ class AppDatabaseHolderTest {
         }
 
         withClue("Can't access index that doesn't exist") {
-            checkAll<String>(10) { indexName ->
+            checkAll<String>(timeLimit(0.5.seconds)) { indexName ->
                 shouldThrowAny {
                     database.transaction(schema.storeName) {
                         objectStore(schema.storeName).index(indexName).getAll()
@@ -129,7 +131,7 @@ class AppDatabaseHolderTest {
             deleteDatabase("test_database")
         }
 
-        checkAll(10, Arb.int(), Arb.string(), Arb.int(min = -365, max = 365)) { id, title, dayDiff ->
+        checkAll(timeLimit, Arb.int(), Arb.string(), Arb.int(min = -365, max = 365)) { id, title, dayDiff ->
             val entity = Entity(id, title, DateUtils.today + DatePeriod(days = dayDiff))
 
             database.writeTransaction(schema.storeName) {

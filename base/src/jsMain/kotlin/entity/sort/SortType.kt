@@ -105,10 +105,16 @@ sealed class SortType : BookmarkSort() {
         override val next: BookmarkSort? = null,
         override val isReversed: Boolean = false,
     ) : SortType() {
+
+
+        private fun Bookmark.checkReminder(isReached: Boolean): Boolean {
+            return remindDate != null && (remindDate.isAfterToday() == !isReached)
+        }
+
         override fun isLess(first: Bookmark, second: Bookmark): Boolean = when {
             first.remindDate != null && second.remindDate != null -> first.remindDate < second.remindDate
-            first.remindDate != null -> !first.remindDate.isAfterToday()
-            second.remindDate != null -> !second.remindDate.isAfterToday()
+            first.checkReminder(isReached = true) -> true
+            second.checkReminder(isReached = false) -> true
             else -> false
         }
 
