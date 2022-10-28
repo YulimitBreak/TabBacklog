@@ -143,6 +143,7 @@ class SortTypeTest {
                     it.remindDate.shouldNotBeNull()
                     it.reminderNotReached() shouldBe true
                 }
+                notUnreachedReminders shouldBeSortedWith { a, b -> a.remindDate!!.compareTo(b.remindDate!!) }
             }
         }
     }

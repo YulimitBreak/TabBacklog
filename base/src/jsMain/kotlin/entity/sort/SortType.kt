@@ -73,18 +73,35 @@ sealed class SortType : BookmarkSort() {
         override val isReversed: Boolean = false,
     ) : SortType() {
 
-        // Doesn't sort by reminder itself, only pushes unreached to the end
-        override fun isLess(first: Bookmark, second: Bookmark): Boolean {
-            val firstUnreached = first.remindDate?.isAfterToday() ?: false
-            val secondUnreached = second.remindDate?.isAfterToday() ?: false
-            return !firstUnreached && secondUnreached
+
+        private fun isLess(first: LocalDate?, second: LocalDate?): Boolean = when {
+            first != null && second != null -> when {
+                first.isAfterToday() && second.isAfterToday() -> first < second
+                first.isAfterToday() -> false
+                second.isAfterToday() -> true
+                else -> false // if both are unreached leave sorting of them for later
+            }
+
+            first != null -> false // never less than null
+            second != null -> second.isAfterToday() //if second is unreached, true, else they are equal
+            else -> false
         }
 
-        override fun isEqual(first: Bookmark, second: Bookmark): Boolean {
-            val firstUnreached = first.remindDate?.isAfterToday() ?: false
-            val secondUnreached = second.remindDate?.isAfterToday() ?: false
-            return firstUnreached == secondUnreached
+        private fun isEqual(first: LocalDate?, second: LocalDate?) = when {
+            first != null && second != null -> when {
+                first.isAfterToday() && second.isAfterToday() -> first == second
+                // if one is reached and other is unreached they are not equal
+                first.isAfterToday() || second.isAfterToday() -> false
+                else -> true // if neither is reached they are considered equal
+            }
+
+            first != null -> !first.isAfterToday() // null equals reached reminders
+            second != null -> !second.isAfterToday()
+            else -> true // null equals null
         }
+
+        override fun isLess(first: Bookmark, second: Bookmark): Boolean = isLess(first.remindDate, second.remindDate)
+        override fun isEqual(first: Bookmark, second: Bookmark): Boolean = isEqual(first.remindDate, second.remindDate)
     }
 
     class DeadlineFirst(

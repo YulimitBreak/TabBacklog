@@ -46,6 +46,9 @@ class SmartSortTest {
                         }
                     }
                 }
+                withClue("should be sorted") {
+                    end shouldBeSortedWith { a, b -> a.remindDate!!.compareTo(b.remindDate!!) }
+                }
             }
 
             withClue("Bookmarks with deadlines") {
