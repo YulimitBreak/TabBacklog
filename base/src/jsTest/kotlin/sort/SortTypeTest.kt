@@ -166,7 +166,7 @@ class SortTypeTest {
     @Test
     fun reminderFirst() = runTest {
         val sortType = SortType.ReminderFirst()
-        checkAll(timeLimit, Arb.list(bookmarkArb(), 0..10)) { source ->
+        checkAll(timeLimit, Arb.list(bookmarkArb(), 0..100)) { source ->
             val result = source.sortedWith(sortType)
 
             fun Bookmark.reminderCheck(isReached: Boolean): Boolean {
@@ -212,6 +212,29 @@ class SortTypeTest {
                     it.isExpiringSoon() shouldNotBe true
                 }
             }
+        }
+    }
+
+    @Test
+    fun dualSortTest() = runTest {
+        val sort = SortType.FavoriteFirst(next = SortType.Alphabetically(isReversed = true))
+
+        checkAll(timeLimit, Arb.list(bookmarkArb(), 0..100)) { source ->
+
+            val result = source.sortedWith(sort)
+            val favorite = result.takeWhile { it.favorite }
+            val notFavorite = result.drop(favorite.size)
+
+            favorite.forAll {
+                it.favorite shouldBe true
+            }
+            notFavorite.forAll {
+                it.favorite shouldBe false
+            }
+
+            favorite shouldBeSortedWith { a, b -> -a.title.compareTo(b.title) }
+            notFavorite shouldBeSortedWith { a, b -> -a.title.compareTo(b.title) }
+
         }
     }
 }
