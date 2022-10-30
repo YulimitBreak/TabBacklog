@@ -11,6 +11,8 @@ data class RetrieveBuilder<T>(val actions: List<Action<T>>) : RetrieveRequest<T>
         to: R? = null,
     ) = copy(actions = actions + Action.Sort(field, ascending, from, to))
 
+    fun list(f: (List<T>) -> List<T>) = copy(actions = actions + Action.ListAction(f))
+
     fun map(f: (T) -> T) = copy(actions = actions + Action.Map(f))
 
     fun limit(count: Int) = copy(actions = actions + Action.Limit(count))
@@ -26,6 +28,8 @@ data class RetrieveBuilder<T>(val actions: List<Action<T>>) : RetrieveRequest<T>
             val from: R? = null,
             val to: R? = null,
         ) : Action<T>
+
+        data class ListAction<T>(val f: (List<T>) -> List<T>) : Action<T>
 
         data class Map<T>(val f: (T) -> T) : Action<T>
 
