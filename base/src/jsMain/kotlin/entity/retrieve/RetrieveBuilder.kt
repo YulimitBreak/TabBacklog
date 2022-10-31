@@ -2,22 +2,19 @@ package entity.retrieve
 
 import kotlinx.coroutines.flow.Flow
 
-data class RetrieveBuilder<T>(val actions: List<Action<T>>) : RetrieveRequest<T> {
+data class RetrieveBuilder<T>(val base: RetrieveRequest<T>? = null, val actions: List<Action<T>> = emptyList()) :
+    RetrieveRequest<T> {
 
-    fun <R> sort(
-        field: RetrieveField<T, R>,
-        ascending: Boolean = true,
-        from: R? = null,
-        to: R? = null,
-    ) = copy(actions = actions + Action.Sort(field, ascending, from, to))
+    override fun <R> sort(field: RetrieveField<T, R>, ascending: Boolean, from: R?, to: R?) =
+        copy(actions = actions + Action.Sort(field, ascending, from, to))
 
-    fun list(f: (List<T>) -> List<T>) = copy(actions = actions + Action.ListAction(f))
+    override fun list(f: (List<T>) -> List<T>) = copy(actions = actions + Action.ListAction(f))
 
-    fun map(f: (T) -> T) = copy(actions = actions + Action.Map(f))
+    override fun map(f: (T) -> T) = copy(actions = actions + Action.Map(f))
 
-    fun limit(count: Int) = copy(actions = actions + Action.Limit(count))
+    override fun limit(count: Int) = copy(actions = actions + Action.Limit(count))
 
-    fun filter(f: (T) -> Boolean) = copy(actions = actions + Action.Filter(f))
+    override fun filter(f: (T) -> Boolean) = copy(actions = actions + Action.Filter(f))
 
     override fun resolve(resolver: RetrieveResolver<T>): Flow<T> = resolver.resolve(this)
 

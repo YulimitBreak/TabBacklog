@@ -9,6 +9,21 @@ sealed interface RetrieveRequest<T> {
 
     fun resolve(resolver: RetrieveResolver<T>): Flow<T>
 
+    fun <R> sort(
+        field: RetrieveField<T, R>,
+        ascending: Boolean = true,
+        from: R? = null,
+        to: R? = null,
+    ): RetrieveRequest<T> = RetrieveBuilder(this).sort(field, ascending, from, to)
+
+    fun list(f: (List<T>) -> List<T>): RetrieveRequest<T> = RetrieveBuilder(this).list(f)
+
+    fun map(f: (T) -> T): RetrieveRequest<T> = RetrieveBuilder(this).map(f)
+
+    fun limit(count: Int): RetrieveRequest<T> = RetrieveBuilder(this).limit(count)
+
+    fun filter(f: (T) -> Boolean): RetrieveRequest<T> = RetrieveBuilder(this).filter(f)
+
     private data class Single<T>(val builder: RetrieveScope<T>.() -> RetrieveRequest<T>) : RetrieveRequest<T> {
         override fun resolve(resolver: RetrieveResolver<T>): Flow<T> = builder(resolver.scope).resolve(resolver)
     }
