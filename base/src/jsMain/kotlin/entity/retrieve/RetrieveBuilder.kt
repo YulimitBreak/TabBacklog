@@ -26,12 +26,12 @@ data class RetrieveBuilder<T>(val base: RetrieveRequest<T>, val actions: List<Ac
             val to: R? = null,
         ) : Action<T>
 
-        data class ListAction<T>(val f: (List<T>) -> List<T>) : Action<T>
+        data class ListAction<T>(val transform: (List<T>) -> List<T>) : Action<T>
 
-        data class Map<T>(val f: (T) -> T) : Action<T>
+        data class Map<T>(val transform: (T) -> T) : Action<T>
 
         data class Limit<T>(val count: Int) : Action<T>
 
-        data class Filter<T>(val f: (T) -> Boolean) : Action<T>
+        data class Filter<T>(val criteria: (T) -> Boolean) : Action<T>
     }
 }

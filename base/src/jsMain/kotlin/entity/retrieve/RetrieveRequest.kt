@@ -24,8 +24,10 @@ sealed interface RetrieveRequest<T> {
 
     fun filter(f: (T) -> Boolean): RetrieveRequest<T> = RetrieveBuilder(this).filter(f)
 
-    private data class Single<T>(val builder: RetrieveScope<T>.() -> RetrieveRequest<T>) : RetrieveRequest<T> {
-        override fun resolve(resolver: RetrieveResolver<T>): Flow<T> = builder(resolver.scope).resolve(resolver)
+    data class Deferred<T>(val builder: RetrieveScope<T>.() -> RetrieveRequest<T>) : RetrieveRequest<T> {
+
+        fun innerRequest(scope: RetrieveScope<T>) = builder(scope)
+        override fun resolve(resolver: RetrieveResolver<T>): Flow<T> = innerRequest(resolver.scope).resolve(resolver)
     }
 
     class Fetch<T>() : RetrieveRequest<T> {
@@ -50,6 +52,6 @@ sealed interface RetrieveRequest<T> {
 
     companion object {
         operator fun <T> invoke(builder: RetrieveScope<T>.() -> RetrieveRequest<T>): RetrieveRequest<T> =
-            Single(builder)
+            Deferred(builder)
     }
 }
