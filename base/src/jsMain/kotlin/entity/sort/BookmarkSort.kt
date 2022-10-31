@@ -14,7 +14,7 @@ abstract class BookmarkSort : CombinableComparator<Bookmark> {
 
     fun sort(list: List<Bookmark>) = list.sortedWith(this)
 
-    protected open val retrieve: RetrieveRequest<Bookmark> = RetrieveRequest {
+    open val retrieve: RetrieveRequest<Bookmark> = RetrieveRequest {
         next?.retrieve ?: empty()
     }
 

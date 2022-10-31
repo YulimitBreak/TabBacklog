@@ -28,8 +28,16 @@ sealed interface RetrieveRequest<T> {
         override fun resolve(resolver: RetrieveResolver<T>): Flow<T> = builder(resolver.scope).resolve(resolver)
     }
 
+    class Fetch<T>() : RetrieveRequest<T> {
+        override fun resolve(resolver: RetrieveResolver<T>): Flow<T> = RetrieveBuilder(this).resolve(resolver)
+
+        override fun toString(): String = "Fetch"
+    }
+
     class Empty<T>() : RetrieveRequest<T> {
         override fun resolve(resolver: RetrieveResolver<T>): Flow<T> = emptyFlow()
+
+        override fun toString(): String = "Empty"
     }
 
     data class Join<T>(val requests: List<RetrieveRequest<T>>) : RetrieveRequest<T> {

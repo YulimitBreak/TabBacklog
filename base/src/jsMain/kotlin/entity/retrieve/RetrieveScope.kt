@@ -2,10 +2,14 @@ package entity.retrieve
 
 interface RetrieveScope<T> {
 
-    fun request(vararg requests: RetrieveRequest<T>): RetrieveRequest<T> = when (requests.size) {
-        0 -> RetrieveRequest.Empty()
-        1 -> requests.first()
-        else -> RetrieveRequest.Join(requests.toList())
+    fun fetch(): RetrieveRequest<T> = RetrieveBuilder(RetrieveRequest.Fetch())
+
+    fun join(vararg requests: RetrieveRequest<T>?): RetrieveRequest<T> = with(requests.mapNotNull { it }) {
+        when (size) {
+            0 -> RetrieveRequest.Empty()
+            1 -> first()
+            else -> RetrieveRequest.Join(this)
+        }
     }
 
     fun empty() = RetrieveRequest.Empty<T>()

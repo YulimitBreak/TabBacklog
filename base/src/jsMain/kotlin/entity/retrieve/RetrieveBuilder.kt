@@ -2,7 +2,7 @@ package entity.retrieve
 
 import kotlinx.coroutines.flow.Flow
 
-data class RetrieveBuilder<T>(val base: RetrieveRequest<T>? = null, val actions: List<Action<T>> = emptyList()) :
+data class RetrieveBuilder<T>(val base: RetrieveRequest<T>, val actions: List<Action<T>> = emptyList()) :
     RetrieveRequest<T> {
 
     override fun <R> sort(field: RetrieveField<T, R>, ascending: Boolean, from: R?, to: R?) =

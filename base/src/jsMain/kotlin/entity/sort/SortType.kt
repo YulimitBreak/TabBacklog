@@ -1,11 +1,11 @@
 package entity.sort
 
+import common.DateUtils
 import common.isAfterToday
 import entity.Bookmark
 import entity.BookmarkType
-import kotlinx.datetime.DateTimeUnit
-import kotlinx.datetime.LocalDate
-import kotlinx.datetime.minus
+import entity.retrieve.RetrieveRequest
+import kotlinx.datetime.*
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract
 
@@ -24,53 +24,87 @@ sealed class SortType : BookmarkSort() {
         }
 
 
+        override val retrieve: RetrieveRequest<Bookmark> = RetrieveRequest {
+            if (unsavedFirst) {
+                join(
+                    next?.retrieve?.filter { it.creationDate == null },
+                    fetch().sort(BookmarkRetrieveField.CreationDate, ascending = !isReversed)
+                )
+            } else {
+                join(
+                    fetch().sort(BookmarkRetrieveField.CreationDate, ascending = !isReversed),
+                    next?.retrieve?.filter { it.creationDate == null },
+                )
+            }
+        }
+
         override fun isEqual(first: Bookmark, second: Bookmark): Boolean = first.creationDate == second.creationDate
     }
 
     class Alphabetically(
-        override val next: BookmarkSort? = null,
         override val isReversed: Boolean = false,
     ) : SortType() {
         override fun isLess(first: Bookmark, second: Bookmark): Boolean = first.title < second.title
 
         override fun isEqual(first: Bookmark, second: Bookmark): Boolean = first.title == second.title
+
+        override val retrieve = RetrieveRequest {
+            fetch().sort(BookmarkRetrieveField.Title, ascending = !isReversed)
+        }
     }
 
     class FavoriteFirst(
         override val next: BookmarkSort? = null,
-        override val isReversed: Boolean = false,
     ) : SortType() {
         override fun isLess(first: Bookmark, second: Bookmark): Boolean = first.favorite && !second.favorite
 
         override fun isEqual(first: Bookmark, second: Bookmark): Boolean = first.favorite == second.favorite
+
+        override val retrieve: RetrieveRequest<Bookmark> = RetrieveRequest {
+            join(
+                (next?.retrieve ?: fetch()).filter { it.favorite },
+                (next?.retrieve ?: fetch()).filter { !it.favorite },
+            )
+        }
     }
 
     class BacklogFirst(
         override val next: BookmarkSort? = null,
-        override val isReversed: Boolean = false,
     ) : SortType() {
         override fun isLess(first: Bookmark, second: Bookmark): Boolean =
             first.type == BookmarkType.BACKLOG && second.type == BookmarkType.LIBRARY
 
         override fun isEqual(first: Bookmark, second: Bookmark): Boolean =
             first.type == second.type
+
+        override val retrieve: RetrieveRequest<Bookmark> = RetrieveRequest {
+            join(
+                (next?.retrieve ?: fetch()).filter { it.type == BookmarkType.BACKLOG },
+                (next?.retrieve ?: fetch()).filter { it.type != BookmarkType.BACKLOG },
+            )
+        }
     }
 
     class LibraryFirst(
         override val next: BookmarkSort? = null,
-        override val isReversed: Boolean = false,
     ) : SortType() {
         override fun isLess(first: Bookmark, second: Bookmark): Boolean =
             first.type == BookmarkType.LIBRARY && second.type == BookmarkType.BACKLOG
 
         override fun isEqual(first: Bookmark, second: Bookmark): Boolean =
             first.type == second.type
+
+        override val retrieve: RetrieveRequest<Bookmark> = RetrieveRequest {
+            join(
+                (next?.retrieve ?: fetch()).filter { it.type == BookmarkType.LIBRARY },
+                (next?.retrieve ?: fetch()).filter { it.type != BookmarkType.LIBRARY },
+            )
+        }
     }
 
 
     class UnreachedReminderLast(
         override val next: BookmarkSort? = null,
-        override val isReversed: Boolean = false,
     ) : SortType() {
 
 
@@ -102,11 +136,17 @@ sealed class SortType : BookmarkSort() {
 
         override fun isLess(first: Bookmark, second: Bookmark): Boolean = isLess(first.remindDate, second.remindDate)
         override fun isEqual(first: Bookmark, second: Bookmark): Boolean = isEqual(first.remindDate, second.remindDate)
+
+        override val retrieve: RetrieveRequest<Bookmark> = RetrieveRequest {
+            join(
+                (next?.retrieve ?: fetch()).filter { it.remindDate == null || !it.remindDate.isAfterToday() },
+                fetch().sort(BookmarkRetrieveField.RemindDate, from = DateUtils.today + DatePeriod(days = 1))
+            )
+        }
     }
 
     class DeadlineFirst(
         override val next: BookmarkSort? = null,
-        override val isReversed: Boolean = false,
     ) : SortType() {
         override fun isLess(first: Bookmark, second: Bookmark): Boolean =
             when {
@@ -116,11 +156,17 @@ sealed class SortType : BookmarkSort() {
             }
 
         override fun isEqual(first: Bookmark, second: Bookmark): Boolean = first.deadline == second.deadline
+
+        override val retrieve: RetrieveRequest<Bookmark> = RetrieveRequest {
+            join(
+                fetch().sort(BookmarkRetrieveField.Deadline),
+                (next?.retrieve ?: fetch()).filter { it.deadline == null }
+            )
+        }
     }
 
     class ReminderFirst(
         override val next: BookmarkSort? = null,
-        override val isReversed: Boolean = false,
     ) : SortType() {
 
 
@@ -134,11 +180,18 @@ sealed class SortType : BookmarkSort() {
         override fun isLess(first: Bookmark, second: Bookmark): Boolean = isLess(first.remindDate, second.remindDate)
 
         override fun isEqual(first: Bookmark, second: Bookmark): Boolean = first.remindDate == second.remindDate
+
+        override val retrieve: RetrieveRequest<Bookmark> = RetrieveRequest {
+            join(
+                fetch().sort(BookmarkRetrieveField.RemindDate, to = DateUtils.today),
+                (next?.retrieve ?: fetch()).filter { it.remindDate == null },
+                fetch().sort(BookmarkRetrieveField.RemindDate, from = DateUtils.today + DatePeriod(days = 1)),
+            )
+        }
     }
 
     class ExpiringSoonFirst(
         override val next: BookmarkSort? = null,
-        override val isReversed: Boolean = false,
     ) : SortType() {
 
 
@@ -160,6 +213,18 @@ sealed class SortType : BookmarkSort() {
         override fun isEqual(first: Bookmark, second: Bookmark): Boolean {
             if (!expiresSoon(first.expirationDate) && !expiresSoon(second.expirationDate)) return true
             return first.expirationDate == second.expirationDate
+        }
+
+        override val retrieve: RetrieveRequest<Bookmark> = RetrieveRequest {
+            join(
+                fetch().sort(BookmarkRetrieveField.ExpirationDate, to = DateUtils.today.plus(1, DateTimeUnit.WEEK)),
+                (next?.retrieve ?: fetch()).filter {
+                    it.expirationDate == null || it.expirationDate.minus(
+                        1,
+                        DateTimeUnit.WEEK
+                    ).isAfterToday()
+                }
+            )
         }
     }
 
