@@ -7,3 +7,4 @@ fun Int.coerceIn(min: Int? = null, max: Int? = null): Int =
         else -> this
     }
 
+fun <T : Comparable<T>> comparator(): Comparator<T> = Comparator { a, b -> a.compareTo(b) }
