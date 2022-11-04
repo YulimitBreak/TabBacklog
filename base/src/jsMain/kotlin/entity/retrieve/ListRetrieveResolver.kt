@@ -28,7 +28,7 @@ abstract class ListRetrieveResolver<T, Query : RetrieveQuery<T>>(val source: Lis
         query: RetrieveQuery.Sort<T, R>
     ) =
         sortByField(
-            source, field, naturalOrder(), query.ascending, query.from, query.to
+            source, field, naturalOrder(), query.ascending, query.from, query.to, query.fallbackSort
         )
 
     protected fun <R : Any> sortByField(
@@ -38,7 +38,7 @@ abstract class ListRetrieveResolver<T, Query : RetrieveQuery<T>>(val source: Lis
         query: RetrieveQuery.Sort<T, R>
     ) =
         sortByField(
-            source, field, comparator, query.ascending, query.from, query.to
+            source, field, comparator, query.ascending, query.from, query.to, query.fallbackSort
         )
 
     @Suppress("MemberVisibilityCanBePrivate")
@@ -47,11 +47,14 @@ abstract class ListRetrieveResolver<T, Query : RetrieveQuery<T>>(val source: Lis
         comparator: Comparator<R>,
         ascending: Boolean,
         from: R?,
-        to: R?
+        to: R?,
+        fallbackSort: Comparator<T>?,
     ): List<T> {
         var result = source.filter { field(it) != null }
             .sortedWith { a, b ->
-                (if (ascending) comparator else comparator.reversed()).compare(field(a)!!, field(b)!!)
+                val compareValues =
+                    (if (ascending) comparator else comparator.reversed()).compare(field(a)!!, field(b)!!)
+                if (compareValues == 0) fallbackSort?.compare(a, b) ?: compareValues else compareValues
             }
         if (from != null) {
             result = result.dropWhile { comparator.compare(field(it)!!, from) < 0 }

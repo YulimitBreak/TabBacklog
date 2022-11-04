@@ -28,11 +28,11 @@ sealed class SortType : BookmarkSort() {
             if (unsavedFirst) {
                 join(
                     next?.retrieve?.filter { it.creationDate == null },
-                    fetch().select(BookmarkRetrieveQuery.CreationDate(ascending = !isReversed))
+                    fetch().select(BookmarkRetrieveQuery.CreationDate(ascending = !isReversed, fallbackSort = next))
                 )
             } else {
                 join(
-                    fetch().select(BookmarkRetrieveQuery.CreationDate(ascending = !isReversed)),
+                    fetch().select(BookmarkRetrieveQuery.CreationDate(ascending = !isReversed, fallbackSort = next)),
                     next?.retrieve?.filter { it.creationDate == null },
                 )
             }
@@ -49,7 +49,7 @@ sealed class SortType : BookmarkSort() {
         override fun isEqual(first: Bookmark, second: Bookmark): Boolean = first.title == second.title
 
         override val retrieve = RetrieveRequest<_, BookmarkRetrieveQuery> {
-            fetch().select(BookmarkRetrieveQuery.Title(ascending = !isReversed))
+            fetch().select(BookmarkRetrieveQuery.Title(ascending = !isReversed, fallbackSort = next))
         }
     }
 
@@ -140,7 +140,12 @@ sealed class SortType : BookmarkSort() {
         override val retrieve = retrieveRequest {
             join(
                 (next?.retrieve ?: fetch()).filter { it.remindDate == null || !it.remindDate.isAfterToday() },
-                fetch().select(BookmarkRetrieveQuery.RemindDate(from = DateUtils.today + DatePeriod(days = 1))),
+                fetch().select(
+                    BookmarkRetrieveQuery.RemindDate(
+                        from = DateUtils.today + DatePeriod(days = 1),
+                        fallbackSort = next
+                    )
+                ),
             )
         }
     }
@@ -159,7 +164,7 @@ sealed class SortType : BookmarkSort() {
 
         override val retrieve = retrieveRequest {
             join(
-                fetch().select(BookmarkRetrieveQuery.Deadline()),
+                fetch().select(BookmarkRetrieveQuery.Deadline(fallbackSort = next)),
                 (next?.retrieve ?: fetch()).filter { it.deadline == null }
             )
         }
@@ -183,9 +188,14 @@ sealed class SortType : BookmarkSort() {
 
         override val retrieve = retrieveRequest {
             join(
-                fetch().select(BookmarkRetrieveQuery.RemindDate(to = DateUtils.today)),
+                fetch().select(BookmarkRetrieveQuery.RemindDate(to = DateUtils.today, fallbackSort = next)),
                 (next?.retrieve ?: fetch()).filter { it.remindDate == null },
-                fetch().select(BookmarkRetrieveQuery.RemindDate(from = DateUtils.today + DatePeriod(days = 1))),
+                fetch().select(
+                    BookmarkRetrieveQuery.RemindDate(
+                        from = DateUtils.today + DatePeriod(days = 1),
+                        fallbackSort = next
+                    )
+                ),
             )
         }
     }
@@ -217,7 +227,12 @@ sealed class SortType : BookmarkSort() {
 
         override val retrieve = retrieveRequest {
             join(
-                fetch().select(BookmarkRetrieveQuery.ExpirationDate(to = DateUtils.today.plus(1, DateTimeUnit.WEEK))),
+                fetch().select(
+                    BookmarkRetrieveQuery.ExpirationDate(
+                        to = DateUtils.today.plus(1, DateTimeUnit.WEEK),
+                        fallbackSort = next
+                    )
+                ),
                 (next?.retrieve ?: fetch()).filter {
                     it.expirationDate == null || it.expirationDate.minus(
                         1,

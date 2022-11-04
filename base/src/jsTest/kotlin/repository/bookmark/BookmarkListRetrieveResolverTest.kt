@@ -53,6 +53,7 @@ class BookmarkListRetrieveResolverTest {
         val derivatives = listOf<(BookmarkSort?) -> BookmarkSort>(
             SortType::FavoriteFirst,
             SortType::LibraryFirst,
+            SortType::BacklogFirst,
             SortType::UnreachedReminderLast,
             SortType::DeadlineFirst,
             SortType::ReminderFirst,

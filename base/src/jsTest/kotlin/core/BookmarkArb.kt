@@ -42,9 +42,9 @@ fun bookmarkArb(
 }
 
 fun bookmarkArbShort() = bookmarkArb(
-    title = Arb.string(0..10, Codepoint.alphanumeric()),
-    url = Arb.string(0..10, Codepoint.az()).map { "http://$it.com" },
-    favicon = Arb.string(0..10, Codepoint.az()).map { "http://$it.com" }.orNull(nullProbability = 0.1),
+    title = Arb.string(5..10, Codepoint.alphanumeric()),
+    url = Arb.string(3..10, Codepoint.az()).map { "http://$it.com" },
+    favicon = Arb.string(3..10, Codepoint.az()).map { "http://$it.com" }.orNull(nullProbability = 0.1),
     comment = Arb.string(0..10, Codepoint.alphanumeric())
 )
 
