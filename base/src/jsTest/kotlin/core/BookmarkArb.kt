@@ -41,6 +41,13 @@ fun bookmarkArb(
     )
 }
 
+fun bookmarkArbShort() = bookmarkArb(
+    title = Arb.string(0..10, Codepoint.alphanumeric()),
+    url = Arb.string(0..10, Codepoint.az()).map { "http://$it.com" },
+    favicon = Arb.string(0..10, Codepoint.az()).map { "http://$it.com" }.orNull(nullProbability = 0.1),
+    comment = Arb.string(0..10, Codepoint.alphanumeric())
+)
+
 fun Arb<Date>.toLocalDate() = map { it.toLocalDate() }
 
 fun Arb<Date>.toLocalDateTime() = map { it.toLocalDateTime() }

@@ -1,6 +1,5 @@
 package entity.retrieve
 
-import common.comparator
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.asFlow
 
@@ -29,7 +28,7 @@ abstract class ListRetrieveResolver<T, Query : RetrieveQuery<T>>(val source: Lis
         query: RetrieveQuery.Sort<T, R>
     ) =
         sortByField(
-            source, field, comparator(), query.ascending, query.from, query.to
+            source, field, naturalOrder(), query.ascending, query.from, query.to
         )
 
     protected fun <R : Any> sortByField(
@@ -50,15 +49,16 @@ abstract class ListRetrieveResolver<T, Query : RetrieveQuery<T>>(val source: Lis
         from: R?,
         to: R?
     ): List<T> {
-        val sorted = source.filter { field(it) != null }
+        var result = source.filter { field(it) != null }
             .sortedWith { a, b ->
-                comparator.compare(field(a)!!, field(b)!!).let {
-                    if (ascending) it else -it
-                }
+                (if (ascending) comparator else comparator.reversed()).compare(field(a)!!, field(b)!!)
             }
-        val indexFrom = from?.let { source.indexOfFirst { field(it) == from } } ?: 0
-        val indexTo = to?.let { source.indexOfFirst { field(it) == from } } ?: source.lastIndex
-        if (indexFrom == -1 || indexTo == -1) return emptyList()
-        return sorted.subList(indexFrom, indexTo + 1)
+        if (from != null) {
+            result = result.dropWhile { comparator.compare(field(it)!!, from) < 0 }
+        }
+        if (to != null) {
+            result = result.dropLastWhile { comparator.compare(field(it)!!, to) > 0 }
+        }
+        return result
     }
 }

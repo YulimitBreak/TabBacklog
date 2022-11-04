@@ -11,7 +11,7 @@ import kotlin.contracts.contract
 
 sealed class SortType : BookmarkSort() {
 
-    class CreationDate(
+    data class CreationDate(
         private val unsavedFirst: Boolean = true,
         override val next: BookmarkSort? = null,
         override val isReversed: Boolean = false,
@@ -41,7 +41,7 @@ sealed class SortType : BookmarkSort() {
         override fun isEqual(first: Bookmark, second: Bookmark): Boolean = first.creationDate == second.creationDate
     }
 
-    class Alphabetically(
+    data class Alphabetically(
         override val isReversed: Boolean = false,
     ) : SortType() {
         override fun isLess(first: Bookmark, second: Bookmark): Boolean = first.title < second.title
@@ -53,7 +53,7 @@ sealed class SortType : BookmarkSort() {
         }
     }
 
-    class FavoriteFirst(
+    data class FavoriteFirst(
         override val next: BookmarkSort? = null,
     ) : SortType() {
         override fun isLess(first: Bookmark, second: Bookmark): Boolean = first.favorite && !second.favorite
@@ -68,7 +68,7 @@ sealed class SortType : BookmarkSort() {
         }
     }
 
-    class BacklogFirst(
+    data class BacklogFirst(
         override val next: BookmarkSort? = null,
     ) : SortType() {
         override fun isLess(first: Bookmark, second: Bookmark): Boolean =
@@ -85,7 +85,7 @@ sealed class SortType : BookmarkSort() {
         }
     }
 
-    class LibraryFirst(
+    data class LibraryFirst(
         override val next: BookmarkSort? = null,
     ) : SortType() {
         override fun isLess(first: Bookmark, second: Bookmark): Boolean =
@@ -103,7 +103,7 @@ sealed class SortType : BookmarkSort() {
     }
 
 
-    class UnreachedReminderLast(
+    data class UnreachedReminderLast(
         override val next: BookmarkSort? = null,
     ) : SortType() {
 
@@ -145,7 +145,7 @@ sealed class SortType : BookmarkSort() {
         }
     }
 
-    class DeadlineFirst(
+    data class DeadlineFirst(
         override val next: BookmarkSort? = null,
     ) : SortType() {
         override fun isLess(first: Bookmark, second: Bookmark): Boolean =
@@ -165,7 +165,7 @@ sealed class SortType : BookmarkSort() {
         }
     }
 
-    class ReminderFirst(
+    data class ReminderFirst(
         override val next: BookmarkSort? = null,
     ) : SortType() {
 
@@ -190,7 +190,7 @@ sealed class SortType : BookmarkSort() {
         }
     }
 
-    class ExpiringSoonFirst(
+    data class ExpiringSoonFirst(
         override val next: BookmarkSort? = null,
     ) : SortType() {
 
