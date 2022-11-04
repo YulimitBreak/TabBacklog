@@ -2,11 +2,13 @@ package entity.retrieve
 
 import kotlinx.coroutines.flow.Flow
 
-data class RetrieveBuilder<T>(val base: RetrieveRequest<T>, val actions: List<Action<T>> = emptyList()) :
-    RetrieveRequest<T> {
+data class RetrieveBuilder<T, Query : RetrieveQuery<T>>(
+    val base: RetrieveRequest<T, Query>,
+    val actions: List<Action<T, Query>> = emptyList()
+) :
+    RetrieveRequest<T, Query> {
 
-    override fun <R> sort(field: RetrieveField<T, R>, ascending: Boolean, from: R?, to: R?) =
-        copy(actions = actions + Action.Sort(field, ascending, from, to))
+    override fun select(query: Query): RetrieveRequest<T, Query> = copy(actions = actions + Action.Select(query))
 
     override fun list(f: (List<T>) -> List<T>) = copy(actions = actions + Action.ListAction(f))
 
@@ -18,20 +20,16 @@ data class RetrieveBuilder<T>(val base: RetrieveRequest<T>, val actions: List<Ac
 
     override fun resolve(resolver: RetrieveResolver<T>): Flow<T> = resolver.resolve(this)
 
-    sealed interface Action<T> {
-        data class Sort<T, R>(
-            val field: RetrieveField<T, R>,
-            val ascending: Boolean = true,
-            val from: R? = null,
-            val to: R? = null,
-        ) : Action<T>
+    sealed interface Action<T, Query : RetrieveQuery<T>> {
 
-        data class ListAction<T>(val transform: (List<T>) -> List<T>) : Action<T>
+        data class Select<T, Query : RetrieveQuery<T>>(val query: Query) : Action<T, Query>
 
-        data class Map<T>(val transform: (T) -> T) : Action<T>
+        data class ListAction<T, Query : RetrieveQuery<T>>(val transform: (List<T>) -> List<T>) : Action<T, Query>
 
-        data class Limit<T>(val count: Int) : Action<T>
+        data class Map<T, Query : RetrieveQuery<T>>(val transform: (T) -> T) : Action<T, Query>
 
-        data class Filter<T>(val criteria: (T) -> Boolean) : Action<T>
+        data class Limit<T, Query : RetrieveQuery<T>>(val count: Int) : Action<T, Query>
+
+        data class Filter<T, Query : RetrieveQuery<T>>(val criteria: (T) -> Boolean) : Action<T, Query>
     }
 }

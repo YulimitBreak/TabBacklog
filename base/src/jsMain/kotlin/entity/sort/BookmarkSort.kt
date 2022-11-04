@@ -3,6 +3,7 @@ package entity.sort
 import common.CombinableComparator
 import entity.Bookmark
 import entity.retrieve.RetrieveRequest
+import entity.retrieve.RetrieveScope
 
 abstract class BookmarkSort : CombinableComparator<Bookmark> {
 
@@ -14,9 +15,12 @@ abstract class BookmarkSort : CombinableComparator<Bookmark> {
 
     fun sort(list: List<Bookmark>) = list.sortedWith(this)
 
-    open val retrieve: RetrieveRequest<Bookmark> = RetrieveRequest {
+    open val retrieve: RetrieveRequest<Bookmark, BookmarkRetrieveQuery> = RetrieveRequest {
         next?.retrieve ?: empty()
     }
+
+    protected fun retrieveRequest(builder: RetrieveScope<Bookmark, BookmarkRetrieveQuery>.() -> RetrieveRequest<Bookmark, BookmarkRetrieveQuery>) =
+        RetrieveRequest(builder)
 
     companion object {
         fun combine(
