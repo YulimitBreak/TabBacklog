@@ -4,6 +4,7 @@ import com.juul.indexeddb.Database
 import com.juul.indexeddb.VersionChangeTransaction
 import com.juul.indexeddb.deleteDatabase
 import com.juul.indexeddb.openDatabase
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
@@ -45,11 +46,13 @@ class AppDatabaseHolder(
         return try {
             open()
         } catch (e: Exception) {
+            if (e is CancellationException) throw e
             console.error("Open database error")
             e.printStackTrace()
             try {
                 deleteDatabase(databaseName)
             } catch (e: Exception) {
+                if (e is CancellationException) throw e
                 console.error("Delete database error")
                 e.printStackTrace()
             }

@@ -1,9 +1,6 @@
 package entity.core
 
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 
 sealed class Loadable<out T> {
     abstract val value: T?
@@ -62,6 +59,7 @@ fun <T> CoroutineScope.load(
             debounceJob?.cancel()
             setter(Loadable.Success(result))
         } catch (e: Exception) {
+            if (e is CancellationException) throw e
             console.error(e)
             e.printStackTrace()
             debounceJob?.cancel()
