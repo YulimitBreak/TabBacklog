@@ -8,15 +8,12 @@ abstract class RetrieveResolver<T, Query : RetrieveQuery<T>> {
 
     open val scope: RetrieveScope<T, Query> = object : RetrieveScope<T, Query> {}
 
-    tailrec fun resolve(builder: RetrieveBuilder<T, Query>): Flow<T> {
-        console.log("Resolving builder with ${builder.base} and ${builder.actions}")
-        return when (val base = builder.base) {
-            is RetrieveRequest.Fetch -> resolveFlow(::fetchFlow, builder.actions)
-            is RetrieveRequest.Join -> resolveFlow(joinFlowSource(base.requests), builder.actions)
-            is RetrieveRequest.Empty -> emptyFlow()
-            is RetrieveBuilder -> resolve(RetrieveBuilder(base.base, base.actions + builder.actions))
-            is RetrieveRequest.Deferred -> resolve(RetrieveBuilder(base.innerRequest(scope), builder.actions))
-        }
+    tailrec fun resolve(builder: RetrieveBuilder<T, Query>): Flow<T> = when (val base = builder.base) {
+        is RetrieveRequest.Fetch -> resolveFlow(::fetchFlow, builder.actions)
+        is RetrieveRequest.Join -> resolveFlow(joinFlowSource(base.requests), builder.actions)
+        is RetrieveRequest.Empty -> emptyFlow()
+        is RetrieveBuilder -> resolve(RetrieveBuilder(base.base, base.actions + builder.actions))
+        is RetrieveRequest.Deferred -> resolve(RetrieveBuilder(base.innerRequest(scope), builder.actions))
     }
 
 
@@ -70,7 +67,7 @@ abstract class RetrieveResolver<T, Query : RetrieveQuery<T>> {
     }
 
     private fun joinFlowSource(requests: List<RetrieveRequest<T, Query>>) =
-        FlowSource<T, Query> { query, hasReorderingActions ->
+        FlowSource<T, Query> { query, _ ->
             when (query) {
                 null -> flow {
                     requests.forEach { request ->

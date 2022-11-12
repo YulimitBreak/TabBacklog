@@ -3,12 +3,17 @@ package common
 import core.runTest
 import core.timeLimit
 import io.kotest.assertions.withClue
+import io.kotest.inspectors.forAll
 import io.kotest.matchers.collections.shouldBeSameSizeAs
 import io.kotest.matchers.collections.shouldBeSortedWith
 import io.kotest.matchers.collections.shouldBeUnique
+import io.kotest.matchers.ints.shouldBeGreaterThan
+import io.kotest.matchers.ints.shouldBeLessThanOrEqual
 import io.kotest.matchers.longs.shouldBeGreaterThanOrEqual
 import io.kotest.matchers.longs.shouldBeLessThan
+import io.kotest.matchers.shouldBe
 import io.kotest.property.Arb
+import io.kotest.property.arbitrary.int
 import io.kotest.property.arbitrary.list
 import io.kotest.property.arbitrary.long
 import io.kotest.property.arbitrary.numericFloat
@@ -60,6 +65,54 @@ class FlowOperatorTest {
                 ) {
                     list2.minBy { it.time }.time - list1.maxBy { it.time }.time shouldBeGreaterThanOrEqual period
                 }
+            }
+        }
+    }
+
+    @Test
+    fun listTransform_noTransform() = runTest {
+        checkAll(timeLimit, Arb.list(Arb.int(0..1000))) { source ->
+            val flow = flow {
+                source.forEach {
+                    emit(it)
+                    delay(100)
+                }
+            }
+            val result = flow.listTransform { it }.toList()
+            result shouldBe source
+        }
+    }
+
+    @Test
+    fun listTransform_sort() = runTest {
+        checkAll(timeLimit, Arb.list(Arb.int(0..1000))) { source ->
+            val flow = flow {
+                source.forEach {
+                    emit(it)
+                    delay(100)
+                }
+            }
+            val result = flow.listTransform { it.sorted() }.toList()
+            result shouldBeSameSizeAs source
+            result shouldBeSortedWith naturalOrder()
+        }
+    }
+
+    @Test
+    fun listTransform_filter() = runTest {
+        checkAll(timeLimit, Arb.list(Arb.int(0..1000)), Arb.int(100..900)) { source, bar ->
+            val flow = flow {
+                source.forEach {
+                    emit(it)
+                    delay(100)
+                }
+            }
+            val result = flow.listTransform { list -> list.filter { it > bar } }.toList()
+            result.forAll {
+                it shouldBeGreaterThan bar
+            }
+            (source - result.toSet()).forAll {
+                it shouldBeLessThanOrEqual bar
             }
         }
     }
