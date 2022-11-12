@@ -14,8 +14,6 @@ data class RetrieveBuilder<T, Query : RetrieveQuery<T>>(
 
     override fun map(f: (T) -> T) = copy(actions = actions + Action.Map(f))
 
-    override fun limit(count: Int) = copy(actions = actions + Action.Limit(count))
-
     override fun filter(f: (T) -> Boolean) = copy(actions = actions + Action.Filter(f))
 
     override fun resolve(resolver: RetrieveResolver<T, Query>): Flow<T> = resolver.resolve(this)
@@ -27,8 +25,6 @@ data class RetrieveBuilder<T, Query : RetrieveQuery<T>>(
         data class ListAction<T, Query : RetrieveQuery<T>>(val transform: (List<T>) -> List<T>) : Action<T, Query>
 
         data class Map<T, Query : RetrieveQuery<T>>(val transform: (T) -> T) : Action<T, Query>
-
-        data class Limit<T, Query : RetrieveQuery<T>>(val count: Int) : Action<T, Query>
 
         data class Filter<T, Query : RetrieveQuery<T>>(val criteria: (T) -> Boolean) : Action<T, Query>
     }

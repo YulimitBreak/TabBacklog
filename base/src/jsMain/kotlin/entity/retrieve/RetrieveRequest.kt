@@ -15,8 +15,6 @@ sealed interface RetrieveRequest<T, Query : RetrieveQuery<T>> {
 
     fun map(f: (T) -> T): RetrieveRequest<T, Query> = RetrieveBuilder(this).map(f)
 
-    fun limit(count: Int): RetrieveRequest<T, Query> = RetrieveBuilder(this).limit(count)
-
     fun filter(f: (T) -> Boolean): RetrieveRequest<T, Query> = RetrieveBuilder(this).filter(f)
 
     data class Deferred<T, Query : RetrieveQuery<T>>(val builder: RetrieveScope<T, Query>.() -> RetrieveRequest<T, Query>) :
