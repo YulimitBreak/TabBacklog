@@ -85,7 +85,7 @@ abstract class RetrieveResolver<T, Query : RetrieveQuery<T>> {
 
                 else -> flow {
                     requests.forEach { request ->
-                        emitAll(request.resolve(this@RetrieveResolver))
+                        emitAll(applyQueryToFlow(request.resolve(this@RetrieveResolver), query))
                     }
                 }
             }
