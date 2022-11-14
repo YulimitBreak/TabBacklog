@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.flow
 
 sealed interface RetrieveRequest<T, Query : RetrieveQuery<T>> {
 
-    fun resolve(resolver: RetrieveResolver<T, Query>): Flow<T>
+    suspend fun resolve(resolver: RetrieveResolver<T, Query>): Flow<T>
 
     fun select(query: Query): RetrieveRequest<T, Query> = RetrieveBuilder(this).select(query)
 
@@ -21,25 +21,26 @@ sealed interface RetrieveRequest<T, Query : RetrieveQuery<T>> {
         RetrieveRequest<T, Query> {
 
         fun innerRequest(scope: RetrieveScope<T, Query>) = builder(scope)
-        override fun resolve(resolver: RetrieveResolver<T, Query>): Flow<T> =
+        override suspend fun resolve(resolver: RetrieveResolver<T, Query>): Flow<T> =
             innerRequest(resolver.scope).resolve(resolver)
     }
 
     class Fetch<T, Query : RetrieveQuery<T>>() : RetrieveRequest<T, Query> {
-        override fun resolve(resolver: RetrieveResolver<T, Query>): Flow<T> = RetrieveBuilder(this).resolve(resolver)
+        override suspend fun resolve(resolver: RetrieveResolver<T, Query>): Flow<T> =
+            RetrieveBuilder(this).resolve(resolver)
 
         override fun toString(): String = "Fetch"
     }
 
     class Empty<T, Query : RetrieveQuery<T>>() : RetrieveRequest<T, Query> {
-        override fun resolve(resolver: RetrieveResolver<T, Query>): Flow<T> = emptyFlow()
+        override suspend fun resolve(resolver: RetrieveResolver<T, Query>): Flow<T> = emptyFlow()
 
         override fun toString(): String = "Empty"
     }
 
     data class Join<T, Query : RetrieveQuery<T>>(val requests: List<RetrieveRequest<T, Query>>) :
         RetrieveRequest<T, Query> {
-        override fun resolve(resolver: RetrieveResolver<T, Query>): Flow<T> = flow {
+        override suspend fun resolve(resolver: RetrieveResolver<T, Query>): Flow<T> = flow {
             requests.forEach {
                 emitAll(it.resolve(resolver))
             }

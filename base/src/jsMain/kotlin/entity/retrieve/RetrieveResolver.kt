@@ -8,7 +8,7 @@ abstract class RetrieveResolver<T, Query : RetrieveQuery<T>> {
 
     open val scope: RetrieveScope<T, Query> = object : RetrieveScope<T, Query> {}
 
-    tailrec fun resolve(builder: RetrieveBuilder<T, Query>): Flow<T> = when (val base = builder.base) {
+    tailrec suspend fun resolve(builder: RetrieveBuilder<T, Query>): Flow<T> = when (val base = builder.base) {
         is RetrieveRequest.Fetch -> resolveFlow(::fetchFlow, builder.actions)
         is RetrieveRequest.Join -> resolveFlow(joinFlowSource(base.requests), builder.actions)
         is RetrieveRequest.Empty -> emptyFlow()
@@ -17,10 +17,13 @@ abstract class RetrieveResolver<T, Query : RetrieveQuery<T>> {
     }
 
 
-    abstract fun fetchFlow(query: Query?, hasReorderingActions: Boolean): Flow<T>
-    abstract fun applyQueryToFlow(flow: Flow<T>, query: Query): Flow<T>
+    abstract suspend fun fetchFlow(query: Query?, hasReorderingActions: Boolean): Flow<T>
+    abstract suspend fun applyQueryToFlow(flow: Flow<T>, query: Query): Flow<T>
 
-    private fun resolveFlow(source: FlowSource<T, Query>, actions: List<RetrieveBuilder.Action<T, Query>>): Flow<T> {
+    private suspend fun resolveFlow(
+        source: FlowSource<T, Query>,
+        actions: List<RetrieveBuilder.Action<T, Query>>
+    ): Flow<T> {
         val firstQuery = actions.filterIsInstance<RetrieveBuilder.Action.Select<T, Query>>().firstOrNull()
         val flow: Flow<T>
         val postFlowActions: List<RetrieveBuilder.Action<T, Query>>
@@ -85,14 +88,16 @@ abstract class RetrieveResolver<T, Query : RetrieveQuery<T>> {
 
                 else -> flow {
                     requests.forEach { request ->
-                        emitAll(applyQueryToFlow(request.resolve(this@RetrieveResolver), query))
+                        emitAll(
+                            applyQueryToFlow(request.resolve(this@RetrieveResolver), query)
+                        )
                     }
                 }
             }
         }
 
     private fun interface FlowSource<T, Query : RetrieveQuery<T>> {
-        operator fun invoke(query: Query?, hasReorderingActions: Boolean): Flow<T>
+        suspend operator fun invoke(query: Query?, hasReorderingActions: Boolean): Flow<T>
     }
 
 
