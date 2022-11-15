@@ -5,9 +5,7 @@ import common.chunkedBy
 import common.listTransform
 import data.database.core.paginate
 import entity.retrieve.util.selectByField
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.asFlow
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.*
 
 abstract class DatabaseRetrieveResolver<T, Query : RetrieveQuery<T>>(
     val database: suspend () -> Database,
@@ -22,7 +20,6 @@ abstract class DatabaseRetrieveResolver<T, Query : RetrieveQuery<T>>(
     protected abstract suspend fun resolveQuery(query: Query): DatabaseQuery<T>
 
     override suspend fun fetchFlow(query: Query?, hasReorderingActions: Boolean): Flow<T> =
-        // TODO handle fallbackSort
         if (!hasReorderingActions) {
             val dbQuery = query?.let { resolveQuery(it) }
             database().paginate(
@@ -32,6 +29,13 @@ abstract class DatabaseRetrieveResolver<T, Query : RetrieveQuery<T>>(
             ) {
                 extract(it.value)
             }
+                .let { flow ->
+                    if (dbQuery?.fallback != null) {
+                        flow.chunkedBy { dbQuery.fallback.compareField(it) }.transform { chunk ->
+                            emitAll(chunk.sortedWith(dbQuery.fallback.comparator).asFlow())
+                        }
+                    } else flow
+                }
         } else {
             database().transaction(storeName) {
                 val dbQuery = query?.let { resolveQuery(it) }
@@ -40,12 +44,12 @@ abstract class DatabaseRetrieveResolver<T, Query : RetrieveQuery<T>>(
                 queryable.getAll(dbQuery?.key)
                     .map { extract(it) }
                     .let { if (dbQuery?.reverse == true) it.asReversed() else it }
-                    .let {
+                    .let { list ->
                         if (dbQuery?.fallback != null) {
-                            it.chunkedBy(dbQuery.fallback.compareField).flatMap { chunk ->
+                            list.chunkedBy(dbQuery.fallback.compareField).flatMap { chunk ->
                                 chunk.sortedWith(dbQuery.fallback.comparator)
                             }
-                        } else it
+                        } else list
                     }
             }.asFlow()
         }.map {
