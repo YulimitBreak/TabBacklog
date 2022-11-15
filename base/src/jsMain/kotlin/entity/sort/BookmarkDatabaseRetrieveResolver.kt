@@ -30,7 +30,7 @@ class BookmarkDatabaseRetrieveResolver(database: suspend () -> Database) :
             DatabaseQuery(BookmarkSchema.ExpirationDate.name, Bookmark::expirationDate, query) { it.toString() }
 
         is BookmarkRetrieveQuery.Favorite ->
-            DatabaseQuery(BookmarkSchema.Favorite.name, query)
+            DatabaseQuery(Bookmark::favorite, query)
 
         is BookmarkRetrieveQuery.RemindDate ->
             DatabaseQuery(BookmarkSchema.RemindDate.name, Bookmark::remindDate, query) { it.toString() }

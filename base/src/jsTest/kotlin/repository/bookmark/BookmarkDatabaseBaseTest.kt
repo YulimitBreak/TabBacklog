@@ -44,7 +44,7 @@ open class BookmarkDatabaseBaseTest : DatabaseBookmarkScope {
         } else bookmark
     }
 
-    internal suspend fun TestScope.openDatabase(): TestDatabaseHolder {
+    internal suspend fun TestScope.openDatabase(populateCount: Int = 40): TestDatabaseHolder {
         val holder = TestDatabaseHolder(
             "test_database",
             listOf(bookmarkSchema, tagsSchema)
@@ -53,7 +53,7 @@ open class BookmarkDatabaseBaseTest : DatabaseBookmarkScope {
             holder.deleteDatabase()
         }
         holder.database().writeTransaction(bookmarkSchema.storeName, tagsSchema.storeName) {
-            bookmarkArb.take(40).forEach { bookmark ->
+            bookmarkArb.take(populateCount).forEach { bookmark ->
                 saveBookmarkTransaction(bookmark, withTags = true)
             }
         }

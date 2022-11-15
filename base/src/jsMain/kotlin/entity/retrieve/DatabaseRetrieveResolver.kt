@@ -36,6 +36,11 @@ abstract class DatabaseRetrieveResolver<T, Query : RetrieveQuery<T>>(
                         }
                     } else flow
                 }
+                .let { flow ->
+                    if (dbQuery?.postFilter != null) {
+                        flow.filter(dbQuery.postFilter)
+                    } else flow
+                }
         } else {
             database().transaction(storeName) {
                 val dbQuery = query?.let { resolveQuery(it) }
@@ -49,6 +54,11 @@ abstract class DatabaseRetrieveResolver<T, Query : RetrieveQuery<T>>(
                             list.chunkedBy(dbQuery.fallback.compareField).flatMap { chunk ->
                                 chunk.sortedWith(dbQuery.fallback.comparator)
                             }
+                        } else list
+                    }
+                    .let { list ->
+                        if (dbQuery?.postFilter != null) {
+                            list.filter(dbQuery.postFilter)
                         } else list
                     }
             }.asFlow()
@@ -81,7 +91,8 @@ abstract class DatabaseRetrieveResolver<T, Query : RetrieveQuery<T>>(
         val indexName: String?,
         val key: Key?,
         val reverse: Boolean = false,
-        val fallback: FallbackSort<T, *>?
+        val fallback: FallbackSort<T, *>? = null,
+        val postFilter: ((T) -> Boolean)? = null,
     ) {
         companion object {
             operator fun <T, R : Any> invoke(
@@ -110,10 +121,21 @@ abstract class DatabaseRetrieveResolver<T, Query : RetrieveQuery<T>>(
                 filterQuery: RetrieveQuery.Filter<T, R>,
                 typeMapper: ((R) -> dynamic)? = null
             ) = DatabaseQuery<T>(
-                indexName,
-                Key(filterQuery.target.let { typeMapper?.invoke(it) ?: it }),
-                false,
-                null
+                indexName = indexName,
+                key = Key(filterQuery.target.let { typeMapper?.invoke(it) ?: it }),
+                reverse = false,
+                fallback = null
+            )
+
+            operator fun <T, R : Any> invoke(
+                field: (T) -> R?,
+                filterQuery: RetrieveQuery.Filter<T, R>,
+            ) = DatabaseQuery<T>(
+                indexName = null,
+                key = null,
+                reverse = false,
+                fallback = null,
+                postFilter = { field(it) == filterQuery.target }
             )
         }
     }

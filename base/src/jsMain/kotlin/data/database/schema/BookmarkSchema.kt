@@ -22,7 +22,7 @@ enum class BookmarkSchema(
     RemindDate(saveAsString(Bookmark::remindDate), Index.Field()),
     Deadline(saveAsString(Bookmark::deadline), Index.Field()),
     ExpirationDate(saveAsString(Bookmark::expirationDate), Index.Field()),
-    Favorite(Bookmark::favorite, Index.Field()),
+    Favorite(Bookmark::favorite),
     Comment(Bookmark::comment)
     ;
 
