@@ -4,13 +4,14 @@ import com.juul.indexeddb.Database
 import data.database.core.DbSchema
 import data.database.schema.BookmarkSchema
 import data.database.schema.extractObject
+import data.database.util.DatabaseBookmarkScope
 import entity.Bookmark
 import entity.retrieve.DatabaseRetrieveResolver
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.filter
 
 class BookmarkDatabaseRetrieveResolver(database: suspend () -> Database) :
-    DatabaseRetrieveResolver<Bookmark, BookmarkRetrieveQuery>(database) {
+    DatabaseRetrieveResolver<Bookmark, BookmarkRetrieveQuery>(database), DatabaseBookmarkScope {
 
     private val schema = DbSchema<BookmarkSchema>()
 
@@ -56,8 +57,8 @@ class BookmarkDatabaseRetrieveResolver(database: suspend () -> Database) :
             is BookmarkRetrieveQuery.Url -> flow.applySelectToFlow(Bookmark::url, query)
         }
 
-    override suspend fun postFetch(data: Bookmark): Bookmark {
-        // TODO get tags
-        return super.postFetch(data)
-    }
+    override suspend fun postFetch(data: Bookmark): Bookmark =
+        data.copy(tags = database().transaction(tagsSchema.storeName) {
+            getTagsTransaction(data.url, withSorting = true)
+        })
 }

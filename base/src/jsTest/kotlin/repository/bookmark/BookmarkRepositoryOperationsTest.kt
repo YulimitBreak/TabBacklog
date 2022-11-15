@@ -29,7 +29,7 @@ class BookmarkRepositoryOperationsTest : BookmarkRepositoryBaseTest() {
         checkAll(timeLimit, bookmarkArb) { bookmark ->
             repository.saveBookmark(bookmark)
 
-            val result = holder.database().transaction(bookmarkSchema.storeName, tagSchema.storeName) {
+            val result = holder.database().transaction(bookmarkSchema.storeName, tagsSchema.storeName) {
                 loadBookmark(bookmark.url, withTags = true)
             }
             withClue("Retrieved bookmark should have same values it had during saving") {
@@ -44,9 +44,9 @@ class BookmarkRepositoryOperationsTest : BookmarkRepositoryBaseTest() {
         val repository = repository(holder)
 
         checkAll(timeLimit, bookmarkArb) { bookmarkSource ->
-            val randomBookmark = holder.database().transaction(bookmarkSchema.storeName, tagSchema.storeName) {
+            val randomBookmark = holder.database().transaction(bookmarkSchema.storeName, tagsSchema.storeName) {
                 bookmarkSchema.extractObject(objectStore(bookmarkSchema.storeName).getAll().random()).let {
-                    it.copy(tags = getTags(it.url))
+                    it.copy(tags = getTagsTransaction(it.url, withSorting = false))
                 }
             }
 
@@ -63,7 +63,7 @@ class BookmarkRepositoryOperationsTest : BookmarkRepositoryBaseTest() {
 
             repository.saveBookmark(copiedBookmark)
 
-            val result = holder.database().transaction(bookmarkSchema.storeName, tagSchema.storeName) {
+            val result = holder.database().transaction(bookmarkSchema.storeName, tagsSchema.storeName) {
                 loadBookmark(randomBookmark.url, withTags = true)
             }
 
@@ -81,7 +81,7 @@ class BookmarkRepositoryOperationsTest : BookmarkRepositoryBaseTest() {
                 expirationDate = DateUtils.today - DatePeriod(days = daysAgoExpired)
             )
             holder.database().writeTransaction(bookmarkSchema.storeName) {
-                saveBookmark(expiredBookmark, withTags = false)
+                saveBookmarkTransaction(expiredBookmark, withTags = false)
             }
 
             repository.saveBookmark(newBookmark)
@@ -105,7 +105,7 @@ class BookmarkRepositoryOperationsTest : BookmarkRepositoryBaseTest() {
 
             repository.deleteBookmark(randomBookmarkUrl)
 
-            val result = holder.database().transaction(bookmarkSchema.storeName, tagSchema.storeName) {
+            val result = holder.database().transaction(bookmarkSchema.storeName, tagsSchema.storeName) {
                 loadBookmark(randomBookmarkUrl, withTags = true)
             }
 
@@ -124,7 +124,7 @@ class BookmarkRepositoryOperationsTest : BookmarkRepositoryBaseTest() {
             val randomBookmark = holder.database().writeTransaction(bookmarkSchema.storeName) {
                 val randomBookmark =
                     bookmarkSchema.extractObject(objectStore(bookmarkSchema.storeName).getAll().random()).url
-                saveBookmark(expiredBookmark, withTags = false)
+                saveBookmarkTransaction(expiredBookmark, withTags = false)
                 randomBookmark
             }
 
@@ -143,8 +143,8 @@ class BookmarkRepositoryOperationsTest : BookmarkRepositoryBaseTest() {
         val repository = repository(holder)
 
         checkAll(timeLimit, bookmarkArb) { bookmark ->
-            holder.database().writeTransaction(bookmarkSchema.storeName, tagSchema.storeName) {
-                saveBookmark(bookmark, withTags = true)
+            holder.database().writeTransaction(bookmarkSchema.storeName, tagsSchema.storeName) {
+                saveBookmarkTransaction(bookmark, withTags = true)
             }
 
             val result = repository.loadBookmark(bookmark.url)
