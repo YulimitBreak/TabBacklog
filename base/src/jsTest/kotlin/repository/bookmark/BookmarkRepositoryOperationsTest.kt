@@ -117,7 +117,7 @@ class BookmarkRepositoryOperationsTest : BookmarkRepositoryBaseTest() {
     fun deleteBookmark_deleteExpired() = runTest {
         val holder = openDatabase()
         val repository = repository(holder)
-        checkAll(30, Arb.int(1, 365)) { daysAgoExpired ->
+        checkAll(timeLimit, Arb.int(1, 365)) { daysAgoExpired ->
             val expiredBookmark = bookmarkArb.single().copy(
                 expirationDate = DateUtils.today - DatePeriod(days = daysAgoExpired)
             )

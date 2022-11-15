@@ -7,16 +7,15 @@ import io.kotest.inspectors.forAll
 import io.kotest.matchers.collections.shouldBeSameSizeAs
 import io.kotest.matchers.collections.shouldBeSortedWith
 import io.kotest.matchers.collections.shouldBeUnique
+import io.kotest.matchers.collections.shouldNotBeEmpty
 import io.kotest.matchers.ints.shouldBeGreaterThan
 import io.kotest.matchers.ints.shouldBeLessThanOrEqual
 import io.kotest.matchers.longs.shouldBeGreaterThanOrEqual
 import io.kotest.matchers.longs.shouldBeLessThan
 import io.kotest.matchers.shouldBe
+import io.kotest.matchers.shouldNotBe
 import io.kotest.property.Arb
-import io.kotest.property.arbitrary.int
-import io.kotest.property.arbitrary.list
-import io.kotest.property.arbitrary.long
-import io.kotest.property.arbitrary.numericFloat
+import io.kotest.property.arbitrary.*
 import io.kotest.property.checkAll
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
@@ -113,6 +112,50 @@ class FlowOperatorTest {
             }
             (source - result.toSet()).forAll {
                 it shouldBeLessThanOrEqual bar
+            }
+        }
+    }
+
+    @Test
+    fun chunkedBy() = runTest {
+
+        data class Entry(val text: String, val key: Int)
+        data class Counter(val key: Int, val count: Int)
+
+
+        val counterArb = arbitrary {
+            Counter(
+                Arb.int(-10, 10).bind(),
+                Arb.positiveInt(20).bind()
+            )
+        }
+        val listArb = Arb.list(counterArb).map { list ->
+            list.flatMap { counter ->
+                List(counter.count) { counter.key }
+            }.map { key ->
+                Entry(
+                    Arb.string(5).next(),
+                    key
+                )
+            }
+        }
+
+        checkAll(timeLimit, listArb) { source ->
+            val flow = flow {
+                source.forEach { emit(it) }
+                delay(100)
+            }
+
+            val result = flow.chunkedBy { it.key }.toList()
+
+            result.flatten() shouldBe source
+            result.forAll { list ->
+                list.shouldNotBeEmpty()
+                val key = list.first().key
+                list.forAll { it.key shouldBe key }
+            }
+            result.windowed(2).forAll { (a, b) ->
+                a.last().key shouldNotBe b.first().key
             }
         }
     }
