@@ -1,6 +1,7 @@
 package entity.retrieve
 
 import com.juul.indexeddb.*
+import common.chunkedBy
 import common.listTransform
 import data.database.core.paginate
 import entity.retrieve.util.selectByField
@@ -39,6 +40,13 @@ abstract class DatabaseRetrieveResolver<T, Query : RetrieveQuery<T>>(
                 queryable.getAll(dbQuery?.key)
                     .map { extract(it) }
                     .let { if (dbQuery?.reverse == true) it.asReversed() else it }
+                    .let {
+                        if (dbQuery?.fallback != null) {
+                            it.chunkedBy(dbQuery.fallback.compareField).flatMap { chunk ->
+                                chunk.sortedWith(dbQuery.fallback.comparator)
+                            }
+                        } else it
+                    }
             }.asFlow()
         }.map {
             postFetch(it)
@@ -63,7 +71,7 @@ abstract class DatabaseRetrieveResolver<T, Query : RetrieveQuery<T>>(
             list.selectByField(field, query)
         }
 
-    protected data class FallbackSort<T, R : Any>(val compareField: (T) -> R?, val fallbackSort: Comparator<T>)
+    protected data class FallbackSort<T, R : Any>(val compareField: (T) -> R?, val comparator: Comparator<T>)
 
     protected data class DatabaseQuery<T>(
         val indexName: String?,
