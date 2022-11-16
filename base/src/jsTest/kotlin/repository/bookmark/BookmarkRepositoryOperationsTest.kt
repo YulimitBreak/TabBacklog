@@ -1,6 +1,7 @@
 package repository.bookmark
 
 import common.DateUtils
+import core.limit
 import core.runTest
 import core.timeLimit
 import data.database.schema.extractObject
@@ -119,9 +120,9 @@ class BookmarkRepositoryOperationsTest : BookmarkRepositoryBaseTest() {
 
     @Test
     fun deleteBookmark_deleteExpired() = runTest {
-        val holder = openDatabase()
+        val holder = openDatabase(40)
         val repository = repository(holder)
-        checkAll(timeLimit, Arb.int(1, 365)) { daysAgoExpired ->
+        checkAll(timeLimit.limit(iterations = 30), Arb.int(1, 365)) { daysAgoExpired ->
             val expiredBookmark = bookmarkArb.single().copy(
                 expirationDate = DateUtils.today - DatePeriod(days = daysAgoExpired)
             )
