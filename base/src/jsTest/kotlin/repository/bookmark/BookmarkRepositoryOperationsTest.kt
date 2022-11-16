@@ -29,9 +29,10 @@ class BookmarkRepositoryOperationsTest : BookmarkRepositoryBaseTest() {
         checkAll(timeLimit, bookmarkArb) { bookmark ->
             repository.saveBookmark(bookmark)
 
-            val result = holder.database().transaction(bookmarkSchema.storeName, tagsSchema.storeName) {
-                loadBookmark(bookmark.url, withTags = true)
-            }
+            val result = holder.database()
+                .transaction(bookmarkSchema.storeName, tagsSchema.storeName, tagCountSchema.storeName) {
+                    loadBookmark(bookmark.url, withTags = true)
+                }
             withClue("Retrieved bookmark should have same values it had during saving") {
                 result shouldBeSame bookmark
             }
@@ -44,11 +45,12 @@ class BookmarkRepositoryOperationsTest : BookmarkRepositoryBaseTest() {
         val repository = repository(holder)
 
         checkAll(timeLimit, bookmarkArb) { bookmarkSource ->
-            val randomBookmark = holder.database().transaction(bookmarkSchema.storeName, tagsSchema.storeName) {
-                bookmarkSchema.extractObject(objectStore(bookmarkSchema.storeName).getAll().random()).let {
-                    it.copy(tags = getTagsTransaction(it.url, withSorting = false))
+            val randomBookmark = holder.database()
+                .transaction(bookmarkSchema.storeName, tagsSchema.storeName, tagCountSchema.storeName) {
+                    bookmarkSchema.extractObject(objectStore(bookmarkSchema.storeName).getAll().random()).let {
+                        it.copy(tags = getTags(it.url, withSorting = false))
+                    }
                 }
-            }
 
             val copiedBookmark = randomBookmark.copy(
                 title = bookmarkSource.title,
@@ -63,9 +65,10 @@ class BookmarkRepositoryOperationsTest : BookmarkRepositoryBaseTest() {
 
             repository.saveBookmark(copiedBookmark)
 
-            val result = holder.database().transaction(bookmarkSchema.storeName, tagsSchema.storeName) {
-                loadBookmark(randomBookmark.url, withTags = true)
-            }
+            val result = holder.database()
+                .transaction(bookmarkSchema.storeName, tagsSchema.storeName, tagCountSchema.storeName) {
+                    loadBookmark(randomBookmark.url, withTags = true)
+                }
 
             result shouldBeSame copiedBookmark
             result shouldNotHave bookmarkTagInvariantMatcher(randomBookmark)
@@ -105,9 +108,10 @@ class BookmarkRepositoryOperationsTest : BookmarkRepositoryBaseTest() {
 
             repository.deleteBookmark(randomBookmarkUrl)
 
-            val result = holder.database().transaction(bookmarkSchema.storeName, tagsSchema.storeName) {
-                loadBookmark(randomBookmarkUrl, withTags = true)
-            }
+            val result = holder.database()
+                .transaction(bookmarkSchema.storeName, tagsSchema.storeName, tagCountSchema.storeName) {
+                    loadBookmark(randomBookmarkUrl, withTags = true)
+                }
 
             result.shouldBeNull()
         }
@@ -143,9 +147,10 @@ class BookmarkRepositoryOperationsTest : BookmarkRepositoryBaseTest() {
         val repository = repository(holder)
 
         checkAll(timeLimit, bookmarkArb) { bookmark ->
-            holder.database().writeTransaction(bookmarkSchema.storeName, tagsSchema.storeName) {
-                saveBookmarkTransaction(bookmark, withTags = true)
-            }
+            holder.database()
+                .writeTransaction(bookmarkSchema.storeName, tagsSchema.storeName, tagCountSchema.storeName) {
+                    saveBookmarkTransaction(bookmark, withTags = true)
+                }
 
             val result = repository.loadBookmark(bookmark.url)
 

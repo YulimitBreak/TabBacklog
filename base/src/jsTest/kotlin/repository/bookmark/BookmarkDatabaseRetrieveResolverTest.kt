@@ -29,7 +29,7 @@ class BookmarkDatabaseRetrieveResolverTest : BookmarkDatabaseBaseTest() {
         transaction(bookmarkSchema.storeName, tagsSchema.storeName) {
             objectStore(bookmarkSchema.storeName).getAll()
                 .map { bookmarkSchema.extractObject(it) }
-                .map { it.copy(tags = getTagsTransaction(it.url, true)) }
+                .map { it.copy(tags = getTags(it.url, true)) }
         }
 
     @Test

@@ -5,6 +5,7 @@ import data.database.core.AppDatabaseHolder
 import data.database.core.DatabaseHolder
 import data.database.core.DbSchema
 import data.database.schema.BookmarkSchema
+import data.database.schema.TagCountSchema
 import data.database.schema.TagSchema
 import dev.shustoff.dikt.Create
 
@@ -15,10 +16,11 @@ class RepositoryModule {
     val databaseHolder: DatabaseHolder by lazy {
         AppDatabaseHolder(
             "TabBacklog",
-            1,
+            2,
             listOf(
                 DbSchema<BookmarkSchema>(),
                 DbSchema<TagSchema>(),
+                DbSchema<TagCountSchema>(),
             )
         )
     }

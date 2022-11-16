@@ -36,31 +36,34 @@ class BookmarkRepository(
 
     suspend fun deleteBookmark(url: String) {
         console.log("Deleting bookmark for $url")
-        databaseHolder.database().writeTransaction(bookmarkSchema.storeName, tagsSchema.storeName) {
-            objectStore(bookmarkSchema.storeName).delete(Key(url))
-            deleteTagsTransaction(url)
-            deleteExpiredBookmarksTransaction()
-            browserInteractor.sendUpdateMessage(url)
-        }
+        databaseHolder.database()
+            .writeTransaction(bookmarkSchema.storeName, tagsSchema.storeName, tagCountSchema.storeName) {
+                objectStore(bookmarkSchema.storeName).delete(Key(url))
+                deleteTags(url, updateTagsCount = true)
+                deleteExpiredBookmarks()
+                browserInteractor.sendUpdateMessage(url)
+            }
     }
 
     suspend fun saveBookmark(bookmark: Bookmark) {
         console.log("Saving bookmark ${bookmark.url}")
-        databaseHolder.database().writeTransaction(bookmarkSchema.storeName, tagsSchema.storeName) {
-            saveBookmarkTransaction(bookmark, withTags = true)
-            deleteExpiredBookmarksTransaction()
-            browserInteractor.sendUpdateMessage(bookmark.url)
-        }
+        databaseHolder.database()
+            .writeTransaction(bookmarkSchema.storeName, tagsSchema.storeName, tagCountSchema.storeName) {
+                saveBookmarkTransaction(bookmark, withTags = true)
+                deleteExpiredBookmarks()
+                browserInteractor.sendUpdateMessage(bookmark.url)
+            }
     }
 
 
     suspend fun loadBookmark(url: String): Bookmark? {
         console.log("Trying to find bookmark by $url")
-        return databaseHolder.database().transaction(bookmarkSchema.storeName, tagsSchema.storeName) {
-            val bookmarkEntity = objectStore(bookmarkSchema.storeName).get(Key(url)) ?: return@transaction null
-            val bookmark = bookmarkSchema.extractObject(bookmarkEntity)
-            return@transaction bookmark.copy(tags = getTagsTransaction(url, withSorting = true))
-        }
+        return databaseHolder.database()
+            .transaction(bookmarkSchema.storeName, tagsSchema.storeName, tagCountSchema.storeName) {
+                val bookmarkEntity = objectStore(bookmarkSchema.storeName).get(Key(url)) ?: return@transaction null
+                val bookmark = bookmarkSchema.extractObject(bookmarkEntity)
+                return@transaction bookmark.copy(tags = getTags(url, withSorting = true))
+            }
     }
 
     // TODO query params
@@ -71,7 +74,7 @@ class BookmarkRepository(
             .filterNot { it.expirationDate?.isBeforeToday() == true }
             .map { bookmark ->
                 databaseHolder.database().transaction(tagsSchema.storeName) {
-                    bookmark.copy(tags = getTagsTransaction(bookmark.url, withSorting = true))
+                    bookmark.copy(tags = getTags(bookmark.url, withSorting = true))
                 }
             }
             .let { emitAll(it) }

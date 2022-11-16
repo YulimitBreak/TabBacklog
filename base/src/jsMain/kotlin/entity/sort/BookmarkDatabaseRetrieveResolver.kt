@@ -1,7 +1,6 @@
 package entity.sort
 
 import com.juul.indexeddb.Database
-import data.database.core.DbSchema
 import data.database.schema.BookmarkSchema
 import data.database.schema.extractObject
 import data.database.util.DatabaseBookmarkScope
@@ -13,11 +12,9 @@ import kotlinx.coroutines.flow.filter
 class BookmarkDatabaseRetrieveResolver(database: suspend () -> Database) :
     DatabaseRetrieveResolver<Bookmark, BookmarkRetrieveQuery>(database), DatabaseBookmarkScope {
 
-    private val schema = DbSchema<BookmarkSchema>()
+    override val storeName: String = bookmarkSchema.storeName
 
-    override val storeName: String = schema.storeName
-
-    override fun extract(source: dynamic): Bookmark = schema.extractObject(source)
+    override fun extract(source: dynamic): Bookmark = bookmarkSchema.extractObject(source)
 
     override suspend fun resolveQuery(query: BookmarkRetrieveQuery): DatabaseQuery<Bookmark> = when (query) {
         is BookmarkRetrieveQuery.CreationDate ->
@@ -58,7 +55,7 @@ class BookmarkDatabaseRetrieveResolver(database: suspend () -> Database) :
         }
 
     override suspend fun postFetch(data: Bookmark): Bookmark =
-        data.copy(tags = database().transaction(tagsSchema.storeName) {
-            getTagsTransaction(data.url, withSorting = true)
+        data.copy(tags = database().transaction(tagsSchema.storeName, tagCountSchema.storeName) {
+            getTags(data.url, withSorting = false)
         })
 }

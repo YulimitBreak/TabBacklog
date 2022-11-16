@@ -40,19 +40,19 @@ open class BookmarkDatabaseBaseTest : DatabaseBookmarkScope {
         val bookmarkEntity = objectStore(bookmarkSchema.storeName).get(Key(url)) ?: return null
         val bookmark = bookmarkSchema.extractObject(bookmarkEntity)
         return if (withTags) {
-            bookmark.copy(tags = getTagsTransaction(url, withSorting = false))
+            bookmark.copy(tags = getTags(url, withSorting = false))
         } else bookmark
     }
 
     internal suspend fun TestScope.openDatabase(populateCount: Int = 40): TestDatabaseHolder {
         val holder = TestDatabaseHolder(
             "test_database",
-            listOf(bookmarkSchema, tagsSchema)
+            listOf(bookmarkSchema, tagsSchema, tagCountSchema)
         )
         onCleanup {
             holder.deleteDatabase()
         }
-        holder.database().writeTransaction(bookmarkSchema.storeName, tagsSchema.storeName) {
+        holder.database().writeTransaction(bookmarkSchema.storeName, tagsSchema.storeName, tagCountSchema.storeName) {
             bookmarkArb.take(populateCount).forEach { bookmark ->
                 saveBookmarkTransaction(bookmark, withTags = true)
             }
