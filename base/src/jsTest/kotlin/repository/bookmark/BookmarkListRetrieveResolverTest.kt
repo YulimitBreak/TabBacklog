@@ -4,7 +4,7 @@ import core.bookmarkArbShort
 import core.runTest
 import core.shuffle
 import core.timeLimit
-import entity.sort.BookmarkListRetrieveResolver
+import data.database.resolver.BookmarkListRetrieveResolver
 import entity.sort.BookmarkSort
 import entity.sort.SmartSort
 import entity.sort.SortType

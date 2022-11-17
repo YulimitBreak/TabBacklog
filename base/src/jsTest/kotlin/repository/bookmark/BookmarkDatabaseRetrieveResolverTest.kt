@@ -4,9 +4,9 @@ import com.juul.indexeddb.Database
 import core.runTest
 import core.shuffle
 import core.timeLimit
+import data.database.resolver.BookmarkDatabaseRetrieveResolver
 import data.database.schema.extractObject
 import entity.Bookmark
-import entity.sort.BookmarkDatabaseRetrieveResolver
 import entity.sort.BookmarkSort
 import entity.sort.SmartSort
 import entity.sort.SortType

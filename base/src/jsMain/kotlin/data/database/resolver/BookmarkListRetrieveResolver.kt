@@ -1,8 +1,9 @@
-package entity.sort
+package data.database.resolver
 
 import entity.Bookmark
 import entity.retrieve.ListRetrieveResolver
 import entity.retrieve.util.selectByField
+import entity.sort.BookmarkRetrieveQuery
 
 class BookmarkListRetrieveResolver(source: List<Bookmark>) :
     ListRetrieveResolver<Bookmark, BookmarkRetrieveQuery>(source) {
