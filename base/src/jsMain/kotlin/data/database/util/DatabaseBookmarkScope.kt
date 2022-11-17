@@ -105,6 +105,12 @@ interface DatabaseBookmarkScope {
 
     suspend fun Transaction.getTagCount(tags: Collection<String>): Map<String, Int> {
         val store = objectStore(tagCountSchema.storeName)
-        return tags.associateWith { t -> tagCountSchema.extract(store.get(Key(t)), TagCountSchema.Count) }
+        return tags.associateWith { t ->
+            val tagCountEntity = store.get(Key(t))
+            if (tagCountEntity != undefined) {
+                tagCountSchema.extract(tagCountEntity, TagCountSchema.Count)
+            } else 0
+
+        }
     }
 }

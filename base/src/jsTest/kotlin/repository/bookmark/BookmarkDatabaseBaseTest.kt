@@ -37,16 +37,23 @@ open class BookmarkDatabaseBaseTest : DatabaseBookmarkScope {
 
     infix fun Bookmark?.shouldBeSame(target: Bookmark) = this shouldBe bookmarkTagInvariantMatcher(target)
 
-    protected suspend fun Transaction.loadBookmark(url: String, withTags: Boolean): Bookmark? {
+    protected suspend fun Transaction.loadBookmark(
+        url: String,
+        withTags: Boolean,
+        withTagSorting: Boolean = false
+    ): Bookmark? {
 
         val bookmarkEntity = objectStore(bookmarkSchema.storeName).get(Key(url)) ?: return null
         val bookmark = bookmarkSchema.extractObject(bookmarkEntity)
         return if (withTags) {
-            bookmark.copy(tags = getTags(url, withSorting = false))
+            bookmark.copy(tags = getTags(url, withSorting = withTagSorting))
         } else bookmark
     }
 
-    internal suspend fun TestScope.openDatabase(populateCount: Int = 40): TestDatabaseHolder {
+    internal suspend fun TestScope.openDatabase(
+        populateCount: Int = 40,
+        populationArb: Arb<Bookmark> = bookmarkArb
+    ): TestDatabaseHolder {
         val holder = TestDatabaseHolder(
             "test_database",
             listOf(bookmarkSchema, tagsSchema, tagCountSchema)
@@ -55,7 +62,7 @@ open class BookmarkDatabaseBaseTest : DatabaseBookmarkScope {
             holder.deleteDatabase()
         }
         holder.database().writeTransaction(bookmarkSchema.storeName, tagsSchema.storeName, tagCountSchema.storeName) {
-            bookmarkArb.take(populateCount).forEach { bookmark ->
+            populationArb.take(populateCount).forEach { bookmark ->
                 saveBookmarkTransaction(bookmark, withTags = true)
             }
         }

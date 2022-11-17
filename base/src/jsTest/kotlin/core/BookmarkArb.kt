@@ -35,18 +35,19 @@ fun bookmarkArb(
         remindDate = remindDate.bind(),
         deadline = deadline.bind(),
         expirationDate = expirationDate.bind(),
-        tags = if (tags.isEmpty()) emptyList() else Arb.subsequence(tags).bind(),
+        tags = if (tags.isEmpty()) emptyList() else Arb.subsequence(Arb.shuffle(tags).bind()).bind(),
         favorite = favorite.bind(),
         comment = comment.bind()
     )
 }
 
-fun bookmarkArbShort() = bookmarkArb(
-    title = Arb.string(5..10, Codepoint.alphanumeric()),
-    url = Arb.string(3..10, Codepoint.az()).map { "http://$it.com" },
-    favicon = Arb.string(3..10, Codepoint.az()).map { "http://$it.com" }.orNull(nullProbability = 0.1),
-    comment = Arb.string(0..10, Codepoint.alphanumeric())
-)
+fun bookmarkArbShort(
+    title: Arb<String> = Arb.string(5..10, Codepoint.alphanumeric()),
+    url: Arb<String> = Arb.string(3..10, Codepoint.az()).map { "http://$it.com" },
+    favicon: Arb<String?> = Arb.string(3..10, Codepoint.az()).map { "http://$it.com" }.orNull(nullProbability = 0.1),
+    comment: Arb<String> = Arb.string(0..10, Codepoint.alphanumeric()),
+    tags: List<String> = emptyList(),
+) = bookmarkArb(title = title, url = url, favicon = favicon, comment = comment, tags = tags)
 
 fun Arb<Date>.toLocalDate() = map { it.toLocalDate() }
 
