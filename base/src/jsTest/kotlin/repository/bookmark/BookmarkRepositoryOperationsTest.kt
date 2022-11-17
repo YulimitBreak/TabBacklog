@@ -99,7 +99,7 @@ class BookmarkRepositoryOperationsTest : BookmarkRepositoryBaseTest() {
 
     @Test
     fun deleteBookmark() = runTest {
-        val holder = openDatabase()
+        val holder = openDatabase(40)
         val repository = repository(holder)
 
         repeat(30) {

@@ -26,7 +26,7 @@ import kotlin.test.Test
 class BookmarkDatabaseRetrieveResolverTest : BookmarkDatabaseBaseTest() {
 
     private suspend fun Database.getAllBookmarks(): List<Bookmark> =
-        transaction(bookmarkSchema.storeName, tagsSchema.storeName) {
+        transaction(bookmarkSchema.storeName, tagsSchema.storeName, tagCountSchema.storeName) {
             objectStore(bookmarkSchema.storeName).getAll()
                 .map { bookmarkSchema.extractObject(it) }
                 .map { it.copy(tags = getTags(it.url, true)) }
