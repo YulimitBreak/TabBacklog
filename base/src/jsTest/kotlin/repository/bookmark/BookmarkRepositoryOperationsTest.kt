@@ -4,12 +4,19 @@ import common.DateUtils
 import core.limit
 import core.runTest
 import core.timeLimit
+import data.database.schema.TagSchema
 import data.database.schema.extractObject
 import io.kotest.assertions.withClue
+import io.kotest.inspectors.forAll
+import io.kotest.matchers.collections.shouldBeSortedWith
+import io.kotest.matchers.ints.shouldBeExactly
+import io.kotest.matchers.maps.shouldNotHaveKey
 import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.shouldNotHave
 import io.kotest.property.Arb
+import io.kotest.property.arbitrary.element
 import io.kotest.property.arbitrary.int
+import io.kotest.property.arbitrary.map
 import io.kotest.property.arbitrary.single
 import io.kotest.property.checkAll
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -20,22 +27,34 @@ import kotlin.test.Test
 @OptIn(ExperimentalCoroutinesApi::class)
 class BookmarkRepositoryOperationsTest : BookmarkRepositoryBaseTest() {
 
-    // TODO tag sorting after #5 implemented
-    // TODO check that updating sends an event
-
     @Test
     fun saveBookmark() = runTest {
         val holder = openDatabase()
         val repository = repository(holder)
         checkAll(timeLimit, bookmarkArb) { bookmark ->
+
+            val oldTagCount = holder.database().transaction(tagCountSchema.storeName) {
+                getTagCount(bookmark.tags)
+            }
+
             repository.saveBookmark(bookmark)
 
             val result = holder.database()
                 .transaction(bookmarkSchema.storeName, tagsSchema.storeName, tagCountSchema.storeName) {
                     loadBookmark(bookmark.url, withTags = true)
                 }
+
+            val newTagCount = holder.database().transaction(tagCountSchema.storeName) {
+                getTagCount(bookmark.tags)
+            }
+
             withClue("Retrieved bookmark should have same values it had during saving") {
                 result shouldBeSame bookmark
+            }
+            withClue("Tag count should update after new bookmark") {
+                oldTagCount.forAll { (k, v) ->
+                    newTagCount.getValue(k) - 1 shouldBeExactly v
+                }
             }
         }
     }
@@ -64,7 +83,16 @@ class BookmarkRepositoryOperationsTest : BookmarkRepositoryBaseTest() {
                 comment = bookmarkSource.comment,
             )
 
+            val allTags = (randomBookmark.tags + copiedBookmark.tags).distinct()
+            val oldTagCount = holder.database().transaction(tagCountSchema.storeName) {
+                getTagCount(allTags)
+            }
+
             repository.saveBookmark(copiedBookmark)
+
+            val newTagCount = holder.database().transaction(tagCountSchema.storeName) {
+                getTagCount(allTags)
+            }
 
             val result = holder.database()
                 .transaction(bookmarkSchema.storeName, tagsSchema.storeName, tagCountSchema.storeName) {
@@ -73,6 +101,29 @@ class BookmarkRepositoryOperationsTest : BookmarkRepositoryBaseTest() {
 
             result shouldBeSame copiedBookmark
             result shouldNotHave bookmarkTagInvariantMatcher(randomBookmark)
+
+            withClue("Tag count should be updated properly") {
+                allTags.forAll { tag ->
+                    when {
+                        tag in randomBookmark.tags && tag !in copiedBookmark.tags -> {
+                            val oldTagValue = oldTagCount.getValue(tag)
+                            if (oldTagValue > 1) {
+                                newTagCount.getValue(tag) + 1 shouldBeExactly oldTagValue
+                            } else {
+                                newTagCount shouldNotHaveKey tag
+                            }
+                        }
+
+                        tag !in randomBookmark.tags && tag in copiedBookmark.tags -> {
+                            newTagCount.getValue(tag) - 1 shouldBeExactly oldTagCount.getValue(tag)
+                        }
+
+                        else -> {
+                            newTagCount.getValue(tag) shouldBeExactly oldTagCount.getValue(tag)
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -94,6 +145,43 @@ class BookmarkRepositoryOperationsTest : BookmarkRepositoryBaseTest() {
                 loadBookmark(expiredBookmark.url, withTags = false)
             }
             result.shouldBeNull()
+        }
+    }
+
+    @Test
+    fun saveBookmark_deleteExpired_expiredTagUpdate() = runTest {
+        val holder = openDatabase()
+        val repository = repository(holder)
+        checkAll(
+            timeLimit,
+            Arb.int(1, 365),
+            bookmarkArb.map { it.copy(tags = emptyList()) } // To not clash with expired bookmark tags
+        ) { daysAgoExpired, newBookmark ->
+            val expiredBookmark = bookmarkArb.single().copy(
+                expirationDate = DateUtils.today - DatePeriod(days = daysAgoExpired)
+            )
+            holder.database()
+                .writeTransaction(bookmarkSchema.storeName, tagsSchema.storeName, tagCountSchema.storeName) {
+                    saveBookmarkTransaction(expiredBookmark, withTags = true)
+                }
+
+            val oldTagCount = holder.database().transaction(tagCountSchema.storeName) {
+                getTagCount(expiredBookmark.tags)
+            }
+
+            repository.saveBookmark(newBookmark)
+
+            val newTagCount = holder.database().transaction(tagCountSchema.storeName) {
+                getTagCount(expiredBookmark.tags)
+            }
+
+            oldTagCount.forAll { (k, v) ->
+                if (v > 1) {
+                    newTagCount.getValue(k) + 1 shouldBeExactly v
+                } else {
+                    newTagCount shouldNotHaveKey k
+                }
+            }
         }
     }
 
@@ -156,6 +244,26 @@ class BookmarkRepositoryOperationsTest : BookmarkRepositoryBaseTest() {
             val result = repository.loadBookmark(bookmark.url)
 
             result shouldBeSame bookmark
+        }
+    }
+
+    @Test
+    fun loadBookmark_tagsSorted() = runTest {
+        val holder = openDatabase()
+        val repository = repository(holder)
+        val tagsSelection = holder.database().transaction(tagsSchema.storeName) {
+            objectStore(tagsSchema.storeName).getAll().map {
+                tagsSchema.extract(it) {
+                    TagSchema.Url.value<String>() to TagSchema.Tag.value<String>()
+                }
+            }
+        }
+        val urls = tagsSelection.map { it.first }
+        val tagCount = tagsSelection.map { it.second }.groupBy { it }.mapValues { it.value.size }
+        checkAll(timeLimit.limit(iterations = urls.size), Arb.element(urls)) { url ->
+            val bookmark = repository.loadBookmark(url) ?: return@checkAll
+
+            bookmark.tags shouldBeSortedWith { a, b -> -tagCount.getValue(a).compareTo(tagCount.getValue(b)) }
         }
     }
 

@@ -5,6 +5,7 @@ import com.juul.indexeddb.Transaction
 import core.TestDatabaseHolder
 import core.bookmarkArb
 import core.onCleanup
+import data.database.schema.TagCountSchema
 import data.database.schema.extractObject
 import data.database.util.DatabaseBookmarkScope
 import entity.Bookmark
@@ -13,6 +14,8 @@ import io.kotest.matchers.Matcher
 import io.kotest.matchers.MatcherResult
 import io.kotest.matchers.shouldBe
 import io.kotest.property.Arb
+import io.kotest.property.arbitrary.Codepoint
+import io.kotest.property.arbitrary.az
 import io.kotest.property.arbitrary.string
 import io.kotest.property.arbitrary.take
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -23,7 +26,7 @@ import kotlinx.datetime.LocalDateTime
 @OptIn(ExperimentalCoroutinesApi::class)
 open class BookmarkDatabaseBaseTest : DatabaseBookmarkScope {
 
-    val tags = Arb.string(minSize = 3, maxSize = 20).take(20).toList()
+    val tags = Arb.string(minSize = 3, maxSize = 20, codepoints = Codepoint.az()).take(20).toList()
     val bookmarkArb = bookmarkArb(tags = tags)
     fun bookmarkTagInvariantMatcher(target: Bookmark?) = Matcher<Bookmark?> { source ->
         MatcherResult(
@@ -58,6 +61,12 @@ open class BookmarkDatabaseBaseTest : DatabaseBookmarkScope {
             }
         }
         return holder
+    }
+
+
+    internal suspend fun Transaction.getTagCount(tags: List<String>): Map<String, Int> {
+        val store = objectStore(tagCountSchema.storeName)
+        return tags.associateWith { t -> tagCountSchema.extract(store.get(Key(t)), TagCountSchema.Count) }
     }
 
     protected data class BookmarkTagInvariant(

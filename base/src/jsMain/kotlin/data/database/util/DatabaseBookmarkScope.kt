@@ -40,6 +40,8 @@ interface DatabaseBookmarkScope {
 
 
     suspend fun WriteTransaction.deleteExpiredBookmarks() {
+
+        val deletedTagUrls = mutableListOf<String>()
         objectStore(bookmarkSchema.storeName).index(BookmarkSchema.ExpirationDate.name).openCursor()
             .takeWhile { cursor ->
                 val date = bookmarkSchema.extract<String>(cursor.value, BookmarkSchema.ExpirationDate).toLocalDate()
@@ -47,9 +49,12 @@ interface DatabaseBookmarkScope {
             }
             .collect { cursor ->
                 val url = bookmarkSchema.extract<String>(cursor.value, BookmarkSchema.Url)
+                deletedTagUrls.add(url)
                 cursor.delete()
-                deleteTags(url, true)
             }
+        deletedTagUrls.forEach { url ->
+            deleteTags(url, true)
+        }
     }
 
     suspend fun WriteTransaction.deleteTags(url: String, updateTagsCount: Boolean) {
