@@ -2,21 +2,22 @@ package data
 
 import browser.tabs.Tab
 import com.juul.indexeddb.Key
-import common.isBeforeToday
 import data.database.core.DatabaseHolder
-import data.database.core.paginate
 import data.database.schema.extractObject
 import data.database.util.DatabaseBookmarkScope
 import entity.Bookmark
+import entity.BookmarkSearchConfig
 import entity.BookmarkType
 import entity.error.UnsupportedTabException
-import kotlinx.coroutines.flow.*
+import entity.sort.BookmarkSort
+import kotlinx.coroutines.flow.Flow
 
 class BookmarkRepository(
     private val databaseHolder: DatabaseHolder,
     private val browserInteractor: BrowserInteractor,
 ) : DatabaseBookmarkScope {
 
+    private val sortEngine = BookmarkSortEngine(databaseHolder)
 
     suspend fun loadBookmarkForActiveTab(): Bookmark {
         val tab = browserInteractor.getCurrentTab()
@@ -66,19 +67,7 @@ class BookmarkRepository(
             }
     }
 
-    // TODO query params
-    fun readBookmarks(): Flow<Bookmark> = flow {
-        databaseHolder.database().paginate(bookmarkSchema.storeName) {
-            bookmarkSchema.extractObject(it.value)
-        }
-            .filterNot { it.expirationDate?.isBeforeToday() == true }
-            .map { bookmark ->
-                databaseHolder.database().transaction(tagsSchema.storeName) {
-                    bookmark.copy(tags = getTags(bookmark.url, withSorting = true))
-                }
-            }
-            .let { emitAll(it) }
-    }
-
+    fun readBookmarks(search: BookmarkSearchConfig, sort: BookmarkSort): Flow<Bookmark> =
+        sortEngine.readBookmarks(search, sort)
 
 }

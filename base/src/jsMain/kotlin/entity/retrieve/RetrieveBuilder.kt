@@ -16,7 +16,7 @@ data class RetrieveBuilder<T, Query : RetrieveQuery<T>>(
 
     override fun filter(f: (T) -> Boolean) = copy(actions = actions + Action.Filter(f))
 
-    override suspend fun resolve(resolver: RetrieveResolver<T, Query>): Flow<T> = resolver.resolve(this)
+    override suspend fun resolve(resolver: RetrieveResolver<T, Query>): Flow<T> = resolver.resolveBuilder(this)
 
     sealed interface Action<T, Query : RetrieveQuery<T>> {
 

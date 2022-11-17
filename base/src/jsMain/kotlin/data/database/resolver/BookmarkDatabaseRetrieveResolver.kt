@@ -6,6 +6,7 @@ import data.database.schema.extractObject
 import data.database.util.DatabaseBookmarkScope
 import entity.Bookmark
 import entity.retrieve.DatabaseRetrieveResolver
+import entity.retrieve.util.applySelectToFlow
 import entity.sort.BookmarkRetrieveQuery
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.filter

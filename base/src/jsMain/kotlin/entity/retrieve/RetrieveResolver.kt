@@ -8,12 +8,14 @@ abstract class RetrieveResolver<T, Query : RetrieveQuery<T>> {
 
     open val scope: RetrieveScope<T, Query> = object : RetrieveScope<T, Query> {}
 
-    tailrec suspend fun resolve(builder: RetrieveBuilder<T, Query>): Flow<T> = when (val base = builder.base) {
+    suspend fun resolve(request: RetrieveRequest<T, Query>) = request.resolve(this)
+
+    tailrec suspend fun resolveBuilder(builder: RetrieveBuilder<T, Query>): Flow<T> = when (val base = builder.base) {
         is RetrieveRequest.Fetch -> resolveFlow(::fetchFlow, builder.actions)
         is RetrieveRequest.Join -> resolveFlow(joinFlowSource(base.requests), builder.actions)
         is RetrieveRequest.Empty -> emptyFlow()
-        is RetrieveBuilder -> resolve(RetrieveBuilder(base.base, base.actions + builder.actions))
-        is RetrieveRequest.Deferred -> resolve(RetrieveBuilder(base.innerRequest(scope), builder.actions))
+        is RetrieveBuilder -> resolveBuilder(RetrieveBuilder(base.base, base.actions + builder.actions))
+        is RetrieveRequest.Deferred -> resolveBuilder(RetrieveBuilder(base.innerRequest(scope), builder.actions))
     }
 
 

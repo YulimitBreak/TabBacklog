@@ -1,6 +1,8 @@
 package entity.retrieve.util
 
+import common.listTransform
 import entity.retrieve.RetrieveQuery
+import kotlinx.coroutines.flow.Flow
 
 fun <T, R> Collection<T>.selectByField(
     field: (T) -> R?,
@@ -36,3 +38,20 @@ fun <T, R : Any> Collection<T>.selectByField(
     query: RetrieveQuery.Sort<T, R>
 ) = selectByField(field, comparator, query.ascending, query.from, query.to, query.fallbackSort)
 
+
+fun <T, R : Any> Flow<T>.applySelectToFlow(
+    field: (T) -> R?,
+    comparator: Comparator<R>,
+    query: RetrieveQuery.Sort<T, R>
+) =
+    this.listTransform { list ->
+        list.selectByField(field, comparator, query)
+    }
+
+fun <T, R : Comparable<R>> Flow<T>.applySelectToFlow(
+    field: (T) -> R?,
+    query: RetrieveQuery.Sort<T, R>
+) =
+    this.listTransform { list ->
+        list.selectByField(field, query)
+    }

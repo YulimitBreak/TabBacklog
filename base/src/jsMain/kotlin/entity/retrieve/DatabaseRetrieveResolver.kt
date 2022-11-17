@@ -2,9 +2,7 @@ package entity.retrieve
 
 import com.juul.indexeddb.*
 import common.chunkedBy
-import common.listTransform
 import data.database.core.paginate
-import entity.retrieve.util.selectByField
 import kotlinx.coroutines.flow.*
 
 abstract class DatabaseRetrieveResolver<T, Query : RetrieveQuery<T>>(
@@ -67,23 +65,6 @@ abstract class DatabaseRetrieveResolver<T, Query : RetrieveQuery<T>>(
         }
 
     protected open suspend fun postFetch(data: T): T = data
-
-    protected fun <R : Any> Flow<T>.applySelectToFlow(
-        field: (T) -> R?,
-        comparator: Comparator<R>,
-        query: RetrieveQuery.Sort<T, R>
-    ) =
-        this.listTransform { list ->
-            list.selectByField(field, comparator, query)
-        }
-
-    protected fun <R : Comparable<R>> Flow<T>.applySelectToFlow(
-        field: (T) -> R?,
-        query: RetrieveQuery.Sort<T, R>
-    ) =
-        this.listTransform { list ->
-            list.selectByField(field, query)
-        }
 
     protected data class FallbackSort<T, R : Any>(val compareField: (T) -> R?, val comparator: Comparator<T>)
 

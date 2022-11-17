@@ -9,6 +9,8 @@ import common.receive
 import data.BookmarkRepository
 import data.BrowserInteractor
 import entity.Bookmark
+import entity.BookmarkSearchConfig
+import entity.sort.SmartSort
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.launch
@@ -25,7 +27,9 @@ class BookmarkListModel(
     var bookmarkListState by mutableStateOf(BookmarkListState(emptyList(), isLoading = false, reachedEnd = false))
         private set
 
-    private var bookmarkChannel: ReceiveChannel<Bookmark> = bookmarkRepository.readBookmarks().produce(coroutineScope)
+    private var bookmarkChannel: ReceiveChannel<Bookmark> = bookmarkRepository.readBookmarks(
+        BookmarkSearchConfig(), SmartSort
+    ).produce(coroutineScope)
 
     // TODO multiselect
     var selectedBookmarkUrl: String? by mutableStateOf(null)

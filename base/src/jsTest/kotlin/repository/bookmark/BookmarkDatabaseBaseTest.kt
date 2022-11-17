@@ -5,7 +5,6 @@ import com.juul.indexeddb.Transaction
 import core.TestDatabaseHolder
 import core.bookmarkArb
 import core.onCleanup
-import data.database.schema.TagCountSchema
 import data.database.schema.extractObject
 import data.database.util.DatabaseBookmarkScope
 import entity.Bookmark
@@ -61,12 +60,6 @@ open class BookmarkDatabaseBaseTest : DatabaseBookmarkScope {
             }
         }
         return holder
-    }
-
-
-    internal suspend fun Transaction.getTagCount(tags: List<String>): Map<String, Int> {
-        val store = objectStore(tagCountSchema.storeName)
-        return tags.associateWith { t -> tagCountSchema.extract(store.get(Key(t)), TagCountSchema.Count) }
     }
 
     protected data class BookmarkTagInvariant(
