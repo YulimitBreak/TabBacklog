@@ -3,11 +3,11 @@ package ui.common.bookmark
 import androidx.compose.runtime.Composable
 import com.varabyte.kobweb.compose.ui.Modifier
 import com.varabyte.kobweb.compose.ui.thenIf
-import com.varabyte.kobweb.silk.components.icons.fa.FaBookBookmark
-import com.varabyte.kobweb.silk.components.icons.fa.FaNoteSticky
 import org.jetbrains.compose.web.dom.Text
 import ui.common.basecomponent.RowButton
 import ui.styles.Variants
+import ui.styles.brand.BacklogIcon
+import ui.styles.brand.LibraryIcon
 
 @Composable
 fun BookmarkTypeLibraryButton(
@@ -20,7 +20,7 @@ fun BookmarkTypeLibraryButton(
         modifier = modifier
             .thenIf(isInLibrary, Variants.Button.SelectedUnclickablePrimary.toModifier())
     ) {
-        FaBookBookmark()
+        LibraryIcon()
         if (isInLibrary) {
             Text("In library")
         } else {
@@ -40,7 +40,7 @@ fun BookmarkTypeBacklogButton(
         modifier = modifier
             .thenIf(isInBacklog, Variants.Button.SelectedUnclickablePrimary.toModifier())
     ) {
-        FaNoteSticky()
+        BacklogIcon()
         if (isInBacklog) {
             Text("In backlog")
         } else {
