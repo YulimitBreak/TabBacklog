@@ -8,6 +8,7 @@ import core.timeLimit
 import data.TagRepository
 import data.database.core.DatabaseHolder
 import data.database.core.DbSchema
+import data.database.schema.TagCountSchema
 import data.database.schema.TagSchema
 import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.collections.shouldBeSortedWith
@@ -24,6 +25,7 @@ import kotlin.test.Test
 class TagRepositoryTest {
 
     private val tagSchema = DbSchema<TagSchema>()
+    private val tagCountSchema = DbSchema<TagCountSchema>()
 
     private val tagArb = arbitrary { Arb.string(minSize = 3, maxSize = 20, codepoints = Codepoint.az()).bind() }
 
@@ -58,14 +60,14 @@ class TagRepositoryTest {
     private suspend fun TestScope.openDatabase(): Pair<DatabaseHolder, Map<String, Int>> {
         val holder = TestDatabaseHolder(
             "test_database",
-            listOf(tagSchema)
+            listOf(tagSchema, tagCountSchema)
         )
         onCleanup {
             holder.deleteDatabase()
         }
         val tags = tagArb.take(50).toList()
         val urls = Arb.domain().take(40).toList()
-        fun tagSample() = Arb.subsequence(tags).single()
+        fun tagSample() = Arb.subsequence(Arb.shuffle(tags).single()).single()
         holder.database().writeTransaction(tagSchema.storeName) {
             val store = objectStore(tagSchema.storeName)
             urls.forEach { url ->
@@ -81,12 +83,25 @@ class TagRepositoryTest {
                 }
             }
         }
+        holder.database().writeTransaction(tagSchema.storeName, tagCountSchema.storeName) {
+            val countStore = objectStore(tagCountSchema.storeName)
+            val tagStore = objectStore(tagSchema.storeName)
+            tags.forEach { tag ->
+                countStore.put(
+                    tagCountSchema.generate(
+                        mapOf(
+                            TagCountSchema.Tag to tag,
+                            TagCountSchema.Count to tagStore.index(TagSchema.Tag.name).count(Key(tag))
+                        )
+                    )
+                )
+            }
+        }
         val sortedTags = holder.database().transaction(tagSchema.storeName) {
             val store = objectStore(tagSchema.storeName)
-            tags.map { tag ->
-                tag to store.index(TagSchema.Tag.name).count(Key(tag))
+            tags.associateWith { tag ->
+                store.index(TagSchema.Tag.name).count(Key(tag))
             }
-                .toMap()
                 .filterValues { it > 0 }
         }
         return Pair(holder, sortedTags)
