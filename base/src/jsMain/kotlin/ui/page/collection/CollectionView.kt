@@ -25,7 +25,7 @@ import ui.page.summary.BookmarkSummary
 @Composable
 fun CollectionView(modifier: Modifier = Modifier) {
 
-    var selectedBookmark by remember { mutableStateOf<Bookmark?>(null) }
+    var selectedBookmarks by remember { mutableStateOf<List<Bookmark>>(emptyList()) }
     var editMode by remember { mutableStateOf(false) }
 
     Row(modifier.role("main").overflowX(Overflow.Auto).gap(32.px).flexWrap(FlexWrap.Nowrap)) {
@@ -46,15 +46,15 @@ fun CollectionView(modifier: Modifier = Modifier) {
                     ),
                 onBookmarkSelect = {
                     editMode = false
-                    selectedBookmark = it
+                    selectedBookmarks = it
                 }
             )
         }
 
         Box(contentAlignment = Alignment.CenterStart, modifier = Modifier.fillMaxHeight()) {
 
-            val bookmark = selectedBookmark
-            if (bookmark != null) {
+            if (selectedBookmarks.size == 1) {
+                val bookmark = selectedBookmarks.single()
                 val bookmarkViewModifier = Modifier
                     .borderRadius(8.px)
                     .padding(16.px)
@@ -85,6 +85,8 @@ fun CollectionView(modifier: Modifier = Modifier) {
                         onNavigateBack = { editMode = false }
                     )
                 }
+            } else if (selectedBookmarks.size > 1) {
+                // TODO
             }
         }
     }

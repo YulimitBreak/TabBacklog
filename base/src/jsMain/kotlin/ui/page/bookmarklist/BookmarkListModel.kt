@@ -36,8 +36,9 @@ class BookmarkListModel(
     private var bookmarkChannel: ReceiveChannel<Bookmark> = readBookmarks(searchConfig)
 
     // TODO multiselect
-    var selectedBookmarkUrl: String? by mutableStateOf(null)
+    var selectedBookmarks: List<String> by mutableStateOf(emptyList())
         private set
+    private var lastClickedBookmarkUrl: String? = null
 
     init {
         coroutineScope.launch {
@@ -76,8 +77,8 @@ class BookmarkListModel(
     }
 
     fun selectBookmark(bookmark: Bookmark) {
-        this.selectedBookmarkUrl = bookmark.url
-        onBookmarkSelect(bookmark)
+        this.selectedBookmarks = listOf(bookmark.url)
+        onBookmarkSelect(listOf(bookmark)) // TODO
     }
 
     fun openBookmark(bookmark: Bookmark) {
@@ -139,7 +140,7 @@ class BookmarkListModel(
     )
 
     fun interface OnBookmarkSelect {
-        operator fun invoke(bookmark: Bookmark)
+        operator fun invoke(bookmark: List<Bookmark>)
     }
 
     companion object {

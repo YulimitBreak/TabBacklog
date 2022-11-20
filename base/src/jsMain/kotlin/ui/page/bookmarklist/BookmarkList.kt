@@ -21,7 +21,7 @@ import ui.styles.Palette
 import ui.styles.primaryColors
 
 @Composable
-fun BookmarkList(modifier: Modifier = Modifier, onBookmarkSelect: (Bookmark) -> Unit) {
+fun BookmarkList(modifier: Modifier = Modifier, onBookmarkSelect: (List<Bookmark>) -> Unit) {
 
     val appModule = AppModule.Local.current
     val scope = rememberCoroutineScope()
@@ -55,7 +55,7 @@ fun BookmarkList(modifier: Modifier = Modifier, onBookmarkSelect: (Bookmark) -> 
                 BookmarkTableView(
                     bookmark,
                     modifier = Modifier.padding(topBottom = 4.px, leftRight = 8.px).width(100.percent - 16.px)
-                        .thenIf(model.selectedBookmarkUrl == bookmark.url, Modifier.primaryColors())
+                        .thenIf(model.selectedBookmarks.contains(bookmark.url), Modifier.primaryColors())
                         .userSelect(UserSelect.None)
                         .onClick { model.selectBookmark(bookmark) }
                         .thenIf(bookmark.comment.isNotBlank(), Modifier.title(bookmark.comment))
