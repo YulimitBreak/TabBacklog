@@ -10,7 +10,7 @@ import com.varabyte.kobweb.compose.ui.graphics.Colors
 import com.varabyte.kobweb.compose.ui.modifiers.*
 import com.varabyte.kobweb.silk.components.icons.fa.FaFileArrowUp
 import data.BrowserInteractor
-import entity.SingleBookmarkTarget
+import entity.SingleBookmarkSource
 import org.jetbrains.compose.web.css.FlexWrap
 import org.jetbrains.compose.web.css.minus
 import org.jetbrains.compose.web.css.percent
@@ -67,7 +67,7 @@ fun CollectionView(modifier: Modifier = Modifier) {
                     )
                 if (!editMode) {
                     BookmarkSummary(
-                        target = SingleBookmarkTarget.Url(bookmarkUrl),
+                        target = SingleBookmarkSource.Url(bookmarkUrl),
                         modifier = bookmarkViewModifier,
                         firstButton = {
                             val browserInteractor = BrowserInteractor.Local.current
@@ -79,7 +79,7 @@ fun CollectionView(modifier: Modifier = Modifier) {
                         onEditRequest = { editMode = true })
                 } else {
                     BookmarkEditor(
-                        target = SingleBookmarkTarget.Url(bookmarkUrl),
+                        target = SingleBookmarkSource.Url(bookmarkUrl),
                         modifier = bookmarkViewModifier,
                         onNavigateBack = { editMode = false }
                     )

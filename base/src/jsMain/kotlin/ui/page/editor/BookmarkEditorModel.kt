@@ -8,7 +8,7 @@ import common.safeCast
 import data.BookmarkRepository
 import entity.BookmarkType
 import entity.EditedBookmark
-import entity.SingleBookmarkTarget
+import entity.SingleBookmarkSource
 import entity.core.Loadable
 import entity.core.load
 import kotlinx.coroutines.CoroutineScope
@@ -20,7 +20,7 @@ import ui.common.ext.apply
 import ui.page.tagedit.TagEditEvent
 
 class BookmarkEditorModel(
-    private val target: SingleBookmarkTarget,
+    private val target: SingleBookmarkSource,
     private val scope: CoroutineScope,
     private val bookmarkRepository: BookmarkRepository,
     onNavigateBackState: State<OnNavigateBack>,
@@ -45,9 +45,9 @@ class BookmarkEditorModel(
             setter = { bookmark = it },
         ) {
             when (target) {
-                SingleBookmarkTarget.CurrentTab -> bookmarkRepository.loadBookmarkForActiveTab()
-                is SingleBookmarkTarget.SelectedBookmark -> target.bookmark
-                is SingleBookmarkTarget.Url -> bookmarkRepository.loadBookmark(target.url)
+                SingleBookmarkSource.CurrentTab -> bookmarkRepository.loadBookmarkForActiveTab()
+                is SingleBookmarkSource.SelectedBookmark -> target.bookmark
+                is SingleBookmarkSource.Url -> bookmarkRepository.loadBookmark(target.url)
                     ?: throw IllegalStateException("Bookmark Not Found")
             }.let {
                 EditedBookmark(it)
@@ -79,7 +79,7 @@ class BookmarkEditorModel(
     fun deleteBookmark() {
         scope.launch {
             val url = bookmark.value?.base?.url
-                ?: target.safeCast<SingleBookmarkTarget.Url>()?.url
+                ?: target.safeCast<SingleBookmarkSource.Url>()?.url
                 ?: kotlin.run {
                     console.warn("Deleting bookmark in unloaded state")
                     return@launch

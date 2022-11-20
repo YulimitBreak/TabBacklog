@@ -8,7 +8,7 @@ import data.BookmarkRepository
 import data.BrowserInteractor
 import entity.Bookmark
 import entity.BookmarkType
-import entity.SingleBookmarkTarget
+import entity.SingleBookmarkSource
 import entity.core.Loadable
 import entity.core.load
 import kotlinx.browser.window
@@ -16,7 +16,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 class BookmarkSummaryModel(
-    private val target: SingleBookmarkTarget,
+    private val target: SingleBookmarkSource,
     private val scope: CoroutineScope,
     private val bookmarkRepository: BookmarkRepository,
     private val browserInteractor: BrowserInteractor,
@@ -36,9 +36,9 @@ class BookmarkSummaryModel(
     init {
         scope.loadBookmark {
             when (target) {
-                SingleBookmarkTarget.CurrentTab -> bookmarkRepository.loadBookmarkForActiveTab()
-                is SingleBookmarkTarget.SelectedBookmark -> target.bookmark
-                is SingleBookmarkTarget.Url -> bookmarkRepository.loadBookmark(target.url)
+                is SingleBookmarkSource.CurrentTab -> bookmarkRepository.loadBookmarkForActiveTab()
+                is SingleBookmarkSource.SelectedBookmark -> target.bookmark
+                is SingleBookmarkSource.Url -> bookmarkRepository.loadBookmark(target.url)
                     ?: throw IllegalStateException("Bookmark Not Found")
             }
         }

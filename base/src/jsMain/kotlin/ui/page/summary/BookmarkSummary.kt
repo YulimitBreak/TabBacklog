@@ -16,7 +16,7 @@ import com.varabyte.kobweb.silk.components.icons.fa.IconStyle
 import com.varabyte.kobweb.silk.components.text.SpanText
 import di.AppModule
 import entity.BookmarkType
-import entity.SingleBookmarkTarget
+import entity.SingleBookmarkSource
 import org.jetbrains.compose.web.css.minus
 import org.jetbrains.compose.web.css.percent
 import org.jetbrains.compose.web.css.px
@@ -35,7 +35,7 @@ import ui.styles.brand.ReminderTimerIcon
 
 @Composable
 fun BookmarkSummary(
-    target: SingleBookmarkTarget,
+    target: SingleBookmarkSource,
     onEditRequest: () -> Unit,
     firstButton: @Composable () -> Unit = {},
     modifier: Modifier = Modifier

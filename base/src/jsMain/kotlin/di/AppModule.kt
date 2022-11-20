@@ -4,7 +4,7 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.staticCompositionLocalOf
 import dev.shustoff.dikt.Create
 import dev.shustoff.dikt.UseModules
-import entity.SingleBookmarkTarget
+import entity.SingleBookmarkSource
 import entity.error.CompositionLocalError
 import kotlinx.coroutines.CoroutineScope
 import ui.page.bookmarklist.BookmarkListModel
@@ -25,13 +25,13 @@ class AppModule(
     @Create
     fun createBookmarkEditorModel(
         coroutineScope: CoroutineScope,
-        target: SingleBookmarkTarget,
+        target: SingleBookmarkSource,
         onNavigateBackState: State<BookmarkEditorModel.OnNavigateBack>
     ): BookmarkEditorModel
 
     @Create
     fun createBookmarkSummaryModel(
-        coroutineScope: CoroutineScope, target: SingleBookmarkTarget
+        coroutineScope: CoroutineScope, target: SingleBookmarkSource
     ): BookmarkSummaryModel
 
     @Create

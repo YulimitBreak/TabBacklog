@@ -8,7 +8,7 @@ import com.varabyte.kobweb.compose.ui.asAttributesBuilder
 import com.varabyte.kobweb.compose.ui.modifiers.fillMaxWidth
 import com.varabyte.kobweb.silk.components.icons.fa.FaListCheck
 import data.BrowserInteractor
-import entity.SingleBookmarkTarget
+import entity.SingleBookmarkSource
 import org.jetbrains.compose.web.dom.Main
 import org.jetbrains.compose.web.dom.Text
 import ui.common.DefaultLocalProvider
@@ -28,7 +28,7 @@ fun Popup() {
                 val router = Router.current
                 route("/") {
                     BookmarkSummary(
-                        target = SingleBookmarkTarget.CurrentTab,
+                        target = SingleBookmarkSource.CurrentTab,
                         onEditRequest = { router.navigate("/edit") },
                         firstButton = {
                             val browserInteractor = BrowserInteractor.Local.current
@@ -43,7 +43,7 @@ fun Popup() {
 
                 route("/edit") {
                     BookmarkEditor(
-                        target = SingleBookmarkTarget.CurrentTab,
+                        target = SingleBookmarkSource.CurrentTab,
                         onNavigateBack = { router.navigate("/") },
                         modifier = Modifier.fillMaxWidth()
                     )
