@@ -85,11 +85,10 @@ class BookmarkListModel(
         val url = bookmark.url
         val lastClickedBookmarkUrl = this.lastClickedBookmarkUrl
         when {
-
             shiftKey && lastClickedBookmarkUrl != null && bookmarkListState.list.any { it.url == lastClickedBookmarkUrl } -> {
                 val indexStart = bookmarkListState.list.indexOfFirst { it.url == lastClickedBookmarkUrl }
                 val indexEnd = bookmarkListState.list.indexOfFirst { it.url == url }
-                if (indexStart == -1 || indexEnd == -1) selectBookmark(bookmark, ctrlKey, false)
+                if (indexStart == -1 || indexEnd == -1) selectBookmark(bookmark, true, false)
                 this.selectedBookmarks =
                     bookmarkListState.list.subList(min(indexStart, indexEnd), max(indexStart, indexEnd) + 1)
                         .map { it.url }
