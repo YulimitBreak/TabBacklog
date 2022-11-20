@@ -10,10 +10,14 @@ import data.BookmarkRepository
 import data.BrowserInteractor
 import entity.Bookmark
 import entity.BookmarkSearchConfig
+import entity.BookmarkType
+import entity.sort.BookmarkSort
 import entity.sort.SmartSort
+import entity.sort.SortType
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.launch
+import ui.common.ext.apply
 
 class BookmarkListModel(
     private val coroutineScope: CoroutineScope,
@@ -30,6 +34,11 @@ class BookmarkListModel(
     private var bookmarkChannel: ReceiveChannel<Bookmark> = bookmarkRepository.readBookmarks(
         BookmarkSearchConfig(), SmartSort
     ).produce(coroutineScope)
+
+    var editedSearchConfig by mutableStateOf(BookmarkSearchViewConfig())
+        private set
+
+    private var appliedSearchConfig = editedSearchConfig
 
     // TODO multiselect
     var selectedBookmarkUrl: String? by mutableStateOf(null)
@@ -75,6 +84,50 @@ class BookmarkListModel(
 
     fun openBookmark(bookmark: Bookmark) {
         browserInteractor.openPage(bookmark.url)
+    }
+
+    fun onSearchConfigChange(event: BookmarkSearchViewEvent) {
+        editedSearchConfig = when (event) {
+            is BookmarkSearchViewEvent.FavoriteFirstChange -> editedSearchConfig.copy(favoriteFirst = event.favoriteFirst)
+            is BookmarkSearchViewEvent.PresetChange -> editedSearchConfig.copy(preset = event.preset)
+            is BookmarkSearchViewEvent.SearchTextUpdate -> editedSearchConfig.copy(searchString = event.text)
+            is BookmarkSearchViewEvent.TypeFirstChange -> editedSearchConfig.copy(typeFirst = event.type)
+            is BookmarkSearchViewEvent.TagUpdate -> editedSearchConfig.copy(
+                searchTags = event.event.apply(
+                    editedSearchConfig.searchTags
+                )
+            )
+        }
+    }
+
+    fun onSearchConfigApply() {
+        appliedSearchConfig = editedSearchConfig
+        bookmarkChannel.cancel()
+        bookmarkChannel = readBookmarks(appliedSearchConfig)
+        bookmarkListState = BookmarkListState(emptyList(), isLoading = false, reachedEnd = false)
+    }
+
+    private fun readBookmarks(config: BookmarkSearchViewConfig): ReceiveChannel<Bookmark> =
+        bookmarkRepository.readBookmarks(
+            BookmarkSearchConfig(config.searchString, config.searchTags.toSet()),
+            provideSort(config)
+        ).produce(coroutineScope)
+
+    private fun provideSort(config: BookmarkSearchViewConfig): BookmarkSort {
+        var sort: BookmarkSort = when (val preset = config.preset) {
+            is BookmarkSearchViewConfig.Preset.Alphabetically -> SortType.Alphabetically(isReversed = preset.isReversed)
+            is BookmarkSearchViewConfig.Preset.CreationDate -> SortType.CreationDate(isReversed = preset.isReversed)
+            is BookmarkSearchViewConfig.Preset.Smart -> SmartSort
+        }
+        sort = when (val type = config.typeFirst) {
+            BookmarkType.LIBRARY -> SortType.LibraryFirst(sort)
+            BookmarkType.BACKLOG -> SortType.BacklogFirst(sort)
+            null -> sort
+        }
+        if (config.favoriteFirst) {
+            sort = SortType.FavoriteFirst(sort)
+        }
+        return sort
     }
 
     data class BookmarkListState(val list: List<Bookmark>, val isLoading: Boolean, val reachedEnd: Boolean)

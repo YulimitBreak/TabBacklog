@@ -16,6 +16,7 @@ import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
 import ui.common.datepicker.DatePickerMode
 import ui.common.datepicker.DatePickerTarget
+import ui.common.ext.apply
 import ui.page.tagedit.TagEditEvent
 
 class BookmarkEditorModel(
@@ -94,29 +95,7 @@ class BookmarkEditorModel(
     }
 
     fun onTagEvent(event: TagEditEvent) {
-        updateBookmark { bookmark ->
-            when (event) {
-                is TagEditEvent.Add -> {
-                    if (bookmark.tags.contains(event.tag)) {
-                        bookmark
-                    } else {
-                        bookmark.copy(tags = bookmark.tags + event.tag)
-                    }
-                }
-
-                is TagEditEvent.Delete -> {
-                    bookmark.copy(tags = bookmark.tags - event.tag)
-                }
-
-                is TagEditEvent.Edit -> {
-                    if (bookmark.tags.contains(event.to)) {
-                        bookmark.copy(tags = bookmark.tags - event.from)
-                    } else {
-                        bookmark.copy(tags = bookmark.tags - event.from + event.to)
-                    }
-                }
-            }
-        }
+        updateBookmark { bookmark -> bookmark.copy(tags = event.apply(bookmark.tags)) }
     }
 
     private fun getTimerState(timerType: TimerType): TimerState {

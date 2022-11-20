@@ -12,6 +12,7 @@ import com.varabyte.kobweb.silk.components.icons.fa.FaSortDown
 import com.varabyte.kobweb.silk.components.icons.fa.FaSortUp
 import com.varabyte.kobweb.silk.components.text.SpanText
 import org.jetbrains.compose.web.css.FlexWrap
+import org.jetbrains.compose.web.css.JustifyContent
 import org.jetbrains.compose.web.css.percent
 import org.jetbrains.compose.web.css.px
 import ui.styles.Palette
@@ -28,23 +29,25 @@ fun BookmarkSortPresetSelector(
 
     val palette = Palette.Local.current
     inline fun <reified Preset : BookmarkSearchViewConfig.Preset> Modifier.setup(
-        radiusLeft: Boolean = false,
-        radiusRight: Boolean = false,
+        roundedLeft: Boolean = false,
+        roundedRight: Boolean = false,
     ): Modifier =
         backgroundColor(presetBasedColor<Preset>(palette.accent, palette.primary))
             .color(presetBasedColor<Preset>(palette.onAccent, palette.onPrimary))
             .cursor(Cursor.Pointer)
             .padding(8.px)
+            .gap(8.px)
+            .justifyContent(JustifyContent.Center)
             .borderRadius(
-                topLeft = if (radiusLeft) 8.px else 0.px,
-                bottomLeft = if (radiusLeft) 8.px else 0.px,
-                topRight = if (radiusRight) 8.px else 0.px,
-                bottomRight = if (radiusRight) 8.px else 0.px,
+                topLeft = if (roundedLeft) 8.px else 0.px,
+                bottomLeft = if (roundedLeft) 8.px else 0.px,
+                topRight = if (roundedRight) 8.px else 0.px,
+                bottomRight = if (roundedRight) 8.px else 0.px,
             ).width(30.percent)
 
-    Row(modifier = modifier.flexWrap(FlexWrap.Nowrap), horizontalArrangement = Arrangement.Center) {
+    Row(modifier = modifier.flexWrap(FlexWrap.Nowrap).gap(4.px), horizontalArrangement = Arrangement.Center) {
         Row(
-            modifier = Modifier.setup<BookmarkSearchViewConfig.Preset.Smart>(radiusLeft = true)
+            modifier = Modifier.setup<BookmarkSearchViewConfig.Preset.Smart>(roundedLeft = true)
                 .onClick { onPresetSelect(BookmarkSearchViewConfig.Preset.Smart) }
         ) {
             SpanText(
@@ -76,7 +79,7 @@ fun BookmarkSortPresetSelector(
             )
         }
         Row(
-            modifier = Modifier.setup<BookmarkSearchViewConfig.Preset.CreationDate>()
+            modifier = Modifier.setup<BookmarkSearchViewConfig.Preset.CreationDate>(roundedRight = true)
                 .onClick {
                     onPresetSelect(
                         if (preset is BookmarkSearchViewConfig.Preset.CreationDate)

@@ -10,7 +10,6 @@ import com.varabyte.kobweb.compose.ui.modifiers.*
 import com.varabyte.kobweb.silk.components.text.SpanText
 import entity.BookmarkType
 import org.jetbrains.compose.web.css.FlexWrap
-import org.jetbrains.compose.web.css.percent
 import org.jetbrains.compose.web.css.px
 import ui.styles.Palette
 import ui.styles.brand.BacklogIcon
@@ -42,12 +41,11 @@ fun BookmarkSortTypeSelector(
                 topRight = if (radiusRight) 8.px else 0.px,
                 bottomRight = if (radiusRight) 8.px else 0.px,
             )
-            .width(30.percent)
             .onClick {
                 if (selectedType == type) onTypeSelect(null) else onTypeSelect(type)
             }
 
-    Row(modifier = modifier.flexWrap(FlexWrap.Nowrap), horizontalArrangement = Arrangement.Center) {
+    Row(modifier = modifier.flexWrap(FlexWrap.Nowrap).gap(4.px), horizontalArrangement = Arrangement.Center) {
         Row(
             modifier = Modifier.setup(BookmarkType.LIBRARY, radiusLeft = true)
         ) {
@@ -57,11 +55,9 @@ fun BookmarkSortTypeSelector(
                 Modifier
             )
         }
-    }
 
-    Row(modifier = modifier.flexWrap(FlexWrap.Nowrap), horizontalArrangement = Arrangement.Center) {
         Row(
-            modifier = Modifier.setup(BookmarkType.LIBRARY, radiusLeft = true)
+            modifier = Modifier.setup(BookmarkType.BACKLOG, radiusRight = true)
         ) {
             BacklogIcon()
             SpanText(

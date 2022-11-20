@@ -1,6 +1,7 @@
 package data
 
 import com.juul.indexeddb.Key
+import common.isBeforeToday
 import data.database.core.DatabaseHolder
 import data.database.resolver.BookmarkDatabaseRetrieveResolver
 import data.database.resolver.BookmarkListRetrieveResolver
@@ -10,10 +11,7 @@ import data.database.util.DatabaseBookmarkScope
 import entity.Bookmark
 import entity.BookmarkSearchConfig
 import entity.sort.BookmarkSort
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.emitAll
-import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.*
 
 class BookmarkSortEngine(private val databaseHolder: DatabaseHolder) : DatabaseBookmarkScope {
 
@@ -21,7 +19,10 @@ class BookmarkSortEngine(private val databaseHolder: DatabaseHolder) : DatabaseB
 
     fun readBookmarks(search: BookmarkSearchConfig, sort: BookmarkSort): Flow<Bookmark> =
         flow {
-            emitAll(getBookmarkFlow(search, sort))
+            emitAll(
+                getBookmarkFlow(search, sort)
+                    .filterNot { it.expirationDate?.isBeforeToday() == true }
+            )
         }
 
     private suspend fun getBookmarkFlow(search: BookmarkSearchConfig, sort: BookmarkSort): Flow<Bookmark> {

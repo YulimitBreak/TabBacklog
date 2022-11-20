@@ -16,7 +16,7 @@ class RepositoryModule {
     val databaseHolder: DatabaseHolder by lazy {
         AppDatabaseHolder(
             "TabBacklog",
-            2,
+            1,
             listOf(
                 DbSchema<BookmarkSchema>(),
                 DbSchema<TagSchema>(),
