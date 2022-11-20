@@ -32,12 +32,11 @@ fun BookmarkList(modifier: Modifier = Modifier, onBookmarkSelect: (Bookmark) -> 
 
     Column(modifier.overflow(Overflow.Hidden)) {
         BookmarkSearchView(
-            model.editedSearchConfig,
+            model.searchConfig,
             onConfigChange = {
                 model.onSearchConfigChange(it)
 
             },
-            onApplyClick = { model.onSearchConfigApply() },
             modifier = Modifier.width(100.percent - 32.px).padding(leftRight = 16.px, topBottom = 8.px)
         )
 

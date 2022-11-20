@@ -134,12 +134,6 @@ class BookmarkSearchEngineTest : BookmarkDatabaseBaseTest() {
         }.withEdgecases("", "   ")
     }
 
-    private fun Bookmark.containsSearch(searchString: String) =
-        searchString.isBlank() ||
-                title.contains(searchString, ignoreCase = true) ||
-                comment.contains(searchString, ignoreCase = true) ||
-                url.contains(searchString, ignoreCase = true)
-
     private val derivativeSort = listOf<(BookmarkSort?) -> BookmarkSort>(
         SortType::FavoriteFirst,
         SortType::LibraryFirst,

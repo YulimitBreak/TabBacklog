@@ -61,12 +61,6 @@ class BookmarkSortEngine(private val databaseHolder: DatabaseHolder) : DatabaseB
         }.entries.minBy { it.value }
     }
 
-    private fun Bookmark.containsSearch(searchString: String?): Boolean =
-        searchString.isNullOrBlank() ||
-                title.contains(searchString, ignoreCase = true) ||
-                comment.contains(searchString, ignoreCase = true) ||
-                url.contains(searchString, ignoreCase = true)
-
     companion object {
         private const val MAX_COUNT_TAG_LIMIT = 200
     }
