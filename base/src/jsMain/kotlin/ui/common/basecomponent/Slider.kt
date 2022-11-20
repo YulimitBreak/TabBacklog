@@ -20,6 +20,7 @@ import org.w3c.dom.events.Event
 import ui.styles.components.SliderComponent
 import kotlin.math.roundToInt
 
+@Deprecated("Should replace this with regular slider")
 @Composable
 fun Slider(
     value: Int,

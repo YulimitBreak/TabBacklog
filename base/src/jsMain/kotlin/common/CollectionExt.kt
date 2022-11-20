@@ -16,3 +16,8 @@ fun <T, K> Iterable<T>.chunkedBy(keySelector: (T) -> K): List<List<T>> {
     }
     return result.toList()
 }
+
+fun <T> List<T>.insertWithComparator(value: T, comparator: Comparator<T>): List<T> {
+    val (head, tail) = partition { comparator.compare(it, value) < 0 }
+    return head + value + tail
+}

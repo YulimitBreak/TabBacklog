@@ -23,7 +23,6 @@ import ui.common.basecomponent.TagListView
 import ui.styles.Palette
 import ui.styles.components.TagComponent
 
-// TODO clear all button
 @Composable
 fun TagEditView(tags: List<String>, modifier: Modifier, onTagEditEvent: (TagEditEvent) -> Unit) {
 

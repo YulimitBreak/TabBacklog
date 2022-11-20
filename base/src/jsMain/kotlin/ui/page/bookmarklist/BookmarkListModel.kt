@@ -4,6 +4,7 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import common.insertWithComparator
 import common.produce
 import common.receive
 import data.BookmarkRepository
@@ -11,7 +12,6 @@ import data.BrowserInteractor
 import entity.Bookmark
 import entity.BookmarkSearchConfig
 import entity.sort.BookmarkSort
-import entity.sort.SmartSort
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.flow.drop
@@ -30,12 +30,10 @@ class BookmarkListModel(
     var bookmarkListState by mutableStateOf(BookmarkListState(emptyList(), isLoading = false, reachedEnd = false))
         private set
 
-    private var bookmarkChannel: ReceiveChannel<Bookmark> = bookmarkRepository.readBookmarks(
-        BookmarkSearchConfig(), SmartSort
-    ).produce(coroutineScope)
-
     var searchConfig by mutableStateOf(BookmarkSearchViewConfig())
         private set
+
+    private var bookmarkChannel: ReceiveChannel<Bookmark> = readBookmarks(searchConfig)
 
     // TODO multiselect
     var selectedBookmarkUrl: String? by mutableStateOf(null)
@@ -45,21 +43,24 @@ class BookmarkListModel(
         coroutineScope.launch {
             browserInteractor.subscribeToDbUpdates().collect { changedUrl ->
                 val changedBookmark = bookmarkRepository.loadBookmark(changedUrl)
-                if (bookmarkListState.list.any { it.url == changedUrl }) {
-                    // Old value was changed or deleted
-                    bookmarkListState = bookmarkListState.copy(
-                        list = bookmarkListState.list.mapNotNull { if (it.url == changedUrl) changedBookmark else it }
-                    )
-                } else if (changedBookmark != null) {
-                    // New value was added
-                    addNewEntry(changedBookmark)
+                updateList { original ->
+                    withNewEntry(original.filterNot { it.url == changedUrl }, changedBookmark)
                 }
             }
         }
     }
 
-    private fun addNewEntry(bookmark: Bookmark) {
-        // TODO add bookmark into list if it matches search parameters, in correct place according to sorting method
+    private fun updateList(update: (List<Bookmark>) -> List<Bookmark>) {
+        bookmarkListState = bookmarkListState.copy(list = update(bookmarkListState.list))
+    }
+
+    private fun withNewEntry(list: List<Bookmark>, bookmark: Bookmark?): List<Bookmark> {
+        if (bookmark == null) return list
+        return if (bookmark.containsSearch(searchConfig.searchString) && bookmark.tags.containsAll(searchConfig.searchTags)) {
+            list.insertWithComparator(bookmark, searchConfig.compiledSort)
+        } else {
+            list
+        }
     }
 
     fun requestMoreBookmarks() {
@@ -112,6 +113,7 @@ class BookmarkListModel(
                 it.containsSearch(searchConfig.searchString) && it.tags.containsAll(searchConfig.searchTags)
             })
         } else {
+            // Otherwise cached search can be discarded
             this.cachedSearch = null
             applySearchChange(searchConfig)
         }
