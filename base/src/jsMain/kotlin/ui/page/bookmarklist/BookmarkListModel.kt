@@ -17,6 +17,8 @@ import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.launch
 import ui.common.ext.apply
+import kotlin.math.max
+import kotlin.math.min
 
 class BookmarkListModel(
     private val coroutineScope: CoroutineScope,
@@ -35,9 +37,12 @@ class BookmarkListModel(
 
     private var bookmarkChannel: ReceiveChannel<Bookmark> = readBookmarks(searchConfig)
 
-    // TODO multiselect
-    var selectedBookmarks: List<String> by mutableStateOf(emptyList())
+    var selectedBookmarks: Set<String> by mutableStateOf(emptySet())
         private set
+
+    var multiSelectMode: Boolean by mutableStateOf(false)
+        private set
+
     private var lastClickedBookmarkUrl: String? = null
 
     init {
@@ -76,9 +81,36 @@ class BookmarkListModel(
         }
     }
 
-    fun selectBookmark(bookmark: Bookmark) {
-        this.selectedBookmarks = listOf(bookmark.url)
-        onBookmarkSelect(listOf(bookmark)) // TODO
+    fun selectBookmark(bookmark: Bookmark, ctrlKey: Boolean, shiftKey: Boolean) {
+        val url = bookmark.url
+        val lastClickedBookmarkUrl = this.lastClickedBookmarkUrl
+        when {
+
+            shiftKey && lastClickedBookmarkUrl != null && bookmarkListState.list.any { it.url == lastClickedBookmarkUrl } -> {
+                val indexStart = bookmarkListState.list.indexOfFirst { it.url == lastClickedBookmarkUrl }
+                val indexEnd = bookmarkListState.list.indexOfFirst { it.url == url }
+                if (indexStart == -1 || indexEnd == -1) selectBookmark(bookmark, ctrlKey, false)
+                this.selectedBookmarks =
+                    bookmarkListState.list.subList(min(indexStart, indexEnd), max(indexStart, indexEnd) + 1)
+                        .map { it.url }
+                        .toSet()
+            }
+
+            shiftKey || ctrlKey || multiSelectMode -> {
+                if (this.selectedBookmarks.contains(url)) {
+                    this.selectedBookmarks -= url
+                } else {
+                    this.selectedBookmarks += url
+                    this.lastClickedBookmarkUrl = url
+                }
+            }
+
+            else -> {
+                this.selectedBookmarks = setOf(url)
+                this.lastClickedBookmarkUrl = url
+            }
+        }
+        onBookmarkSelect(this.selectedBookmarks)
     }
 
     fun openBookmark(bookmark: Bookmark) {
@@ -133,6 +165,10 @@ class BookmarkListModel(
             config.compiledSort
         ).drop(skipCount).produce(coroutineScope)
 
+    fun updateMultiSelectMode(toggledOn: Boolean) {
+        multiSelectMode = toggledOn
+    }
+
     data class BookmarkListState(val list: List<Bookmark>, val isLoading: Boolean, val reachedEnd: Boolean)
 
     private data class CachedSearch(
@@ -140,7 +176,7 @@ class BookmarkListModel(
     )
 
     fun interface OnBookmarkSelect {
-        operator fun invoke(bookmark: List<Bookmark>)
+        operator fun invoke(bookmarkUrls: Set<String>)
     }
 
     companion object {
