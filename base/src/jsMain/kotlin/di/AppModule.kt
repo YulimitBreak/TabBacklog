@@ -4,11 +4,13 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.staticCompositionLocalOf
 import dev.shustoff.dikt.Create
 import dev.shustoff.dikt.UseModules
+import entity.MultiBookmarkSource
 import entity.SingleBookmarkSource
 import entity.error.CompositionLocalError
 import kotlinx.coroutines.CoroutineScope
 import ui.page.bookmarklist.BookmarkListModel
 import ui.page.editor.BookmarkEditorModel
+import ui.page.multisummary.BookmarkMultiSummaryModel
 import ui.page.summary.BookmarkSummaryModel
 import ui.page.tagedit.TagEditModel
 import ui.popup.PopupBaseModel
@@ -33,6 +35,11 @@ class AppModule(
     fun createBookmarkSummaryModel(
         coroutineScope: CoroutineScope, target: SingleBookmarkSource
     ): BookmarkSummaryModel
+
+    @Create
+    fun createBookmarkMultiSummaryModel(
+        coroutineScope: CoroutineScope, target: MultiBookmarkSource
+    ): BookmarkMultiSummaryModel
 
     @Create
     fun createTagEditModel(

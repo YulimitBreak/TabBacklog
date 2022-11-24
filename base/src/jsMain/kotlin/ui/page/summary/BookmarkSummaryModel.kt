@@ -5,21 +5,17 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import common.DateUtils
 import data.BookmarkRepository
-import data.BrowserInteractor
 import entity.Bookmark
 import entity.BookmarkType
 import entity.SingleBookmarkSource
 import entity.core.Loadable
 import entity.core.load
-import kotlinx.browser.window
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
 
 class BookmarkSummaryModel(
     private val target: SingleBookmarkSource,
     private val scope: CoroutineScope,
     private val bookmarkRepository: BookmarkRepository,
-    private val browserInteractor: BrowserInteractor,
 ) {
 
     var bookmark by mutableStateOf<Loadable<Bookmark>>(Loadable.Loading())
@@ -41,13 +37,6 @@ class BookmarkSummaryModel(
                 is SingleBookmarkSource.Url -> bookmarkRepository.loadBookmark(target.url)
                     ?: throw IllegalStateException("Bookmark Not Found")
             }
-        }
-    }
-
-    fun openManager() {
-        scope.launch {
-            browserInteractor.openManager()
-            window.close()
         }
     }
 

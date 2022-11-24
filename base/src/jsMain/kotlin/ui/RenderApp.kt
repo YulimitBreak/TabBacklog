@@ -48,7 +48,7 @@ fun renderApp(
                 Variants.Button.SelectedUnclickablePrimary,
             )
             registerComponentStyle(TagComponent.Style)
-            registerComponentVariants(TagComponent.Clickable, TagComponent.Selected)
+            registerComponentVariants(TagComponent.Clickable, TagComponent.Selected, TagComponent.Postfix)
             registerComponentStyle(BookmarkEditClickableArea.Style)
             registerComponentStyle(SliderComponent.InactiveTrackStyle)
             registerComponentStyle(SliderComponent.TrackStyle)

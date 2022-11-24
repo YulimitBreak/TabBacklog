@@ -10,6 +10,7 @@ import com.varabyte.kobweb.compose.ui.graphics.Colors
 import com.varabyte.kobweb.compose.ui.modifiers.*
 import com.varabyte.kobweb.silk.components.icons.fa.FaFileArrowUp
 import data.BrowserInteractor
+import entity.MultiBookmarkSource
 import entity.SingleBookmarkSource
 import org.jetbrains.compose.web.css.FlexWrap
 import org.jetbrains.compose.web.css.minus
@@ -19,6 +20,7 @@ import org.jetbrains.compose.web.dom.Text
 import ui.common.basecomponent.RowButton
 import ui.page.bookmarklist.BookmarkList
 import ui.page.editor.BookmarkEditor
+import ui.page.multisummary.BookmarkMultiSummary
 import ui.page.summary.BookmarkSummary
 
 @Composable
@@ -85,7 +87,17 @@ fun CollectionView(modifier: Modifier = Modifier) {
                     )
                 }
             } else if (selectedBookmarkUrls.size > 1) {
-                // TODO
+                BookmarkMultiSummary(
+                    target = MultiBookmarkSource.Url(selectedBookmarkUrls),
+                    firstButton = {
+                        val browserInteractor = BrowserInteractor.Local.current
+                        RowButton(onClick = { browserInteractor.openPages(selectedBookmarkUrls.toList()) }) {
+                            FaFileArrowUp()
+                            Text("Open")
+                        }
+                    },
+                    onEditRequest = { editMode = true }
+                )
             }
         }
     }

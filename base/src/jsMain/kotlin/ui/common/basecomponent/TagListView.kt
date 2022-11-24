@@ -14,6 +14,7 @@ import ui.styles.components.TagComponent
 fun TagListView(
     tags: List<String>,
     modifier: Modifier = Modifier,
+    postfixTag: String? = null,
     tagModifier: @Composable (tag: String) -> Modifier = { Modifier },
 ) {
 
@@ -22,6 +23,9 @@ fun TagListView(
             key(tag) {
                 SpanText(tag, modifier = TagComponent.Style.toModifier().then(tagModifier(tag)))
             }
+        }
+        if (postfixTag != null) {
+            SpanText(postfixTag, modifier = TagComponent.Style.toModifier(TagComponent.Postfix))
         }
     }
 }

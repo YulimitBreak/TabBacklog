@@ -8,6 +8,7 @@ import com.varabyte.kobweb.compose.ui.modifiers.*
 import com.varabyte.kobweb.silk.components.style.ComponentStyle
 import com.varabyte.kobweb.silk.components.style.hover
 import org.jetbrains.compose.web.css.em
+import org.jetbrains.compose.web.css.percent
 import org.jetbrains.compose.web.css.px
 import org.jetbrains.compose.web.css.value
 import ui.styles.Palette
@@ -36,6 +37,12 @@ object TagComponent {
         base {
             Modifier.backgroundColor(Palette.Variable.color_accent.value())
                 .color(Palette.Variable.color_onAccent.value())
+        }
+    }
+
+    val Postfix = Style.addVariant("postfix") {
+        base {
+            Modifier.opacity(50.percent)
         }
     }
 }
