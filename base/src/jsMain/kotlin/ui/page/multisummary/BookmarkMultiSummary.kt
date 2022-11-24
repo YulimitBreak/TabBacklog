@@ -94,11 +94,12 @@ fun BookmarkMultiSummary(
                 SpanText("Tags:")
                 TagListView(
                     bookmarks.commonTags, Modifier.margin(leftRight = 8.px).width(100.percent - 16.px),
-                    postfixTag = "${bookmarks.offTags} more"
+                    postfixTag = "${bookmarks.offTags.size} more"
                 )
             }
 
             BookmarkSummaryTimerView(
+                "Closest timers:",
                 bookmarks.remindDate, bookmarks.deadline, bookmarks.expirationDate,
                 onReminderDelete = { model.deleteReminder() },
                 onDeadlineDelete = { model.deleteDeadline() },

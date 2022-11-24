@@ -22,12 +22,12 @@ fun BookmarkMultiTitleView(
     modifier: Modifier = Modifier
 ) {
     Row(
-        modifier.minWidth(200.px).maxWidth(400.px).flexWrap(FlexWrap.Nowrap).gap(16.px),
+        modifier.minWidth(200.px).flexWrap(FlexWrap.Nowrap).gap(16.px),
         verticalAlignment = Alignment.CenterVertically
     ) {
         FaFileLines(Modifier.fontSize(32.px).size(32.px))
         Column(
-            Modifier.width(100.percent).gap(8.px),
+            Modifier.width(100.percent).gap(2.px),
             horizontalAlignment = Alignment.Start,
             verticalArrangement = Arrangement.Center
         ) {

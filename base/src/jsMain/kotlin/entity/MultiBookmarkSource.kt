@@ -1,6 +1,6 @@
 package entity
 
-interface MultiBookmarkSource {
+sealed interface MultiBookmarkSource {
 
     class Url(val urls: Set<String>) : MultiBookmarkSource
 }

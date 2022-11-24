@@ -54,19 +54,21 @@ fun CollectionView(modifier: Modifier = Modifier) {
 
         Box(contentAlignment = Alignment.CenterStart, modifier = Modifier.fillMaxHeight()) {
 
+            val bookmarkViewModifier = Modifier
+                .borderRadius(8.px)
+                .padding(16.px)
+                .width(400.px)
+                .boxShadow(
+                    offsetX = 0.px,
+                    offsetY = 5.px,
+                    blurRadius = 8.px,
+                    spreadRadius = 2.px,
+                    Colors.Gray
+                )
+
             if (selectedBookmarkUrls.size == 1) {
                 val bookmarkUrl = selectedBookmarkUrls.single()
-                val bookmarkViewModifier = Modifier
-                    .borderRadius(8.px)
-                    .padding(16.px)
-                    .width(400.px)
-                    .boxShadow(
-                        offsetX = 0.px,
-                        offsetY = 5.px,
-                        blurRadius = 8.px,
-                        spreadRadius = 2.px,
-                        Colors.Gray
-                    )
+
                 if (!editMode) {
                     BookmarkSummary(
                         target = SingleBookmarkSource.Url(bookmarkUrl),
@@ -89,11 +91,12 @@ fun CollectionView(modifier: Modifier = Modifier) {
             } else if (selectedBookmarkUrls.size > 1) {
                 BookmarkMultiSummary(
                     target = MultiBookmarkSource.Url(selectedBookmarkUrls),
+                    modifier = bookmarkViewModifier,
                     firstButton = {
                         val browserInteractor = BrowserInteractor.Local.current
                         RowButton(onClick = { browserInteractor.openPages(selectedBookmarkUrls.toList()) }) {
                             FaFileArrowUp()
-                            Text("Open")
+                            Text("Open all")
                         }
                     },
                     onEditRequest = { editMode = true }

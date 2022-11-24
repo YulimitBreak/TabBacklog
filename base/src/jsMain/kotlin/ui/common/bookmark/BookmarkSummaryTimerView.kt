@@ -12,6 +12,7 @@ import ui.styles.brand.ReminderTimerIcon
 
 @Composable
 fun BookmarkSummaryTimerView(
+    title: String,
     remindDate: LocalDate?, deadline: LocalDate?, expirationDate: LocalDate?,
     modifier: Modifier = Modifier,
     onReminderDelete: (() -> Unit)? = null,
@@ -19,7 +20,7 @@ fun BookmarkSummaryTimerView(
     onExpirationDelete: (() -> Unit)? = null
 ) {
     if (remindDate != null || deadline != null || expirationDate != null) {
-        SpanText("Timers:")
+        SpanText(title)
         Column(modifier) {
             if (remindDate != null) {
                 TimerDisplay(

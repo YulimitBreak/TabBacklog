@@ -2,6 +2,7 @@ package data
 
 import browser.tabs.CreateCreateProperties
 import browser.tabs.QueryQueryInfo
+import kotlinx.browser.window
 import kotlinx.coroutines.await
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
@@ -28,6 +29,13 @@ class PolyfillBrowserInteractor : BrowserInteractor {
             this.url = url
             this.active = true
         })
+    }
+
+    override fun openPages(urls: List<String>) {
+        val confirm = window.confirm("You're going to open ${urls.size} tabs")
+        if (confirm) {
+            urls.forEach { openPage(it) }
+        }
     }
 
     private val updateChannel = BroadcastChannel("bookmark_db_update")
