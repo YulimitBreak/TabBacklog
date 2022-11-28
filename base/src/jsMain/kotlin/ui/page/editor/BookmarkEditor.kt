@@ -28,10 +28,7 @@ import ui.common.basecomponent.DivText
 import ui.common.basecomponent.LoadableView
 import ui.common.basecomponent.RowButton
 import ui.common.basecomponent.TagListView
-import ui.common.bookmark.BookmarkTitleEdit
-import ui.common.bookmark.BookmarkTitleView
-import ui.common.bookmark.BookmarkTypeBacklogButton
-import ui.common.bookmark.BookmarkTypeLibraryButton
+import ui.common.bookmark.*
 import ui.page.tagedit.TagEditView
 import ui.styles.brand.DeadlineTimerIcon
 import ui.styles.brand.ExpirationTimerIcon

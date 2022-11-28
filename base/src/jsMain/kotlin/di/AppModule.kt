@@ -10,6 +10,7 @@ import entity.error.CompositionLocalError
 import kotlinx.coroutines.CoroutineScope
 import ui.page.bookmarklist.BookmarkListModel
 import ui.page.editor.BookmarkEditorModel
+import ui.page.multieditor.BookmarkMultiEditorModel
 import ui.page.multisummary.BookmarkMultiSummaryModel
 import ui.page.summary.BookmarkSummaryModel
 import ui.page.tagedit.TagEditModel
@@ -30,6 +31,13 @@ class AppModule(
         target: SingleBookmarkSource,
         onNavigateBackState: State<BookmarkEditorModel.OnNavigateBack>
     ): BookmarkEditorModel
+
+    @Create
+    fun createBookmarkMultiEditorModel(
+        coroutineScope: CoroutineScope,
+        target: MultiBookmarkSource,
+        onNavigateBackState: State<BookmarkEditorModel.OnNavigateBack>
+    ): BookmarkMultiEditorModel
 
     @Create
     fun createBookmarkSummaryModel(
