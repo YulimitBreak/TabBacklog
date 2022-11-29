@@ -20,7 +20,7 @@ import org.jetbrains.compose.web.dom.Text
 import ui.common.basecomponent.RowButton
 import ui.page.bookmarklist.BookmarkList
 import ui.page.editor.BookmarkEditor
-import ui.page.multisummary.BookmarkMultiSummary
+import ui.page.summary.BookmarkMultiSummary
 import ui.page.summary.BookmarkSummary
 
 @Composable

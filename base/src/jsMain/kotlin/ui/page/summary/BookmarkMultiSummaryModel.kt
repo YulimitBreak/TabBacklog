@@ -1,4 +1,4 @@
-package ui.page.multisummary
+package ui.page.summary
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf

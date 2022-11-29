@@ -13,10 +13,7 @@ import entity.core.Loadable
 import entity.core.load
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-import kotlinx.datetime.LocalDate
 import ui.common.bookmark.TimerEditorEvent
-import ui.common.datepicker.DatePickerMode
-import ui.common.datepicker.DatePickerTarget
 import ui.common.ext.apply
 import ui.page.tagedit.TagEditEvent
 
@@ -35,11 +32,14 @@ class BookmarkEditorModel(
     var editedBlock: BookmarkEditedBlock? by mutableStateOf(null)
         private set
 
-    private val timerStates = mapOf(
-        TimerType.REMINDER to mutableStateOf<TimerState?>(null),
-        TimerType.DEADLINE to mutableStateOf<TimerState?>(null),
-        TimerType.EXPIRATION to mutableStateOf<TimerState?>(null),
-    )
+    private val reminderDelegate = TimerEditorDelegate { bookmark.value?.remindDate }
+    private val deadlineDelegate = TimerEditorDelegate { bookmark.value?.deadline }
+    private val expirationDelegate = TimerEditorDelegate { bookmark.value?.expirationDate }
+    private fun timerDelegate(type: TimerType) = when (type) {
+        TimerType.REMINDER -> reminderDelegate
+        TimerType.DEADLINE -> deadlineDelegate
+        TimerType.EXPIRATION -> expirationDelegate
+    }
 
     init {
         scope.load(
@@ -99,39 +99,12 @@ class BookmarkEditorModel(
         updateBookmark { bookmark -> bookmark.copy(tags = event.apply(bookmark.tags)) }
     }
 
-    private fun getTimerState(timerType: TimerType): TimerState {
-        val state = timerStates.getValue(timerType)
-        state.value?.let { return it }
-        fun generateState(date: LocalDate?): TimerState =
-            if (date != null) {
-                TimerState(date, 1, DatePickerMode.SET)
-            } else {
-                TimerState(null, 1, DatePickerMode.NONE)
-            }
-
-        return generateState(
-            when (timerType) {
-                TimerType.REMINDER -> bookmark.value?.remindDate
-                TimerType.DEADLINE -> bookmark.value?.deadline
-                TimerType.EXPIRATION -> bookmark.value?.expirationDate
-            }
-        )
-    }
-
-    fun getTimerTarget(type: TimerType) = getTimerState(type).toRelativeTimerTarget()
+    fun getTimerTarget(type: TimerType) = timerDelegate(type).timerTarget
 
     fun onTimerEvent(timerType: TimerType, event: TimerEditorEvent) {
-        val state = getTimerState(timerType)
-        timerStates.getValue(timerType).value = when (event) {
-            is TimerEditorEvent.OnCountChange -> state.copy(count = event.count.coerceAtLeast(1))
-            is TimerEditorEvent.OnDateSelect -> state.copy(rememberedDate = event.date)
-            is TimerEditorEvent.OnDelete -> {
-                state.copy(rememberedDate = null, selectedMode = DatePickerMode.NONE).also {
-                    editedBlock = null
-                }
-            }
-
-            is TimerEditorEvent.OnModeChange -> state.copy(selectedMode = event.mode)
+        timerDelegate(timerType).onTimerEvent(event)
+        if (event is TimerEditorEvent.OnDelete) {
+            editedBlock = null
         }
     }
 
@@ -145,15 +118,9 @@ class BookmarkEditorModel(
                 console.warn("Saving bookmark in unloaded state")
                 return@launch
             }
-            timerStates[TimerType.REMINDER]?.value?.let {
-                editedBookmark = editedBookmark.copy(remindDate = it.toRelativeTimerTarget().resolve())
-            }
-            timerStates[TimerType.DEADLINE]?.value?.let {
-                editedBookmark = editedBookmark.copy(deadline = it.toRelativeTimerTarget().resolve())
-            }
-            timerStates[TimerType.EXPIRATION]?.value?.let {
-                editedBookmark = editedBookmark.copy(expirationDate = it.toRelativeTimerTarget().resolve())
-            }
+            reminderDelegate.applyTimer { editedBookmark = editedBookmark.copy(remindDate = it) }
+            deadlineDelegate.applyTimer { editedBookmark = editedBookmark.copy(deadline = it) }
+            expirationDelegate.applyTimer { editedBookmark = editedBookmark.copy(expirationDate = it) }
             bookmark = Loadable.Loading()
             bookmarkRepository.saveBookmark(editedBookmark.toImmutableBookmark())
             onNavigateBack()
@@ -164,34 +131,4 @@ class BookmarkEditorModel(
         operator fun invoke()
     }
 
-}
-
-enum class BookmarkEditedBlock {
-    TITLE,
-    COMMENT,
-    TAGS,
-    REMINDER,
-    DEADLINE,
-    EXPIRATION,
-}
-
-enum class TimerType(val block: BookmarkEditedBlock) {
-    REMINDER(BookmarkEditedBlock.REMINDER),
-    DEADLINE(BookmarkEditedBlock.DEADLINE),
-    EXPIRATION(BookmarkEditedBlock.EXPIRATION),
-}
-
-private data class TimerState(
-    val rememberedDate: LocalDate?,
-    val count: Int,
-    val selectedMode: DatePickerMode,
-) {
-    fun toRelativeTimerTarget() = when (selectedMode) {
-        DatePickerMode.NONE -> DatePickerTarget.None
-        DatePickerMode.SET -> DatePickerTarget.SetDate(rememberedDate)
-        DatePickerMode.DAYS -> DatePickerTarget.Counter.Days(count)
-        DatePickerMode.WEEKS -> DatePickerTarget.Counter.Weeks(count)
-        DatePickerMode.MONTHS -> DatePickerTarget.Counter.Months(count)
-        DatePickerMode.YEARS -> DatePickerTarget.Counter.Years(count)
-    }
 }

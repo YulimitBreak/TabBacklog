@@ -1,4 +1,4 @@
-package ui.page.multisummary
+package ui.page.summary
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -99,7 +99,7 @@ fun BookmarkMultiSummary(
             }
 
             BookmarkSummaryTimerView(
-                "Closest timers:",
+                "Earliest timers:",
                 bookmarks.remindDate, bookmarks.deadline, bookmarks.expirationDate,
                 onReminderDelete = { model.deleteReminder() },
                 onDeadlineDelete = { model.deleteDeadline() },

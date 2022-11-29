@@ -1,4 +1,4 @@
-package ui.page.multieditor
+package ui.page.editor
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -7,7 +7,6 @@ import androidx.compose.runtime.rememberUpdatedState
 import com.varabyte.kobweb.compose.ui.Modifier
 import di.AppModule
 import entity.MultiBookmarkSource
-import ui.page.editor.BookmarkEditorModel
 
 @Composable
 fun BookmarkMultiEditor(

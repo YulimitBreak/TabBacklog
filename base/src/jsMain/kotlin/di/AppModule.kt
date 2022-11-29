@@ -10,8 +10,8 @@ import entity.error.CompositionLocalError
 import kotlinx.coroutines.CoroutineScope
 import ui.page.bookmarklist.BookmarkListModel
 import ui.page.editor.BookmarkEditorModel
-import ui.page.multieditor.BookmarkMultiEditorModel
-import ui.page.multisummary.BookmarkMultiSummaryModel
+import ui.page.editor.BookmarkMultiEditorModel
+import ui.page.summary.BookmarkMultiSummaryModel
 import ui.page.summary.BookmarkSummaryModel
 import ui.page.tagedit.TagEditModel
 import ui.popup.PopupBaseModel
