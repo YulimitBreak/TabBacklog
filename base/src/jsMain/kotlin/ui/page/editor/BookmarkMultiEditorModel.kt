@@ -140,12 +140,23 @@ class BookmarkMultiEditorModel(
 
     fun onTimerEvent(timerType: TimerType, event: TimerEditorEvent) {
         if (event is TimerEditorEvent.OnDelete) {
-            updateBundle {
-                when (timerType) {
-                    TimerType.REMINDER -> it.copy(reminderUnset = true)
-                    TimerType.DEADLINE -> it.copy(deadlineUnset = true)
-                    TimerType.EXPIRATION -> it.copy(expirationUnset = true)
-                }
+            val bundle = bookmarkBundle.value ?: return
+            fun undefineDateIfUncertain(
+                field: (BookmarkBundle) -> Boolean,
+                action: (EditedBookmarkBundle) -> EditedBookmarkBundle
+            ) {
+                // TODO maybe reset to a existing date if it is not uncertain?
+                if (field(bundle.base)) updateBundle(action) else timerDelegate(timerType).onTimerEvent(event)
+            }
+            when (timerType) {
+                TimerType.REMINDER ->
+                    undefineDateIfUncertain(BookmarkBundle::remindDateUndefined) { it.copy(reminderUnset = true) }
+
+                TimerType.DEADLINE ->
+                    undefineDateIfUncertain(BookmarkBundle::deadlineUndefined) { it.copy(deadlineUnset = true) }
+
+                TimerType.EXPIRATION ->
+                    undefineDateIfUncertain(BookmarkBundle::expirationDateUndefined) { it.copy(expirationUnset = true) }
             }
             editedBlock = null
         } else {
