@@ -22,7 +22,7 @@ class BookmarkSummaryModel(
         private set
 
     private fun CoroutineScope.loadBookmark(loader: suspend () -> Bookmark) =
-        load(setter = { bookmark = it }, debounceTime = 200L, loader)
+        load(setter = { bookmark = it }, debounceTime = 200L, loader = loader)
 
     private fun CoroutineScope.updateBookmark(action: suspend (Bookmark) -> Bookmark) {
         val bookmark = bookmark.value ?: return

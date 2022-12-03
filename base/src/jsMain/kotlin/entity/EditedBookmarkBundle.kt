@@ -1,7 +1,5 @@
 package entity
 
-import kotlinx.datetime.LocalDate
-
 data class EditedBookmarkBundle(
     val base: BookmarkBundle,
     val currentType: BookmarkType? = base.types.singleOrNull(),
@@ -10,13 +8,11 @@ data class EditedBookmarkBundle(
     val addedTags: List<String> = emptyList(),
     val removedTags: Set<String> = emptySet(),
     val favorite: Boolean? = null,
+    val reminderUnset: Boolean = base.remindDateUndefined,
+    val deadlineUnset: Boolean = base.deadlineUndefined,
+    var expirationUnset: Boolean = base.expirationDateUndefined,
 ) {
     val isNew get() = !base.anySaved
 
-
-    sealed interface TimerDateUpdate {
-        object NoUpdate : TimerDateUpdate
-        data class Update(val date: LocalDate?) : TimerDateUpdate
-    }
-
+    val tags = (coreTags - removedTags) + addedTags
 }

@@ -14,8 +14,8 @@ import entity.core.load
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import ui.common.bookmark.TimerEditorEvent
-import ui.common.ext.apply
 import ui.page.tagedit.TagEditEvent
+import ui.page.tagedit.apply
 
 class BookmarkEditorModel(
     private val target: SingleBookmarkSource,

@@ -24,7 +24,12 @@ import ui.styles.Palette
 import ui.styles.components.TagComponent
 
 @Composable
-fun TagEditView(tags: List<String>, modifier: Modifier, onTagEditEvent: (TagEditEvent) -> Unit) {
+fun TagEditView(
+    tags: List<String>,
+    modifier: Modifier = Modifier,
+    postfixTag: String? = null,
+    onTagEditEvent: (TagEditEvent) -> Unit
+) {
 
     val appModule = AppModule.Local.current
     val scope = rememberCoroutineScope()
@@ -42,7 +47,7 @@ fun TagEditView(tags: List<String>, modifier: Modifier, onTagEditEvent: (TagEdit
     }
 
     Column(modifier = modifier.gap(8.px)) {
-        TagListView(tags, modifier = Modifier.fillMaxWidth(), tagModifier = { tag ->
+        TagListView(tags, modifier = Modifier.fillMaxWidth(), postfixTag = postfixTag, tagModifier = { tag ->
             if (model.selectedTag == tag) {
                 TagComponent.Selected.toModifier()
             } else {

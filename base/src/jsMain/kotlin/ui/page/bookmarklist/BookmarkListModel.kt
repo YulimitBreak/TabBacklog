@@ -14,9 +14,10 @@ import entity.BookmarkSearchConfig
 import entity.sort.BookmarkSort
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.ReceiveChannel
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.launch
-import ui.common.ext.apply
+import ui.page.tagedit.apply
 import kotlin.math.max
 import kotlin.math.min
 
@@ -45,9 +46,14 @@ class BookmarkListModel(
 
     private var lastClickedBookmarkUrl: String? = null
 
+    private val dbUpdateRelay = MutableSharedFlow<String>(extraBufferCapacity = 100)
+
     init {
         coroutineScope.launch {
-            browserInteractor.subscribeToDbUpdates().collect { changedUrl ->
+            browserInteractor.subscribeToDbUpdates().collect { dbUpdateRelay.emit(it) }
+        }
+        coroutineScope.launch {
+            dbUpdateRelay.collect { changedUrl ->
                 val changedBookmark = bookmarkRepository.loadBookmark(changedUrl)
                 updateList { original ->
                     withNewEntry(original.filterNot { it.url == changedUrl }, changedBookmark)

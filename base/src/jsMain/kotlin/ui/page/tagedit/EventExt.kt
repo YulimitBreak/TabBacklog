@@ -1,6 +1,4 @@
-package ui.common.ext
-
-import ui.page.tagedit.TagEditEvent
+package ui.page.tagedit
 
 fun TagEditEvent.apply(tags: List<String>) = when (this) {
     is TagEditEvent.Add -> {

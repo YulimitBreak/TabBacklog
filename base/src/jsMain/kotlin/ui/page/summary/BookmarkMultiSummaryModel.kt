@@ -23,7 +23,7 @@ class BookmarkMultiSummaryModel(
         private set
 
     private fun CoroutineScope.loadBundle(loader: suspend () -> BookmarkBundle) =
-        load(setter = { bookmarks = it }, debounceTime = 200L, loader)
+        load(setter = { bookmarks = it }, debounceTime = 200L, loader = loader)
 
     private fun CoroutineScope.updateBundle(action: suspend (BookmarkBundle) -> BookmarkBundle) {
         val bookmark = bookmarks.value ?: return

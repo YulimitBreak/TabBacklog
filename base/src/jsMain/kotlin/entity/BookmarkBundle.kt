@@ -1,5 +1,7 @@
 package entity
 
+import common.allHaveSameValue
+
 data class BookmarkBundle(val bookmarks: List<Bookmark>) : List<Bookmark> by bookmarks {
 
     val titles = bookmarks.map { it.title }
@@ -13,7 +15,11 @@ data class BookmarkBundle(val bookmarks: List<Bookmark>) : List<Bookmark> by boo
     val offTags = bookmarks.flatMap { it.tags - commonTags.toSet() }.distinct()
     val hasTags = commonTags.isNotEmpty() || offTags.isNotEmpty()
 
-    val remindDate = bookmarks.mapNotNull { it.remindDate }.minOrNull()
-    val deadline = bookmarks.mapNotNull { it.deadline }.minOrNull()
-    val expirationDate = bookmarks.mapNotNull { it.expirationDate }.minOrNull()
+    val earliestRemindDate = bookmarks.mapNotNull { it.remindDate }.minOrNull()
+    val earliestDeadline = bookmarks.mapNotNull { it.deadline }.minOrNull()
+    val earliestExpirationDate = bookmarks.mapNotNull { it.expirationDate }.minOrNull()
+
+    val remindDateUndefined = !bookmarks.allHaveSameValue(Bookmark::remindDate)
+    val deadlineUndefined = !bookmarks.allHaveSameValue(Bookmark::deadline)
+    val expirationDateUndefined = !bookmarks.allHaveSameValue(Bookmark::expirationDate)
 }

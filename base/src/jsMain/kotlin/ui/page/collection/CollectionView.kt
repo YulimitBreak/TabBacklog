@@ -20,6 +20,7 @@ import org.jetbrains.compose.web.dom.Text
 import ui.common.basecomponent.RowButton
 import ui.page.bookmarklist.BookmarkList
 import ui.page.editor.BookmarkEditor
+import ui.page.editor.BookmarkMultiEditor
 import ui.page.summary.BookmarkMultiSummary
 import ui.page.summary.BookmarkSummary
 
@@ -89,18 +90,26 @@ fun CollectionView(modifier: Modifier = Modifier) {
                     )
                 }
             } else if (selectedBookmarkUrls.size > 1) {
-                BookmarkMultiSummary(
-                    target = MultiBookmarkSource.Url(selectedBookmarkUrls),
-                    modifier = bookmarkViewModifier,
-                    firstButton = {
-                        val browserInteractor = BrowserInteractor.Local.current
-                        RowButton(onClick = { browserInteractor.openPages(selectedBookmarkUrls.toList()) }) {
-                            FaFileArrowUp()
-                            Text("Open all")
-                        }
-                    },
-                    onEditRequest = { editMode = true }
-                )
+                if (!editMode) {
+                    BookmarkMultiSummary(
+                        target = MultiBookmarkSource.Url(selectedBookmarkUrls),
+                        modifier = bookmarkViewModifier,
+                        firstButton = {
+                            val browserInteractor = BrowserInteractor.Local.current
+                            RowButton(onClick = { browserInteractor.openPages(selectedBookmarkUrls.toList()) }) {
+                                FaFileArrowUp()
+                                Text("Open all")
+                            }
+                        },
+                        onEditRequest = { editMode = true }
+                    )
+                } else {
+                    BookmarkMultiEditor(
+                        target = MultiBookmarkSource.Url(selectedBookmarkUrls),
+                        modifier = bookmarkViewModifier,
+                        onNavigateBack = { editMode = false }
+                    )
+                }
             }
         }
     }

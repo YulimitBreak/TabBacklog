@@ -41,6 +41,7 @@ sealed class Loadable<out T> {
  */
 fun <T> CoroutineScope.load(
     setter: (Loadable<T>) -> Unit,
+    onSuccess: (T) -> Unit = {},
     debounceTime: Long = 0,
     loader: suspend () -> T
 ) {
@@ -58,6 +59,7 @@ fun <T> CoroutineScope.load(
             val result = loader()
             debounceJob?.cancel()
             setter(Loadable.Success(result))
+            onSuccess(result)
         } catch (e: Exception) {
             if (e is CancellationException) throw e
             console.error(e)
