@@ -222,7 +222,7 @@ fun BookmarkEditor(
                     description,
                     icon,
                     model.editedBlock == type.block,
-                    model.getTimerTarget(type),
+                    model.getDatePickerTarget(type),
                     Modifier
                         .width(100.percent - 6.px)
                         .margin(left = 6.px, top = (-2).px, bottom = (-2).px)

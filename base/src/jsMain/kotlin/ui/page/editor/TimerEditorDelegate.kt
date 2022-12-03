@@ -25,7 +25,7 @@ class TimerEditorDelegate(
         }
     }
 
-    val timerTarget get() = timerState.toDatePickerTarget()
+    val datePickerTarget get() = timerState.toDatePickerTarget()
 
     private val timerState: TimerState
         get() {

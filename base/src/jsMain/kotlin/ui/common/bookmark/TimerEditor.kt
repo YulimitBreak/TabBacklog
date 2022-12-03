@@ -26,6 +26,7 @@ fun TimerEditor(
     isSelected: Boolean,
     datePickerTarget: DatePickerTarget,
     modifier: Modifier = Modifier,
+    descriptionEnd: @Composable () -> Unit = {},
     onEvent: (TimerEditorEvent) -> Unit,
 ) {
     val date = datePickerTarget.resolve()
@@ -55,7 +56,8 @@ fun TimerEditor(
                     title,
                     modifier = Modifier.fontWeight(FontWeight.Bolder).width(25.percent)
                 )
-                DivText(description, modifier = Modifier.fillMaxSize().fontSize(0.9.em).textAlign(TextAlign.Center))
+                DivText(description, modifier = Modifier.fillMaxWidth().fontSize(0.9.em).textAlign(TextAlign.Center))
+                descriptionEnd()
             }
         }
     }

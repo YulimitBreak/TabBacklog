@@ -136,13 +136,27 @@ class BookmarkMultiEditorModel(
         }
     }
 
-    fun getTimerTarget(type: TimerType) = timerDelegate(type).timerTarget
+    fun getDatePickerTarget(type: TimerType) = timerDelegate(type).datePickerTarget
 
     fun onTimerEvent(timerType: TimerType, event: TimerEditorEvent) {
-        // TODO handle undefined
-        timerDelegate(timerType).onTimerEvent(event)
         if (event is TimerEditorEvent.OnDelete) {
+            updateBundle {
+                when (timerType) {
+                    TimerType.REMINDER -> it.copy(reminderUnset = true)
+                    TimerType.DEADLINE -> it.copy(deadlineUnset = true)
+                    TimerType.EXPIRATION -> it.copy(expirationUnset = true)
+                }
+            }
             editedBlock = null
+        } else {
+            timerDelegate(timerType).onTimerEvent(event)
+            updateBundle {
+                when (timerType) {
+                    TimerType.REMINDER -> it.copy(reminderUnset = false)
+                    TimerType.DEADLINE -> it.copy(deadlineUnset = false)
+                    TimerType.EXPIRATION -> it.copy(expirationUnset = false)
+                }
+            }
         }
     }
 

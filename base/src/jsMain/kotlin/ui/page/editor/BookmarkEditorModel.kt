@@ -99,7 +99,7 @@ class BookmarkEditorModel(
         updateBookmark { bookmark -> bookmark.copy(tags = event.apply(bookmark.tags)) }
     }
 
-    fun getTimerTarget(type: TimerType) = timerDelegate(type).timerTarget
+    fun getDatePickerTarget(type: TimerType) = timerDelegate(type).datePickerTarget
 
     fun onTimerEvent(timerType: TimerType, event: TimerEditorEvent) {
         timerDelegate(timerType).onTimerEvent(event)

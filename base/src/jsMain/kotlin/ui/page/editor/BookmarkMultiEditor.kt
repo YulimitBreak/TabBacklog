@@ -12,6 +12,7 @@ import com.varabyte.kobweb.compose.foundation.layout.Spacer
 import com.varabyte.kobweb.compose.ui.Modifier
 import com.varabyte.kobweb.compose.ui.modifiers.*
 import com.varabyte.kobweb.compose.ui.thenIf
+import com.varabyte.kobweb.silk.components.forms.Button
 import com.varabyte.kobweb.silk.components.icons.fa.*
 import com.varabyte.kobweb.silk.components.style.toModifier
 import com.varabyte.kobweb.silk.components.text.SpanText
@@ -23,10 +24,9 @@ import org.jetbrains.compose.web.dom.Text
 import ui.common.basecomponent.LoadableView
 import ui.common.basecomponent.RowButton
 import ui.common.basecomponent.TagListView
-import ui.common.bookmark.BookmarkMultiTitleView
-import ui.common.bookmark.BookmarkTypeBacklogButton
-import ui.common.bookmark.BookmarkTypeLibraryButton
-import ui.common.bookmark.TimerEditor
+import ui.common.bookmark.*
+import ui.common.datepicker.DatePickerMode
+import ui.common.datepicker.DatePickerTarget
 import ui.page.tagedit.TagEditView
 import ui.styles.brand.DeadlineTimerIcon
 import ui.styles.brand.ExpirationTimerIcon
@@ -46,7 +46,7 @@ fun BookmarkMultiEditor(
         appModule.createBookmarkMultiEditorModel(scope, target, onNavigateBackState)
     }
 
-    LoadableView(model.bookmarkBundle, modifier = modifier.minHeight(350.px)) { bookmarks, m ->
+    LoadableView(model.bookmarkBundle, modifier = modifier.minHeight(300.px)) { bookmarks, m ->
         Column(Modifier.gap(8.px).padding(bottom = 8.px).then(m)) {
             Row(Modifier.fillMaxWidth().gap(8.px)) {
 
@@ -62,7 +62,7 @@ fun BookmarkMultiEditor(
                     if (bookmarks.favorite != null) {
                         FaStar(style = if (bookmarks.favorite) IconStyle.FILLED else IconStyle.OUTLINE)
                     } else {
-                        FaStarHalf()
+                        FaStarHalfStroke()
                     }
                     Text("Favorite")
                 }
@@ -142,20 +142,19 @@ fun BookmarkMultiEditor(
             }
 
             SpanText("Timers:")
-            // TODO handle undefined
             @Composable
             fun TimerBlock(
                 title: String,
-                description: String,
+                isUnset: Boolean,
                 icon: @Composable () -> Unit,
                 type: TimerType
             ) {
                 TimerEditor(
                     title,
-                    description,
+                    if (isUnset) "Different timers assigned" else "No timer assigned",
                     icon,
                     model.editedBlock == type.block,
-                    model.getTimerTarget(type),
+                    if (isUnset) DatePickerTarget.None else model.getDatePickerTarget(type),
                     Modifier
                         .width(100.percent - 6.px)
                         .margin(left = 6.px, top = (-2).px, bottom = (-2).px)
@@ -166,27 +165,43 @@ fun BookmarkMultiEditor(
                         )
                         .thenIf(model.editedBlock == type.block) {
                             Modifier.border(2.px, LineStyle.Solid, Color.transparent)
+                        },
+                    descriptionEnd = {
+                        if (isUnset) {
+                            Button(
+                                onClick = {
+                                    model.onTimerEvent(
+                                        type,
+                                        TimerEditorEvent.OnModeChange(DatePickerMode.NONE)
+                                    )
+                                    model.requestEdit(null)
+                                },
+                                Modifier.size(2.em)
+                            ) {
+                                FaTrash(Modifier.fontSize(1.em).padding(4.px))
+                            }
                         }
+                    }
                 ) { model.onTimerEvent(type, it) }
             }
 
             TimerBlock(
                 "Reminder",
-                "For tabs that you want to forget about until specific date",
+                bookmarks.reminderUnset,
                 { ReminderTimerIcon() },
                 TimerType.REMINDER
             )
 
             TimerBlock(
                 "Deadline",
-                "For tabs related to tasks that you need to finish until specific date",
+                bookmarks.deadlineUnset,
                 { DeadlineTimerIcon() },
                 TimerType.DEADLINE
             )
 
             TimerBlock(
                 "Expiration",
-                "For tabs that you won't care after a specific date so they can be safely deleted",
+                bookmarks.expirationUnset,
                 { ExpirationTimerIcon() },
                 TimerType.EXPIRATION
             )
