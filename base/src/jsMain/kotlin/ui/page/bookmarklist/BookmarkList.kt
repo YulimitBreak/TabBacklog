@@ -4,24 +4,26 @@ import androidx.compose.runtime.*
 import com.varabyte.kobweb.compose.css.Overflow
 import com.varabyte.kobweb.compose.css.UserSelect
 import com.varabyte.kobweb.compose.foundation.layout.Column
+import com.varabyte.kobweb.compose.foundation.layout.Row
 import com.varabyte.kobweb.compose.ui.Modifier
 import com.varabyte.kobweb.compose.ui.attrsModifier
 import com.varabyte.kobweb.compose.ui.graphics.toCssColor
 import com.varabyte.kobweb.compose.ui.modifiers.*
 import com.varabyte.kobweb.compose.ui.thenIf
+import com.varabyte.kobweb.silk.components.text.SpanText
 import di.AppModule
-import entity.Bookmark
 import org.jetbrains.compose.web.css.LineStyle
 import org.jetbrains.compose.web.css.minus
 import org.jetbrains.compose.web.css.percent
 import org.jetbrains.compose.web.css.px
 import ui.common.basecomponent.LoadingTable
+import ui.common.basecomponent.Toggle
 import ui.common.bookmark.BookmarkTableView
 import ui.styles.Palette
 import ui.styles.primaryColors
 
 @Composable
-fun BookmarkList(modifier: Modifier = Modifier, onBookmarkSelect: (Bookmark) -> Unit) {
+fun BookmarkList(modifier: Modifier = Modifier, onBookmarkSelect: (urls: Set<String>) -> Unit) {
 
     val appModule = AppModule.Local.current
     val scope = rememberCoroutineScope()
@@ -55,15 +57,22 @@ fun BookmarkList(modifier: Modifier = Modifier, onBookmarkSelect: (Bookmark) -> 
                 BookmarkTableView(
                     bookmark,
                     modifier = Modifier.padding(topBottom = 4.px, leftRight = 8.px).width(100.percent - 16.px)
-                        .thenIf(model.selectedBookmarkUrl == bookmark.url, Modifier.primaryColors())
+                        .thenIf(model.selectedBookmarks.contains(bookmark.url), Modifier.primaryColors())
                         .userSelect(UserSelect.None)
-                        .onClick { model.selectBookmark(bookmark) }
                         .thenIf(bookmark.comment.isNotBlank(), Modifier.title(bookmark.comment))
                         .attrsModifier {
+                            onClick { event ->
+                                model.selectBookmark(bookmark, event.ctrlKey, event.shiftKey)
+                            }
                             onDoubleClick { model.openBookmark(bookmark) }
                         },
                 )
             }
+        }
+
+        Row(modifier = Modifier.width(100.percent - 32.px).padding(leftRight = 16.px, topBottom = 4.px).gap(8.px)) {
+            Toggle(model.multiSelectMode, "Multi-select mode", onToggle = { model.updateMultiSelectMode(it) })
+            SpanText("or use Ctrl and Shift keys while selecting")
         }
     }
 }

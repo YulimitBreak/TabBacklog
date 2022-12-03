@@ -9,26 +9,24 @@ import com.varabyte.kobweb.compose.css.FontWeight
 import com.varabyte.kobweb.compose.foundation.layout.Column
 import com.varabyte.kobweb.compose.foundation.layout.Row
 import com.varabyte.kobweb.compose.foundation.layout.Spacer
-import com.varabyte.kobweb.compose.ui.Alignment
 import com.varabyte.kobweb.compose.ui.Modifier
-import com.varabyte.kobweb.compose.ui.asAttributesBuilder
 import com.varabyte.kobweb.compose.ui.modifiers.*
 import com.varabyte.kobweb.compose.ui.thenIf
+import com.varabyte.kobweb.silk.components.forms.Button
 import com.varabyte.kobweb.silk.components.icons.fa.*
 import com.varabyte.kobweb.silk.components.style.toModifier
 import com.varabyte.kobweb.silk.components.text.SpanText
-import common.styleProperty
 import di.AppModule
 import entity.BookmarkType
-import entity.SingleBookmarkSource
+import entity.MultiBookmarkSource
 import org.jetbrains.compose.web.css.*
 import org.jetbrains.compose.web.dom.Text
-import org.jetbrains.compose.web.dom.TextArea
-import ui.common.basecomponent.DivText
 import ui.common.basecomponent.LoadableView
 import ui.common.basecomponent.RowButton
 import ui.common.basecomponent.TagListView
 import ui.common.bookmark.*
+import ui.common.datepicker.DatePickerMode
+import ui.common.datepicker.DatePickerTarget
 import ui.page.tagedit.TagEditView
 import ui.styles.brand.DeadlineTimerIcon
 import ui.styles.brand.ExpirationTimerIcon
@@ -36,8 +34,8 @@ import ui.styles.brand.ReminderTimerIcon
 import ui.styles.components.BookmarkEditClickableArea
 
 @Composable
-fun BookmarkEditor(
-    target: SingleBookmarkSource,
+fun BookmarkMultiEditor(
+    target: MultiBookmarkSource,
     onNavigateBack: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -45,10 +43,10 @@ fun BookmarkEditor(
     val scope = rememberCoroutineScope()
     val onNavigateBackState = rememberUpdatedState(BookmarkEditorModel.OnNavigateBack(onNavigateBack))
     val model = remember(target) {
-        appModule.createBookmarkEditorModel(scope, target, onNavigateBackState)
+        appModule.createBookmarkMultiEditorModel(scope, target, onNavigateBackState)
     }
 
-    LoadableView(model.bookmark, modifier = modifier.minHeight(350.px)) { bookmark, m ->
+    LoadableView(model.bookmarkBundle, modifier = modifier.minHeight(300.px)) { bookmarks, m ->
         Column(Modifier.gap(8.px).padding(bottom = 8.px).then(m)) {
             Row(Modifier.fillMaxWidth().gap(8.px)) {
 
@@ -59,48 +57,31 @@ fun BookmarkEditor(
 
                 Spacer()
                 RowButton(
-                    onClick = { model.updateFavorite(!bookmark.favorite) },
+                    onClick = { model.toggleFavorite() },
                 ) {
-                    FaStar(style = if (bookmark.favorite) IconStyle.FILLED else IconStyle.OUTLINE)
+                    if (bookmarks.favorite != null) {
+                        FaStar(style = if (bookmarks.favorite) IconStyle.FILLED else IconStyle.OUTLINE)
+                    } else {
+                        FaStarHalfStroke()
+                    }
                     Text("Favorite")
                 }
-                if (!bookmark.isNew) {
-                    RowButton(onClick = { model.deleteBookmark() }) {
+                if (!bookmarks.isNew) {
+                    RowButton(onClick = { model.deleteAll() }) {
                         FaTrash()
                         Text("Delete")
                     }
                 }
             }
 
-            if (model.editedBlock != BookmarkEditedBlock.TITLE) {
-                BookmarkTitleView(bookmark.title, bookmark.base.favicon, bookmark.base.url,
-                    BookmarkEditClickableArea.Style.toModifier()
-                        .width(100.percent - 16.px)
-                        .height(64.px)
-                        .margin(leftRight = 4.px, topBottom = (-2).px) // Negative margin to compensate for border
-                        .padding(leftRight = 2.px)
-                        .onClick {
-                            model.requestEdit(BookmarkEditedBlock.TITLE)
-                        }
-                )
-            } else {
-                BookmarkTitleEdit(
-                    bookmark.title, bookmark.base.favicon,
-                    onInput = { model.updateTitle(it) },
-                    Modifier.margin(leftRight = 8.px)
-                        .height(64.px)
-                        .width(100.percent - 16.px)
-                        .onKeyDown { event ->
-                            if (event.getNormalizedKey() == "Enter") {
-                                event.preventDefault()
-                                model.requestEdit(null)
-                            }
-                        }
-                )
-            }
+            BookmarkMultiTitleView(
+                bookmarks.base.titles,
+                limit = 3,
+                modifier = Modifier.margin(leftRight = 8.px).width(100.percent - 16.px).height(64.px)
+            )
 
             Row(Modifier.fillMaxWidth().gap(8.px)) {
-                val currentType = bookmark.currentType
+                val currentType = bookmarks.currentType
                 BookmarkTypeLibraryButton(currentType == BookmarkType.LIBRARY, Modifier.width(30.percent)) {
                     model.updateType(BookmarkType.LIBRARY)
                 }
@@ -111,60 +92,10 @@ fun BookmarkEditor(
                 Spacer()
 
                 RowButton(onClick = {
-                    model.saveBookmark()
+                    model.saveAll()
                 }) {
                     FaFloppyDisk(style = IconStyle.FILLED)
                     Text("Save")
-                }
-            }
-
-            Column(
-                Modifier.padding(leftRight = 2.px)
-                    .gap(8.px)
-                    .width(100.percent - 4.px)
-                    .margin(leftRight = (-4).px, topBottom = (-2).px)
-                    .thenIf(model.editedBlock != BookmarkEditedBlock.COMMENT,
-                        BookmarkEditClickableArea.Style.toModifier()
-                            .onClick { model.requestEdit(BookmarkEditedBlock.COMMENT) }
-                    )
-                    .thenIf(model.editedBlock == BookmarkEditedBlock.COMMENT) {
-                        Modifier.border(2.px, LineStyle.Solid, Color.transparent)
-                    }
-            ) {
-                SpanText("Comment:")
-                if (model.editedBlock != BookmarkEditedBlock.COMMENT) {
-                    DivText(
-                        bookmark.comment.takeIf { it.isNotBlank() } ?: "No comment",
-                        Modifier.fontWeight(FontWeight.Lighter).margin(left = 8.px).width(100.percent - 8.px)
-                            .thenIf(bookmark.comment.isBlank(), Modifier.fontStyle(FontStyle.Italic))
-                    )
-                } else {
-                    TextArea(
-                        bookmark.comment,
-                        Modifier
-                            .width(100.percent)
-                            .lineHeight(1.2.em)
-                            .minHeight(2.4.em)
-                            .styleProperty("resize", "vertical")
-                            .onKeyDown { event ->
-                                if (event.getNormalizedKey() == "Enter") {
-                                    event.preventDefault()
-                                    model.requestEdit(null)
-                                }
-                            }.asAttributesBuilder {
-                                onInput { model.updateComment(it.value) }
-                            }
-                    )
-                    RowButton(
-                        onClick = {
-                            model.updateComment("")
-                            model.requestEdit(null)
-                        },
-                        Modifier.align(Alignment.End).margin(right = (-2).px)
-                    ) {
-                        FaEraser()
-                        Text("Clear")
-                    }
                 }
             }
 
@@ -185,14 +116,15 @@ fun BookmarkEditor(
                 when {
                     model.editedBlock == BookmarkEditedBlock.TAGS -> {
                         TagEditView(
-                            bookmark.tags,
-                            Modifier.margin(left = 8.px).width(100.percent - 8.px)
+                            bookmarks.tags,
+                            Modifier.margin(left = 8.px).width(100.percent - 8.px),
+                            postfixTag = if (bookmarks.offTags.isNotEmpty()) "${bookmarks.offTags.size} more" else null
                         ) { event ->
                             model.onTagEvent(event)
                         }
                     }
 
-                    bookmark.tags.isEmpty() -> {
+                    bookmarks.tags.isEmpty() -> {
                         SpanText(
                             "No tags",
                             Modifier.fontWeight(FontWeight.Lighter).margin(left = 8.px).width(100.percent - 8.px)
@@ -202,27 +134,27 @@ fun BookmarkEditor(
 
                     else -> {
                         TagListView(
-                            bookmark.tags.toList(), Modifier.margin(leftRight = 8.px).width(100.percent - 16.px),
+                            bookmarks.tags.toList(), Modifier.margin(leftRight = 8.px).width(100.percent - 16.px),
+                            postfixTag = if (bookmarks.offTags.isNotEmpty()) "${bookmarks.offTags.size} more" else null
                         )
                     }
                 }
             }
 
             SpanText("Timers:")
-
             @Composable
             fun TimerBlock(
                 title: String,
-                description: String,
+                isUnset: Boolean,
                 icon: @Composable () -> Unit,
                 type: TimerType
             ) {
                 TimerEditor(
                     title,
-                    description,
+                    if (isUnset) "Different timers assigned" else "No timer assigned",
                     icon,
                     model.editedBlock == type.block,
-                    model.getDatePickerTarget(type),
+                    if (isUnset) DatePickerTarget.None else model.getDatePickerTarget(type),
                     Modifier
                         .width(100.percent - 6.px)
                         .margin(left = 6.px, top = (-2).px, bottom = (-2).px)
@@ -233,27 +165,43 @@ fun BookmarkEditor(
                         )
                         .thenIf(model.editedBlock == type.block) {
                             Modifier.border(2.px, LineStyle.Solid, Color.transparent)
+                        },
+                    descriptionEnd = {
+                        if (isUnset) {
+                            Button(
+                                onClick = {
+                                    model.onTimerEvent(
+                                        type,
+                                        TimerEditorEvent.OnModeChange(DatePickerMode.NONE)
+                                    )
+                                    model.requestEdit(null)
+                                },
+                                Modifier.size(2.em)
+                            ) {
+                                FaTrash(Modifier.fontSize(1.em).padding(4.px))
+                            }
                         }
+                    }
                 ) { model.onTimerEvent(type, it) }
             }
 
             TimerBlock(
                 "Reminder",
-                "For tabs that you want to forget about until specific date",
+                bookmarks.reminderUnset,
                 { ReminderTimerIcon() },
                 TimerType.REMINDER
             )
 
             TimerBlock(
                 "Deadline",
-                "For tabs related to tasks that you need to finish until specific date",
+                bookmarks.deadlineUnset,
                 { DeadlineTimerIcon() },
                 TimerType.DEADLINE
             )
 
             TimerBlock(
                 "Expiration",
-                "For tabs that you won't care after a specific date so they can be safely deleted",
+                bookmarks.expirationUnset,
                 { ExpirationTimerIcon() },
                 TimerType.EXPIRATION
             )

@@ -3,7 +3,6 @@ package ui.page.summary
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import com.varabyte.kobweb.compose.css.FontWeight
 import com.varabyte.kobweb.compose.foundation.layout.Column
 import com.varabyte.kobweb.compose.foundation.layout.Row
 import com.varabyte.kobweb.compose.foundation.layout.Spacer
@@ -16,23 +15,22 @@ import com.varabyte.kobweb.silk.components.icons.fa.IconStyle
 import com.varabyte.kobweb.silk.components.text.SpanText
 import di.AppModule
 import entity.BookmarkType
-import entity.SingleBookmarkSource
+import entity.MultiBookmarkSource
 import org.jetbrains.compose.web.css.minus
 import org.jetbrains.compose.web.css.percent
 import org.jetbrains.compose.web.css.px
 import org.jetbrains.compose.web.dom.Text
-import ui.common.basecomponent.DivText
 import ui.common.basecomponent.LoadableView
 import ui.common.basecomponent.RowButton
 import ui.common.basecomponent.TagListView
+import ui.common.bookmark.BookmarkMultiTitleView
 import ui.common.bookmark.BookmarkSummaryTimerView
-import ui.common.bookmark.BookmarkTitleView
 import ui.common.bookmark.BookmarkTypeBacklogButton
 import ui.common.bookmark.BookmarkTypeLibraryButton
 
 @Composable
-fun BookmarkSummary(
-    target: SingleBookmarkSource,
+fun BookmarkMultiSummary(
+    target: MultiBookmarkSource,
     onEditRequest: () -> Unit,
     firstButton: @Composable () -> Unit = {},
     modifier: Modifier = Modifier
@@ -40,41 +38,46 @@ fun BookmarkSummary(
     val appModule = AppModule.Local.current
     val scope = rememberCoroutineScope()
 
-    val model: BookmarkSummaryModel =
-        remember(target) { appModule.createBookmarkSummaryModel(scope, target) }
+    val model: BookmarkMultiSummaryModel =
+        remember(target) { appModule.createBookmarkMultiSummaryModel(scope, target) }
 
-    LoadableView(model.bookmark, modifier.minHeight(100.px)) { bookmark, m ->
+    LoadableView(model.bookmarks, modifier.minHeight(100.px)) { bookmarks, m ->
         Column(m.gap(8.px).margin(bottom = 8.px)) {
             Row(Modifier.fillMaxWidth().gap(8.px)) {
 
                 firstButton()
 
                 Spacer()
-                if (bookmark.isSaved) {
+                if (bookmarks.anySaved) {
                     RowButton(
-                        onClick = { model.updateFavorite(!bookmark.favorite) },
+                        onClick = { model.updateAllFavorite(!bookmarks.allFavorite) },
                     ) {
-                        FaStar(style = if (bookmark.favorite) IconStyle.FILLED else IconStyle.OUTLINE)
+                        FaStar(style = if (bookmarks.allFavorite) IconStyle.FILLED else IconStyle.OUTLINE)
                         Text("Favorite")
                     }
-                    RowButton(onClick = { model.deleteBookmark() }) {
+                    RowButton(onClick = { model.deleteAll() }) {
                         FaTrash()
                         Text("Delete")
                     }
                 }
             }
-            BookmarkTitleView(
-                bookmark.title,
-                bookmark.favicon,
-                bookmark.url,
-                Modifier.margin(leftRight = 8.px).width(100.percent - 16.px).height(64.px)
+            BookmarkMultiTitleView(
+                bookmarks.titles,
+                limit = 3,
+                modifier = Modifier.margin(leftRight = 8.px).width(100.percent - 16.px).height(64.px)
             )
             Row(Modifier.fillMaxWidth().gap(8.px)) {
-                val currentType = bookmark.takeIf { it.isSaved }?.type
-                BookmarkTypeLibraryButton(currentType == BookmarkType.LIBRARY, Modifier.width(30.percent)) {
+
+                BookmarkTypeLibraryButton(
+                    bookmarks.types.singleOrNull() == BookmarkType.LIBRARY,
+                    modifier = Modifier.width(30.percent)
+                ) {
                     model.updateType(BookmarkType.LIBRARY)
                 }
-                BookmarkTypeBacklogButton(currentType == BookmarkType.BACKLOG, Modifier.width(30.percent)) {
+                BookmarkTypeBacklogButton(
+                    bookmarks.types.singleOrNull() == BookmarkType.BACKLOG,
+                    modifier = Modifier.width(30.percent)
+                ) {
                     model.updateType(BookmarkType.BACKLOG)
                 }
 
@@ -87,26 +90,17 @@ fun BookmarkSummary(
                     Text("Edit")
                 }
             }
-
-            if (bookmark.comment.isNotBlank()) {
-                SpanText("Comment:")
-                DivText(
-                    bookmark.comment, Modifier.fontWeight(FontWeight.Lighter)
-                        .margin(left = 8.px)
-                        .width(100.percent - 8.px)
-                )
-            }
-
-            if (bookmark.tags.isNotEmpty()) {
+            if (bookmarks.hasTags) {
                 SpanText("Tags:")
                 TagListView(
-                    bookmark.tags, Modifier.margin(leftRight = 8.px).width(100.percent - 16.px),
+                    bookmarks.commonTags, Modifier.margin(leftRight = 8.px).width(100.percent - 16.px),
+                    postfixTag = if (bookmarks.offTags.isNotEmpty()) "${bookmarks.offTags.size} more" else null
                 )
             }
 
             BookmarkSummaryTimerView(
-                "Timers:",
-                bookmark.remindDate, bookmark.deadline, bookmark.expirationDate,
+                "Earliest timers:",
+                bookmarks.earliestRemindDate, bookmarks.earliestDeadline, bookmarks.earliestExpirationDate,
                 onReminderDelete = { model.deleteReminder() },
                 onDeadlineDelete = { model.deleteDeadline() },
                 onExpirationDelete = { model.deleteExpiration() },

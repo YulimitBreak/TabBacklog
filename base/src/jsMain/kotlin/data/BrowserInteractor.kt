@@ -11,6 +11,8 @@ interface BrowserInteractor {
     fun openManager()
     fun openPage(url: String)
 
+    fun openPages(urls: List<String>)
+
     suspend fun sendUpdateMessage(url: String)
 
     fun subscribeToDbUpdates(): Flow<String>

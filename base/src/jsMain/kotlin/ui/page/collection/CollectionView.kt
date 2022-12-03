@@ -10,8 +10,8 @@ import com.varabyte.kobweb.compose.ui.graphics.Colors
 import com.varabyte.kobweb.compose.ui.modifiers.*
 import com.varabyte.kobweb.silk.components.icons.fa.FaFileArrowUp
 import data.BrowserInteractor
-import entity.Bookmark
-import entity.SingleBookmarkTarget
+import entity.MultiBookmarkSource
+import entity.SingleBookmarkSource
 import org.jetbrains.compose.web.css.FlexWrap
 import org.jetbrains.compose.web.css.minus
 import org.jetbrains.compose.web.css.percent
@@ -20,12 +20,14 @@ import org.jetbrains.compose.web.dom.Text
 import ui.common.basecomponent.RowButton
 import ui.page.bookmarklist.BookmarkList
 import ui.page.editor.BookmarkEditor
+import ui.page.editor.BookmarkMultiEditor
+import ui.page.summary.BookmarkMultiSummary
 import ui.page.summary.BookmarkSummary
 
 @Composable
 fun CollectionView(modifier: Modifier = Modifier) {
 
-    var selectedBookmark by remember { mutableStateOf<Bookmark?>(null) }
+    var selectedBookmarkUrls by remember { mutableStateOf(emptySet<String>()) }
     var editMode by remember { mutableStateOf(false) }
 
     Row(modifier.role("main").overflowX(Overflow.Auto).gap(32.px).flexWrap(FlexWrap.Nowrap)) {
@@ -46,33 +48,35 @@ fun CollectionView(modifier: Modifier = Modifier) {
                     ),
                 onBookmarkSelect = {
                     editMode = false
-                    selectedBookmark = it
+                    selectedBookmarkUrls = it
                 }
             )
         }
 
         Box(contentAlignment = Alignment.CenterStart, modifier = Modifier.fillMaxHeight()) {
 
-            val bookmark = selectedBookmark
-            if (bookmark != null) {
-                val bookmarkViewModifier = Modifier
-                    .borderRadius(8.px)
-                    .padding(16.px)
-                    .width(400.px)
-                    .boxShadow(
-                        offsetX = 0.px,
-                        offsetY = 5.px,
-                        blurRadius = 8.px,
-                        spreadRadius = 2.px,
-                        Colors.Gray
-                    )
+            val bookmarkViewModifier = Modifier
+                .borderRadius(8.px)
+                .padding(16.px)
+                .width(400.px)
+                .boxShadow(
+                    offsetX = 0.px,
+                    offsetY = 5.px,
+                    blurRadius = 8.px,
+                    spreadRadius = 2.px,
+                    Colors.Gray
+                )
+
+            if (selectedBookmarkUrls.size == 1) {
+                val bookmarkUrl = selectedBookmarkUrls.single()
+
                 if (!editMode) {
                     BookmarkSummary(
-                        target = SingleBookmarkTarget.Url(bookmark.url),
+                        target = SingleBookmarkSource.Url(bookmarkUrl),
                         modifier = bookmarkViewModifier,
                         firstButton = {
                             val browserInteractor = BrowserInteractor.Local.current
-                            RowButton(onClick = { browserInteractor.openPage(bookmark.url) }) {
+                            RowButton(onClick = { browserInteractor.openPage(bookmarkUrl) }) {
                                 FaFileArrowUp()
                                 Text("Open")
                             }
@@ -80,7 +84,28 @@ fun CollectionView(modifier: Modifier = Modifier) {
                         onEditRequest = { editMode = true })
                 } else {
                     BookmarkEditor(
-                        target = SingleBookmarkTarget.Url(bookmark.url),
+                        target = SingleBookmarkSource.Url(bookmarkUrl),
+                        modifier = bookmarkViewModifier,
+                        onNavigateBack = { editMode = false }
+                    )
+                }
+            } else if (selectedBookmarkUrls.size > 1) {
+                if (!editMode) {
+                    BookmarkMultiSummary(
+                        target = MultiBookmarkSource.Url(selectedBookmarkUrls),
+                        modifier = bookmarkViewModifier,
+                        firstButton = {
+                            val browserInteractor = BrowserInteractor.Local.current
+                            RowButton(onClick = { browserInteractor.openPages(selectedBookmarkUrls.toList()) }) {
+                                FaFileArrowUp()
+                                Text("Open all")
+                            }
+                        },
+                        onEditRequest = { editMode = true }
+                    )
+                } else {
+                    BookmarkMultiEditor(
+                        target = MultiBookmarkSource.Url(selectedBookmarkUrls),
                         modifier = bookmarkViewModifier,
                         onNavigateBack = { editMode = false }
                     )

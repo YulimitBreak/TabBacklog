@@ -21,3 +21,5 @@ fun <T> List<T>.insertWithComparator(value: T, comparator: Comparator<T>): List<
     val (head, tail) = partition { comparator.compare(it, value) < 0 }
     return head + value + tail
 }
+
+fun <T, R> Iterable<T>.allHaveSameValue(getter: (T) -> R) = this.all { getter(it) == getter(this.first()) }

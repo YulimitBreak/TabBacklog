@@ -5,28 +5,24 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import common.DateUtils
 import data.BookmarkRepository
-import data.BrowserInteractor
 import entity.Bookmark
 import entity.BookmarkType
-import entity.SingleBookmarkTarget
+import entity.SingleBookmarkSource
 import entity.core.Loadable
 import entity.core.load
-import kotlinx.browser.window
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
 
 class BookmarkSummaryModel(
-    private val target: SingleBookmarkTarget,
+    private val target: SingleBookmarkSource,
     private val scope: CoroutineScope,
     private val bookmarkRepository: BookmarkRepository,
-    private val browserInteractor: BrowserInteractor,
 ) {
 
     var bookmark by mutableStateOf<Loadable<Bookmark>>(Loadable.Loading())
         private set
 
     private fun CoroutineScope.loadBookmark(loader: suspend () -> Bookmark) =
-        load(setter = { bookmark = it }, debounceTime = 200L, loader)
+        load(setter = { bookmark = it }, debounceTime = 200L, loader = loader)
 
     private fun CoroutineScope.updateBookmark(action: suspend (Bookmark) -> Bookmark) {
         val bookmark = bookmark.value ?: return
@@ -36,18 +32,11 @@ class BookmarkSummaryModel(
     init {
         scope.loadBookmark {
             when (target) {
-                SingleBookmarkTarget.CurrentTab -> bookmarkRepository.loadBookmarkForActiveTab()
-                is SingleBookmarkTarget.SelectedBookmark -> target.bookmark
-                is SingleBookmarkTarget.Url -> bookmarkRepository.loadBookmark(target.url)
+                is SingleBookmarkSource.CurrentTab -> bookmarkRepository.loadBookmarkForActiveTab()
+                is SingleBookmarkSource.SelectedBookmark -> target.bookmark
+                is SingleBookmarkSource.Url -> bookmarkRepository.loadBookmark(target.url)
                     ?: throw IllegalStateException("Bookmark Not Found")
             }
-        }
-    }
-
-    fun openManager() {
-        scope.launch {
-            browserInteractor.openManager()
-            window.close()
         }
     }
 
