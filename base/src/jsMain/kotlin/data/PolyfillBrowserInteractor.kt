@@ -1,6 +1,7 @@
 package data
 
 import browser.tabs.AttachInfoProperty
+import browser.tabs.ChangeInfoProperty
 import browser.tabs.CreateCreateProperties
 import browser.tabs.MoveInfoProperty
 import browser.tabs.QueryQueryInfo
@@ -97,17 +98,24 @@ class PolyfillBrowserInteractor : BrowserInteractor {
             val onMovedListener = fun(tabId: Int, moveInfo: MoveInfoProperty) {
                 trySend(TabUpdate.Move(tabId, moveInfo.toIndex))
             }
+            val onUpdatedListener = fun(tabId: Int, changeInfo: ChangeInfoProperty, tab: Tab) {
+                if (changeInfo.favIconUrl != null || changeInfo.title != null || changeInfo.url != null) {
+                    trySend(TabUpdate.Update(tabId, tab.title, tab.favIconUrl, tab.url))
+                }
+            }
             browser.tabs.onCreated.addDynamicListener(onCreatedListener)
             browser.tabs.onRemoved.addDynamicListener(onRemovedListener)
             browser.tabs.onAttached.addDynamicListener(onAttachedListener)
             browser.tabs.onDetached.addDynamicListener(onDetachedListener)
             browser.tabs.onMoved.addDynamicListener(onMovedListener)
+            browser.tabs.onUpdated.addDynamicListener(onUpdatedListener)
             awaitClose {
                 browser.tabs.onCreated.removeDynamicListener(onCreatedListener)
                 browser.tabs.onRemoved.removeDynamicListener(onRemovedListener)
                 browser.tabs.onAttached.removeDynamicListener(onAttachedListener)
                 browser.tabs.onDetached.removeDynamicListener(onDetachedListener)
                 browser.tabs.onMoved.removeDynamicListener(onMovedListener)
+                browser.tabs.onUpdated.removeDynamicListener(onUpdatedListener)
             }
         }
 

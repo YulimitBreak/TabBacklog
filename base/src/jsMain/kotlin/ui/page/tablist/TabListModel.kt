@@ -114,6 +114,25 @@ class TabListModel(
                     list = listMinusTab.take(update.index) + tab + listMinusTab.drop(update.index)
                 )
             }
+
+            is TabUpdate.Update -> {
+                val original = listState.list.find { it.tabId == update.tabId }
+                val bookmark = original?.bookmark ?: if (update.url != null && update.url != original?.url) {
+                    bookmarkRepository.loadBookmark(update.url)
+                } else null
+                updateList { list ->
+                    list.map {
+                        if (it.tabId != update.tabId) return@map it
+
+                        it.copy(
+                            url = update.url ?: it.url,
+                            title = update.title ?: it.title,
+                            favIcon = update.favicon ?: it.favIcon,
+                            bookmark = bookmark,
+                        )
+                    }
+                }
+            }
         }
     }
 

@@ -21,7 +21,7 @@ class BookmarkRepository(
 
     private val sortEngine = BookmarkSortEngine(databaseHolder)
 
-    suspend fun loadBookmarkForActiveTab(): Bookmark {
+    private suspend fun loadBookmarkForActiveTab(): Bookmark {
         val tab = browserInteractor.getCurrentTab()
         return tab.url?.let { loadBookmark(it) } ?: createNewBookmark(tab)
     }
@@ -53,7 +53,6 @@ class BookmarkRepository(
     }
 
     suspend fun deleteBookmark(url: String) {
-        console.log("Deleting bookmark for $url")
         databaseHolder.database()
             .writeTransaction(bookmarkSchema.storeName, tagsSchema.storeName, tagCountSchema.storeName) {
                 objectStore(bookmarkSchema.storeName).delete(Key(url))
@@ -64,7 +63,6 @@ class BookmarkRepository(
     }
 
     suspend fun saveBookmark(bookmark: Bookmark) {
-        console.log("Saving bookmark ${bookmark.url}")
         databaseHolder.database()
             .writeTransaction(bookmarkSchema.storeName, tagsSchema.storeName, tagCountSchema.storeName) {
                 saveBookmarkTransaction(bookmark, withTags = true)
@@ -75,7 +73,6 @@ class BookmarkRepository(
 
 
     suspend fun loadBookmark(url: String): Bookmark? {
-        console.log("Trying to find bookmark by $url")
         return databaseHolder.database()
             .transaction(bookmarkSchema.storeName, tagsSchema.storeName, tagCountSchema.storeName) {
                 val bookmarkEntity = objectStore(bookmarkSchema.storeName).get(Key(url)) ?: return@transaction null
