@@ -2,6 +2,9 @@ package data
 
 import browser.tabs.CreateCreateProperties
 import browser.tabs.QueryQueryInfo
+import browser.tabs.Tab
+import browser.windows.QueryOptions
+import browser.windows.WindowType
 import kotlinx.browser.window
 import kotlinx.coroutines.await
 import kotlinx.coroutines.channels.awaitClose
@@ -58,4 +61,20 @@ class PolyfillBrowserInteractor : BrowserInteractor {
             },
             localUpdateFlow
         )
+
+    override suspend fun getWindowIds(): List<Int> =
+        browser.windows.getAll(QueryOptions {
+            populate = false
+            windowTypes = arrayOf(WindowType.normal)
+        }).await().mapNotNull { it.id }
+
+    override suspend fun getWindowTabs(windowId: Int): List<Tab> =
+        browser.tabs.query(
+            QueryQueryInfo {
+                this.windowId = windowId
+            }
+        ).await().toList()
+
+    override suspend fun getCurrentWindowId(): Int? =
+        browser.windows.getCurrent().await().id
 }

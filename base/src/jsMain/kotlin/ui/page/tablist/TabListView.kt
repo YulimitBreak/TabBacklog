@@ -46,11 +46,12 @@ fun TabListView(
             }.takeIf { !model.reachedEnd }
         ) { tab ->
             key(tab.tabId) {
-                TabTableView(
+                TabTableItemView(
                     tab,
                     Modifier.padding(topBottom = 4.px, leftRight = 8.px).width(100.percent - 16.px)
                         .thenIf(model.selectedTabs.contains(tab.tabId), Modifier.primaryColors())
                         .userSelect(UserSelect.None)
+                        .onClick { event -> model.selectTab(tab, event.ctrlKey, event.shiftKey) }
                 )
             }
         }

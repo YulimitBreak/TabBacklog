@@ -18,6 +18,10 @@ class TestBrowserInteractor : BrowserInteractor {
         console.log("Request to open page $url")
     }
 
+    override fun openPages(urls: List<String>) {
+        console.log("Request to open pages $urls")
+    }
+
     private val updateFlow = MutableSharedFlow<String>()
 
     override suspend fun sendUpdateMessage(url: String) {
@@ -25,4 +29,17 @@ class TestBrowserInteractor : BrowserInteractor {
     }
 
     override fun subscribeToDbUpdates(): Flow<String> = updateFlow
+
+
+    override suspend fun getWindowIds(): List<Int> {
+        return emptyList()
+    }
+
+    override suspend fun getWindowTabs(windowId: Int): List<Tab> {
+        return emptyList()
+    }
+
+    override suspend fun getCurrentWindowId(): Int? {
+        return null
+    }
 }

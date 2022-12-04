@@ -6,8 +6,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import data.BookmarkRepository
 import data.BrowserInteractor
-import entity.Tab
+import entity.BrowserTab
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
 class TabListModel(
     private val coroutineScope: CoroutineScope,
@@ -30,14 +31,36 @@ class TabListModel(
         private set
 
     fun requestMore() {
-        // TODO
+        // TODO pagination
+        coroutineScope.launch {
+            listState = listState.copy(isLoading = true)
+            browserInteractor.getWindowTabs(browserInteractor.getCurrentWindowId() ?: return@launch)
+                .mapNotNull { tab ->
+                    val url = tab.url ?: return@mapNotNull null
+                    BrowserTab(
+                        tab.id ?: return@mapNotNull null,
+                        url,
+                        tab.favIconUrl,
+                        tab.title ?: "",
+                        bookmarkRepository.loadBookmark(url)
+                    )
+                }.let { tabs ->
+                    listState = listState.copy(list = tabs, isLoading = false, reachedEnd = true)
+                }
+        }
     }
 
     fun toggleMultiSelectMode(enabled: Boolean) {
         multiSelectMode = enabled
     }
 
-    private data class ListState(val list: List<Tab>, val isLoading: Boolean, val reachedEnd: Boolean)
+    fun selectTab(tab: BrowserTab, ctrlKey: Boolean, shiftKey: Boolean) {
+        // TODO multiselect
+        selectedTabs = setOf(tab.tabId)
+        onLinkSelect(setOf(tab.url))
+    }
+
+    private data class ListState(val list: List<BrowserTab>, val isLoading: Boolean, val reachedEnd: Boolean)
 
     fun interface OnLinkSelect {
         operator fun invoke(linkUrls: Set<String>)

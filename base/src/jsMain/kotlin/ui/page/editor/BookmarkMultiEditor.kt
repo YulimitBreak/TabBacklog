@@ -80,6 +80,7 @@ fun BookmarkMultiEditor(
                 modifier = Modifier.margin(leftRight = 8.px).width(100.percent - 16.px).height(64.px)
             )
 
+            // TODO unselect type
             Row(Modifier.fillMaxWidth().gap(8.px)) {
                 val currentType = bookmarks.currentType
                 BookmarkTypeLibraryButton(currentType == BookmarkType.LIBRARY, Modifier.width(30.percent)) {

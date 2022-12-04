@@ -17,6 +17,12 @@ interface BrowserInteractor {
 
     fun subscribeToDbUpdates(): Flow<String>
 
+    suspend fun getWindowIds(): List<Int>
+
+    suspend fun getWindowTabs(windowId: Int): List<Tab>
+
+    suspend fun getCurrentWindowId(): Int?
+
     companion object {
         val Local = compositionLocalOf<BrowserInteractor> {
             throw CompositionLocalError("BrowserInteractor")

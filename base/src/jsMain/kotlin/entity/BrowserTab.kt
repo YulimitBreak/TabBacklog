@@ -1,9 +1,9 @@
 package entity
 
-data class Tab(
+data class BrowserTab(
     val tabId: Int,
     val url: String,
-    val favicon: String?,
+    val favIcon: String?,
     val title: String,
     val bookmark: Bookmark? = null
 )
