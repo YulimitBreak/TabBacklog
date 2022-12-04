@@ -9,6 +9,7 @@ import data.BrowserInteractor
 import entity.BrowserTab
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import ui.common.delegate.MultiSelectDelegate
 
 class TabListModel(
     private val coroutineScope: CoroutineScope,
@@ -19,16 +20,15 @@ class TabListModel(
 
     private val onLinkSelect by onTabSelectState
 
-    var selectedTabs by mutableStateOf(emptySet<Int>())
-        private set
-
     private var listState by mutableStateOf(ListState(emptyList(), isLoading = false, reachedEnd = false))
     val tabs get() = listState.list
     val isLoading get() = listState.isLoading
     val reachedEnd get() = listState.reachedEnd
 
-    var multiSelectMode: Boolean by mutableStateOf(false)
-        private set
+    private val multiSelectDelegate = MultiSelectDelegate(BrowserTab::tabId)
+
+    val multiSelectMode: Boolean get() = multiSelectDelegate.multiSelectMode
+    val selectedTabs get() = multiSelectDelegate.selectedIds
 
     fun requestMore() {
         // TODO pagination
@@ -51,13 +51,12 @@ class TabListModel(
     }
 
     fun toggleMultiSelectMode(enabled: Boolean) {
-        multiSelectMode = enabled
+        multiSelectDelegate.multiSelectMode = enabled
     }
 
     fun selectTab(tab: BrowserTab, ctrlKey: Boolean, shiftKey: Boolean) {
-        // TODO multiselect
-        selectedTabs = setOf(tab.tabId)
-        onLinkSelect(setOf(tab))
+        multiSelectDelegate.selectItem(listState.list, tab, ctrlKey, shiftKey)
+        onLinkSelect(multiSelectDelegate.selectedItems)
     }
 
     private data class ListState(val list: List<BrowserTab>, val isLoading: Boolean, val reachedEnd: Boolean)

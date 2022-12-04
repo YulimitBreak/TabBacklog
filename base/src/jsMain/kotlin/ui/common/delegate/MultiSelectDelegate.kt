@@ -25,7 +25,7 @@ class MultiSelectDelegate<Data, Id : Any>(private val idGetter: (Data) -> Id) {
         selectedItem: Data,
         ctrlKey: Boolean,
         shiftKey: Boolean
-    ): Set<Data> {
+    ) {
         val id = idGetter(selectedItem)
         val lastClickedId = this.lastClickedId
         when {
@@ -56,6 +56,5 @@ class MultiSelectDelegate<Data, Id : Any>(private val idGetter: (Data) -> Id) {
                 this.lastClickedId = id
             }
         }
-        return this.selectedItems
     }
 }
