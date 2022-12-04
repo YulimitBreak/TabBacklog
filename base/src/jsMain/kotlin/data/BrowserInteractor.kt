@@ -2,22 +2,32 @@ package data
 
 import androidx.compose.runtime.compositionLocalOf
 import browser.tabs.Tab
+import data.event.TabUpdate
+import data.event.WindowUpdate
 import entity.error.CompositionLocalError
 import kotlinx.coroutines.flow.Flow
 
 interface BrowserInteractor {
 
     suspend fun getCurrentTab(): Tab
+
+    suspend fun getTabById(id: Int): Tab
+
     fun openManager()
+
     fun openPage(url: String, active: Boolean = true)
 
     fun openPages(urls: List<String>)
 
     fun closeTabs(tabIds: Collection<Int>)
 
-    suspend fun sendUpdateMessage(url: String)
+    suspend fun sendBookmarkUpdateMessage(url: String)
 
-    fun subscribeToDbUpdates(): Flow<String>
+    fun subscribeToBookmarkUpdates(): Flow<String>
+
+    fun subscribeToTabUpdates(): Flow<TabUpdate>
+
+    fun subscribeToWindowUpdates(): Flow<WindowUpdate>
 
     suspend fun getWindowIds(): List<Int>
 

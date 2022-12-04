@@ -1,10 +1,17 @@
 package data
 
 import browser.tabs.CreateCreateProperties
+import browser.tabs.OnAttachedListener
+import browser.tabs.OnCreatedListener
+import browser.tabs.OnDetachedListener
+import browser.tabs.OnMovedListener
+import browser.tabs.OnRemovedListener
 import browser.tabs.QueryQueryInfo
 import browser.tabs.Tab
 import browser.windows.QueryOptions
 import browser.windows.WindowType
+import data.event.TabUpdate
+import data.event.WindowUpdate
 import kotlinx.browser.window
 import kotlinx.coroutines.await
 import kotlinx.coroutines.channels.awaitClose
@@ -20,6 +27,8 @@ class PolyfillBrowserInteractor : BrowserInteractor {
         active = true
         currentWindow = true
     }).await().first()
+
+    override suspend fun getTabById(id: Int): Tab = browser.tabs.get(id).await()
 
     override fun openManager() {
         browser.tabs.create(CreateCreateProperties {
@@ -51,12 +60,12 @@ class PolyfillBrowserInteractor : BrowserInteractor {
     private val updateChannel = BroadcastChannel("bookmark_db_update")
     private val localUpdateFlow = MutableSharedFlow<String>()
 
-    override suspend fun sendUpdateMessage(url: String) {
+    override suspend fun sendBookmarkUpdateMessage(url: String) {
         updateChannel.postMessage(url)
         localUpdateFlow.emit(url)
     }
 
-    override fun subscribeToDbUpdates(): Flow<String> =
+    override fun subscribeToBookmarkUpdates(): Flow<String> =
         merge(
             callbackFlow {
                 updateChannel.onmessage = {
@@ -68,6 +77,55 @@ class PolyfillBrowserInteractor : BrowserInteractor {
             },
             localUpdateFlow
         )
+
+    override fun subscribeToTabUpdates(): Flow<TabUpdate> =
+        callbackFlow {
+            val onCreatedListener = fun(event: OnCreatedListener) {
+                trySend(TabUpdate.Open(event.tab.id ?: return, event.tab.index, event.tab.windowId))
+            }
+            val onRemovedListener = fun(event: OnRemovedListener) {
+                // Check to not handle it extra time
+                if (!event.removeInfo.isWindowClosing) {
+                    trySend(TabUpdate.Close(event.tabId))
+                }
+            }
+            val onAttachedListener = fun(event: OnAttachedListener) {
+                trySend(TabUpdate.Open(event.tabId, event.attachInfo.newPosition, event.attachInfo.newWindowId))
+            }
+            val onDetachedListener = fun(event: OnDetachedListener) {
+                trySend(TabUpdate.Close(event.tabId))
+            }
+            val onMovedListener = fun(event: OnMovedListener) {
+                trySend(TabUpdate.Move(event.tabId, event.moveInfo.toIndex))
+            }
+            browser.tabs.onCreated.addListener(onCreatedListener)
+            browser.tabs.onRemoved.addListener(onRemovedListener)
+            browser.tabs.onAttached.addListener(onAttachedListener)
+            browser.tabs.onDetached.addListener(onDetachedListener)
+            browser.tabs.onMoved.addListener(onMovedListener)
+            awaitClose {
+                browser.tabs.onCreated.removeListener(onCreatedListener)
+                browser.tabs.onRemoved.removeListener(onRemovedListener)
+                browser.tabs.onAttached.removeListener(onAttachedListener)
+                browser.tabs.onDetached.removeListener(onDetachedListener)
+                browser.tabs.onMoved.removeListener(onMovedListener)
+            }
+        }
+
+    override fun subscribeToWindowUpdates(): Flow<WindowUpdate> = callbackFlow {
+        val onCreatedListener = fun(event: browser.windows.OnCreatedListener) {
+            trySend(WindowUpdate.Open(event.window.id ?: return))
+        }
+        val onRemovedListener = fun(event: browser.windows.OnRemovedListener) {
+            trySend(WindowUpdate.Close(event.windowId))
+        }
+        browser.windows.onCreated.addListener(onCreatedListener)
+        browser.windows.onRemoved.addListener(onRemovedListener)
+        awaitClose {
+            browser.windows.onCreated.removeListener(onCreatedListener)
+            browser.windows.onRemoved.removeListener(onRemovedListener)
+        }
+    }
 
     override suspend fun getWindowIds(): List<Int> =
         browser.windows.getAll(QueryOptions {

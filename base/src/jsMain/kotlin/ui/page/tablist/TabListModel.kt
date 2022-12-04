@@ -4,16 +4,20 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import browser.tabs.Tab
 import common.produce
 import common.receive
 import data.BookmarkRepository
 import data.BrowserInteractor
+import data.event.TabUpdate
+import data.event.WindowUpdate
 import entity.BrowserTab
 import entity.core.Loadable
 import entity.core.load
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.ReceiveChannel
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.launch
@@ -45,12 +49,70 @@ class TabListModel(
     var openedWindows by mutableStateOf<Loadable<List<Int>>>(Loadable.Loading())
         private set
 
+    private val dbUpdateRelay = MutableSharedFlow<String>(extraBufferCapacity = 100)
+
     init {
-        coroutineScope.load(::openedWindows::set) {
-            browserInteractor.getWindowIds()
-        }
+        coroutineScope.load(::openedWindows::set) { browserInteractor.getWindowIds() }
+        coroutineScope.launch { selectWindow(browserInteractor.getCurrentWindowId() ?: return@launch) }
+        coroutineScope.launch { browserInteractor.subscribeToWindowUpdates().collect(::handleWindowUpdate) }
+        coroutineScope.launch { browserInteractor.subscribeToTabUpdates().collect(::handleTabUpdate) }
+        coroutineScope.launch { browserInteractor.subscribeToBookmarkUpdates().collect(dbUpdateRelay::emit) }
         coroutineScope.launch {
-            selectWindow(browserInteractor.getCurrentWindowId() ?: return@launch)
+            dbUpdateRelay.collect { url ->
+                val bookmark = bookmarkRepository.loadBookmark(url)
+                updateList { list -> list.map { if (it.url == url) it.copy(bookmark = bookmark) else it } }
+            }
+        }
+    }
+
+    private fun updateList(update: (List<BrowserTab>) -> List<BrowserTab>) {
+        listState = listState.copy(list = update(listState.list))
+    }
+
+    private fun handleWindowUpdate(update: WindowUpdate) {
+        when (update) {
+            is WindowUpdate.Close -> {
+                val openedWindows = openedWindows.value ?: return
+                val selected = openedWindows.indexOf(selectedWindow).takeIf { it >= 0 }
+                val newOpenedWindows = openedWindows - update.windowId
+                this@TabListModel.openedWindows = Loadable.Success(newOpenedWindows)
+                if (newOpenedWindows.isEmpty()) return
+                if (selected == null) return
+                if (selected > 0) {
+                    selectWindow(newOpenedWindows[selected - 1])
+                } else {
+                    selectWindow(newOpenedWindows[0])
+                }
+            }
+
+            is WindowUpdate.Open -> {
+                this@TabListModel.openedWindows = openedWindows.map { it + update.windowId }
+            }
+        }
+    }
+
+    private suspend fun handleTabUpdate(update: TabUpdate) {
+        when (update) {
+            is TabUpdate.Open -> {
+                if (update.windowId != selectedWindow) return
+                val tab = browserInteractor.getTabById(update.tabId).toEntity() ?: return
+                updateList { list ->
+                    list.take(update.index) + tab + list.drop(update.index)
+                }
+            }
+
+            is TabUpdate.Close -> updateList { list ->
+                list.filter { it.tabId != update.tabId }
+            }
+
+            is TabUpdate.Move -> {
+                val list = listState.list
+                val tab = list.find { it.tabId == update.tabId } ?: return
+                val listMinusTab = list - tab
+                listState = listState.copy(
+                    list = listMinusTab.take(update.index) + tab + listMinusTab.drop(update.index)
+                )
+            }
         }
     }
 
@@ -65,18 +127,20 @@ class TabListModel(
         }
     }
 
+    private suspend fun Tab.toEntity(loadBookmark: Boolean = true): BrowserTab? {
+        val url = url ?: return null
+        return BrowserTab(
+            id ?: return null,
+            url,
+            favIconUrl,
+            title ?: "",
+            if (loadBookmark) bookmarkRepository.loadBookmark(url) else null
+        )
+    }
+
     private fun readTabs(windowId: Int): ReceiveChannel<BrowserTab> = flow {
         browserInteractor.getWindowTabs(windowId).forEach { emit(it) }
-    }.mapNotNull { tab ->
-        val url = tab.url ?: return@mapNotNull null
-        BrowserTab(
-            tab.id ?: return@mapNotNull null,
-            url,
-            tab.favIconUrl,
-            tab.title ?: "",
-            bookmarkRepository.loadBookmark(url)
-        )
-    }.produce(coroutineScope)
+    }.mapNotNull { it.toEntity() }.produce(coroutineScope)
 
     fun requestMore() {
         coroutineScope.launch {

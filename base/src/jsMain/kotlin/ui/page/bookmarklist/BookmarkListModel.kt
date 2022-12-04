@@ -47,7 +47,7 @@ class BookmarkListModel(
 
     init {
         coroutineScope.launch {
-            browserInteractor.subscribeToDbUpdates().collect { dbUpdateRelay.emit(it) }
+            browserInteractor.subscribeToBookmarkUpdates().collect { dbUpdateRelay.emit(it) }
         }
         coroutineScope.launch {
             dbUpdateRelay.collect { changedUrl ->

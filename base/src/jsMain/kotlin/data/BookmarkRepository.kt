@@ -5,7 +5,11 @@ import com.juul.indexeddb.Key
 import data.database.core.DatabaseHolder
 import data.database.schema.extractObject
 import data.database.util.DatabaseBookmarkScope
-import entity.*
+import entity.Bookmark
+import entity.BookmarkSearchConfig
+import entity.BookmarkSource
+import entity.BookmarkType
+import entity.BrowserTab
 import entity.error.UnsupportedTabException
 import entity.sort.BookmarkSort
 import kotlinx.coroutines.flow.Flow
@@ -55,7 +59,7 @@ class BookmarkRepository(
                 objectStore(bookmarkSchema.storeName).delete(Key(url))
                 deleteTags(url, updateTagsCount = true)
                 deleteExpiredBookmarks()
-                browserInteractor.sendUpdateMessage(url)
+                browserInteractor.sendBookmarkUpdateMessage(url)
             }
     }
 
@@ -65,7 +69,7 @@ class BookmarkRepository(
             .writeTransaction(bookmarkSchema.storeName, tagsSchema.storeName, tagCountSchema.storeName) {
                 saveBookmarkTransaction(bookmark, withTags = true)
                 deleteExpiredBookmarks()
-                browserInteractor.sendUpdateMessage(bookmark.url)
+                browserInteractor.sendBookmarkUpdateMessage(bookmark.url)
             }
     }
 

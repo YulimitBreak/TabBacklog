@@ -2,11 +2,18 @@ package common
 
 import browser.tabs.Tab
 import data.BrowserInteractor
+import data.event.TabUpdate
+import data.event.WindowUpdate
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.flow
 
 class TestBrowserInteractor : BrowserInteractor {
     override suspend fun getCurrentTab(): Tab {
+        throw IllegalStateException("Unavailable during tester")
+    }
+
+    override suspend fun getTabById(id: Int): Tab {
         throw IllegalStateException("Unavailable during tester")
     }
 
@@ -28,12 +35,15 @@ class TestBrowserInteractor : BrowserInteractor {
 
     private val updateFlow = MutableSharedFlow<String>()
 
-    override suspend fun sendUpdateMessage(url: String) {
+    override suspend fun sendBookmarkUpdateMessage(url: String) {
         updateFlow.emit(url)
     }
 
-    override fun subscribeToDbUpdates(): Flow<String> = updateFlow
+    override fun subscribeToBookmarkUpdates(): Flow<String> = updateFlow
 
+    override fun subscribeToTabUpdates(): Flow<TabUpdate> = flow {}
+
+    override fun subscribeToWindowUpdates(): Flow<WindowUpdate> = flow {}
 
     override suspend fun getWindowIds(): List<Int> {
         return emptyList()
