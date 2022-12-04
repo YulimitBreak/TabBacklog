@@ -3,13 +3,6 @@
 
 package browser.events
 
-import kotlin.Any
-import kotlin.Array
-import kotlin.Boolean
-import kotlin.Int
-import kotlin.String
-import kotlin.Unit
-
 /**
  * An object which allows the addition and removal of listeners for a Chrome event.
  */
@@ -20,7 +13,14 @@ public external interface Event<T, R> {
    * @param callback Called when an event occurs. The parameters of this function depend on the type
    * of event.
    */
+  @Deprecated("Doesn't work correctly")
   public fun addListener(callback: (T) -> R): Unit
+
+  @JsName("addListener")
+  public fun addDynamicListener(callback: dynamic)
+
+  @JsName("removeListener")
+  public fun removeDynamicListener(callback: dynamic)
 
   /**
    * Registers an event listener <em>callback</em> to an event.

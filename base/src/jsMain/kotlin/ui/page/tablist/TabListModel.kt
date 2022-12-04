@@ -74,6 +74,7 @@ class TabListModel(
             is WindowUpdate.Close -> {
                 val openedWindows = openedWindows.value ?: return
                 val selected = openedWindows.indexOf(selectedWindow).takeIf { it >= 0 }
+                    .takeIf { selectedWindow == update.windowId }
                 val newOpenedWindows = openedWindows - update.windowId
                 this@TabListModel.openedWindows = Loadable.Success(newOpenedWindows)
                 if (newOpenedWindows.isEmpty()) return

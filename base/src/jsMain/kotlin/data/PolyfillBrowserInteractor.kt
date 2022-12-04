@@ -1,14 +1,13 @@
 package data
 
+import browser.tabs.AttachInfoProperty
 import browser.tabs.CreateCreateProperties
-import browser.tabs.OnAttachedListener
-import browser.tabs.OnCreatedListener
-import browser.tabs.OnDetachedListener
-import browser.tabs.OnMovedListener
-import browser.tabs.OnRemovedListener
+import browser.tabs.MoveInfoProperty
 import browser.tabs.QueryQueryInfo
+import browser.tabs.RemoveInfoProperty
 import browser.tabs.Tab
 import browser.windows.QueryOptions
+import browser.windows.Window
 import browser.windows.WindowType
 import data.event.TabUpdate
 import data.event.WindowUpdate
@@ -80,50 +79,52 @@ class PolyfillBrowserInteractor : BrowserInteractor {
 
     override fun subscribeToTabUpdates(): Flow<TabUpdate> =
         callbackFlow {
-            val onCreatedListener = fun(event: OnCreatedListener) {
-                trySend(TabUpdate.Open(event.tab.id ?: return, event.tab.index, event.tab.windowId))
+            val onCreatedListener = fun(tab: Tab) {
+                trySend(TabUpdate.Open(tab.id ?: return, tab.index, tab.windowId))
             }
-            val onRemovedListener = fun(event: OnRemovedListener) {
+            val onRemovedListener = fun(tabId: Int, removeInfo: RemoveInfoProperty) {
                 // Check to not handle it extra time
-                if (!event.removeInfo.isWindowClosing) {
-                    trySend(TabUpdate.Close(event.tabId))
+                if (!removeInfo.isWindowClosing) {
+                    trySend(TabUpdate.Close(tabId))
                 }
             }
-            val onAttachedListener = fun(event: OnAttachedListener) {
-                trySend(TabUpdate.Open(event.tabId, event.attachInfo.newPosition, event.attachInfo.newWindowId))
+            val onAttachedListener = fun(tabId: Int, attachInfo: AttachInfoProperty) {
+                trySend(TabUpdate.Open(tabId, attachInfo.newPosition, attachInfo.newWindowId))
             }
-            val onDetachedListener = fun(event: OnDetachedListener) {
-                trySend(TabUpdate.Close(event.tabId))
+            val onDetachedListener = fun(tabId: Int) {
+                trySend(TabUpdate.Close(tabId))
             }
-            val onMovedListener = fun(event: OnMovedListener) {
-                trySend(TabUpdate.Move(event.tabId, event.moveInfo.toIndex))
+            val onMovedListener = fun(tabId: Int, moveInfo: MoveInfoProperty) {
+                trySend(TabUpdate.Move(tabId, moveInfo.toIndex))
             }
-            browser.tabs.onCreated.addListener(onCreatedListener)
-            browser.tabs.onRemoved.addListener(onRemovedListener)
-            browser.tabs.onAttached.addListener(onAttachedListener)
-            browser.tabs.onDetached.addListener(onDetachedListener)
-            browser.tabs.onMoved.addListener(onMovedListener)
+            browser.tabs.onCreated.addDynamicListener(onCreatedListener)
+            browser.tabs.onRemoved.addDynamicListener(onRemovedListener)
+            browser.tabs.onAttached.addDynamicListener(onAttachedListener)
+            browser.tabs.onDetached.addDynamicListener(onDetachedListener)
+            browser.tabs.onMoved.addDynamicListener(onMovedListener)
             awaitClose {
-                browser.tabs.onCreated.removeListener(onCreatedListener)
-                browser.tabs.onRemoved.removeListener(onRemovedListener)
-                browser.tabs.onAttached.removeListener(onAttachedListener)
-                browser.tabs.onDetached.removeListener(onDetachedListener)
-                browser.tabs.onMoved.removeListener(onMovedListener)
+                browser.tabs.onCreated.removeDynamicListener(onCreatedListener)
+                browser.tabs.onRemoved.removeDynamicListener(onRemovedListener)
+                browser.tabs.onAttached.removeDynamicListener(onAttachedListener)
+                browser.tabs.onDetached.removeDynamicListener(onDetachedListener)
+                browser.tabs.onMoved.removeDynamicListener(onMovedListener)
             }
         }
 
     override fun subscribeToWindowUpdates(): Flow<WindowUpdate> = callbackFlow {
-        val onCreatedListener = fun(event: browser.windows.OnCreatedListener) {
-            trySend(WindowUpdate.Open(event.window.id ?: return))
+        val onCreatedListener = fun(window: Window) {
+            if (window.isNormal()) {
+                trySend(WindowUpdate.Open(window.id ?: return))
+            }
         }
-        val onRemovedListener = fun(event: browser.windows.OnRemovedListener) {
-            trySend(WindowUpdate.Close(event.windowId))
+        val onRemovedListener = fun(windowId: Int) {
+            trySend(WindowUpdate.Close(windowId))
         }
-        browser.windows.onCreated.addListener(onCreatedListener)
-        browser.windows.onRemoved.addListener(onRemovedListener)
+        browser.windows.onCreated.addDynamicListener(onCreatedListener)
+        browser.windows.onRemoved.addDynamicListener(onRemovedListener)
         awaitClose {
-            browser.windows.onCreated.removeListener(onCreatedListener)
-            browser.windows.onRemoved.removeListener(onRemovedListener)
+            browser.windows.onCreated.removeDynamicListener(onCreatedListener)
+            browser.windows.onRemoved.removeDynamicListener(onRemovedListener)
         }
     }
 
@@ -132,8 +133,12 @@ class PolyfillBrowserInteractor : BrowserInteractor {
             populate = false
         }).await()
             // Filtering instead of using it in query because WindowType mapping is broken
-            .filter { WindowType.valueOf(it.type?.toString() ?: return@filter false) == WindowType.normal }
+            .filter { it.isNormal() }
             .mapNotNull { it.id }
+
+    private fun Window.isNormal(): Boolean {
+        return WindowType.valueOf(this.type?.toString() ?: return false) == WindowType.normal
+    }
 
     override suspend fun getWindowTabs(windowId: Int): List<Tab> =
         browser.tabs.query(
