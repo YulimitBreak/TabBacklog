@@ -14,10 +14,10 @@ class TabListModel(
     private val coroutineScope: CoroutineScope,
     private val browserInteractor: BrowserInteractor,
     private val bookmarkRepository: BookmarkRepository,
-    onLinkSelectState: State<OnLinkSelect>,
+    onTabSelectState: State<OnTabSelect>,
 ) {
 
-    private val onLinkSelect by onLinkSelectState
+    private val onLinkSelect by onTabSelectState
 
     var selectedTabs by mutableStateOf(emptySet<Int>())
         private set
@@ -57,12 +57,12 @@ class TabListModel(
     fun selectTab(tab: BrowserTab, ctrlKey: Boolean, shiftKey: Boolean) {
         // TODO multiselect
         selectedTabs = setOf(tab.tabId)
-        onLinkSelect(setOf(tab.url))
+        onLinkSelect(setOf(tab))
     }
 
     private data class ListState(val list: List<BrowserTab>, val isLoading: Boolean, val reachedEnd: Boolean)
 
-    fun interface OnLinkSelect {
-        operator fun invoke(linkUrls: Set<String>)
+    fun interface OnTabSelect {
+        operator fun invoke(linkUrls: Set<BrowserTab>)
     }
 }

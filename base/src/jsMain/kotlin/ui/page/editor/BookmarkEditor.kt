@@ -19,8 +19,8 @@ import com.varabyte.kobweb.silk.components.style.toModifier
 import com.varabyte.kobweb.silk.components.text.SpanText
 import common.styleProperty
 import di.AppModule
+import entity.BookmarkSource
 import entity.BookmarkType
-import entity.SingleBookmarkSource
 import org.jetbrains.compose.web.css.*
 import org.jetbrains.compose.web.dom.Text
 import org.jetbrains.compose.web.dom.TextArea
@@ -37,7 +37,7 @@ import ui.styles.components.BookmarkEditClickableArea
 
 @Composable
 fun BookmarkEditor(
-    target: SingleBookmarkSource,
+    target: BookmarkSource,
     onNavigateBack: () -> Unit,
     modifier: Modifier = Modifier
 ) {

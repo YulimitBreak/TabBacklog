@@ -45,7 +45,6 @@ fun Slider(
 
     Box(contentAlignment = Alignment.Center, modifier = modifier.role("slider")
         .onClick { event ->
-            console.log(event)
             updatePositionByLocation(clientX = event.clientX)
         }
     ) {
@@ -56,7 +55,6 @@ fun Slider(
                 DisposableEffect(Unit) {
                     sliderWidth = scopeElement.offsetWidth
                     sliderClientOffset = scopeElement.getBoundingClientRect().left
-                    console.log(scopeElement)
                     onDispose { }
                 }
             },

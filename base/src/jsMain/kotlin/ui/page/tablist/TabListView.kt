@@ -10,6 +10,7 @@ import com.varabyte.kobweb.compose.ui.modifiers.*
 import com.varabyte.kobweb.compose.ui.thenIf
 import com.varabyte.kobweb.silk.components.text.SpanText
 import di.AppModule
+import entity.BrowserTab
 import org.jetbrains.compose.web.css.LineStyle
 import org.jetbrains.compose.web.css.minus
 import org.jetbrains.compose.web.css.percent
@@ -22,13 +23,13 @@ import ui.styles.primaryColors
 @Composable
 fun TabListView(
     modifier: Modifier = Modifier,
-    onLinkSelect: (urls: Set<String>) -> Unit
+    onTabSelect: (urls: Set<BrowserTab>) -> Unit
 ) {
     val appModule = AppModule.Local.current
     val scope = rememberCoroutineScope()
-    val onLinkSelectState = rememberUpdatedState(TabListModel.OnLinkSelect(onLinkSelect))
+    val onTabSelectState = rememberUpdatedState(TabListModel.OnTabSelect(onTabSelect))
     val model: TabListModel = remember() {
-        appModule.createTabListModel(scope, onLinkSelectState)
+        appModule.createTabListModel(scope, onTabSelectState)
     }
 
     Column(modifier) {

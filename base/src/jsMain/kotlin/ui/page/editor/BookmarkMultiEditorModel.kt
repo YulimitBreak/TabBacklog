@@ -5,7 +5,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import common.DateUtils
-import common.safeCast
 import data.BookmarkRepository
 import entity.*
 import entity.core.Loadable
@@ -16,7 +15,7 @@ import ui.common.bookmark.TimerEditorEvent
 import ui.page.tagedit.TagEditEvent
 
 class BookmarkMultiEditorModel(
-    private val target: MultiBookmarkSource,
+    private val source: MultiBookmarkSource,
     private val scope: CoroutineScope,
     private val bookmarkRepository: BookmarkRepository,
     onNavigateBackState: State<BookmarkEditorModel.OnNavigateBack>,
@@ -41,13 +40,9 @@ class BookmarkMultiEditorModel(
 
     init {
         scope.load(::bookmarkBundle::set) {
-            when (target) {
-                is MultiBookmarkSource.Url -> target.urls.mapNotNull { url ->
-                    bookmarkRepository.loadBookmark(url)
-                }
-            }.let {
-                EditedBookmarkBundle(BookmarkBundle(it))
-            }
+            EditedBookmarkBundle(BookmarkBundle(
+                source.sources.map { bookmarkRepository.loadBookmark(it) }
+            ))
         }
 
     }
@@ -75,11 +70,7 @@ class BookmarkMultiEditorModel(
 
     fun deleteAll() {
         scope.launch {
-            val urls = bookmarkBundle.value?.base?.map { it.url }
-                ?: target.safeCast<MultiBookmarkSource.Url>()?.urls ?: kotlin.run {
-                    console.warn("Deleting bookmark in unloaded state")
-                    return@launch
-                }
+            val urls = bookmarkBundle.value?.base?.map { it.url } ?: return@launch
             bookmarkBundle = Loadable.Loading()
             urls.forEach {
                 bookmarkRepository.deleteBookmark(it)

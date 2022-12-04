@@ -14,7 +14,7 @@ import entity.core.load
 import kotlinx.coroutines.CoroutineScope
 
 class BookmarkMultiSummaryModel(
-    private val target: MultiBookmarkSource,
+    private val source: MultiBookmarkSource,
     private val scope: CoroutineScope,
     private val bookmarkRepository: BookmarkRepository,
 ) {
@@ -55,11 +55,9 @@ class BookmarkMultiSummaryModel(
 
     init {
         scope.loadBundle {
-            when (target) {
-                is MultiBookmarkSource.Url -> target.urls.mapNotNull { url ->
-                    bookmarkRepository.loadBookmark(url)
-                }.let(::BookmarkBundle)
-            }
+            BookmarkBundle(BookmarkBundle(
+                source.sources.map { bookmarkRepository.loadBookmark(it) }
+            ))
         }
     }
 

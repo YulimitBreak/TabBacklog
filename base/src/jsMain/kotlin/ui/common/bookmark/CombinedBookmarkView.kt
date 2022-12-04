@@ -4,8 +4,8 @@ import androidx.compose.runtime.Composable
 import com.varabyte.kobweb.compose.ui.Modifier
 import com.varabyte.kobweb.silk.components.icons.fa.FaFileArrowUp
 import data.BrowserInteractor
+import entity.BookmarkSource
 import entity.MultiBookmarkSource
-import entity.SingleBookmarkSource
 import org.jetbrains.compose.web.dom.Text
 import ui.common.basecomponent.RowButton
 import ui.page.editor.BookmarkEditor
@@ -15,50 +15,55 @@ import ui.page.summary.BookmarkSummary
 
 @Composable
 fun CombinedBookmarkView(
-    selectedBookmarkUrls: Set<String>,
+    selectedBookmarkSources: Set<BookmarkSource>,
     editMode: Boolean,
     modifier: Modifier = Modifier,
     onChangeEditMode: (Boolean) -> Unit
 ) {
-    if (selectedBookmarkUrls.size == 1) {
-        val bookmarkUrl = selectedBookmarkUrls.single()
+    if (selectedBookmarkSources.size == 1) {
+        val source = selectedBookmarkSources.single()
 
         if (!editMode) {
             BookmarkSummary(
-                target = SingleBookmarkSource.Url(bookmarkUrl),
+                target = source,
                 modifier = modifier,
                 firstButton = {
-                    val browserInteractor = BrowserInteractor.Local.current
-                    RowButton(onClick = { browserInteractor.openPage(bookmarkUrl) }) {
-                        FaFileArrowUp()
-                        Text("Open")
+                    if (source is BookmarkSource.Url) {
+                        val browserInteractor = BrowserInteractor.Local.current
+                        RowButton(onClick = { browserInteractor.openPage(source.url) }) {
+                            FaFileArrowUp()
+                            Text("Open")
+                        }
                     }
                 },
                 onEditRequest = { onChangeEditMode(true) })
         } else {
             BookmarkEditor(
-                target = SingleBookmarkSource.Url(bookmarkUrl),
+                target = source,
                 modifier = modifier,
                 onNavigateBack = { onChangeEditMode(false) }
             )
         }
-    } else if (selectedBookmarkUrls.size > 1) {
+    } else if (selectedBookmarkSources.size > 1) {
         if (!editMode) {
             BookmarkMultiSummary(
-                target = MultiBookmarkSource.Url(selectedBookmarkUrls),
+                target = MultiBookmarkSource(selectedBookmarkSources),
                 modifier = modifier,
                 firstButton = {
-                    val browserInteractor = BrowserInteractor.Local.current
-                    RowButton(onClick = { browserInteractor.openPages(selectedBookmarkUrls.toList()) }) {
-                        FaFileArrowUp()
-                        Text("Open all")
+                    if (selectedBookmarkSources.all { it is BookmarkSource.Url }) {
+                        val urls = selectedBookmarkSources.filterIsInstance<BookmarkSource.Url>().map { it.url }
+                        val browserInteractor = BrowserInteractor.Local.current
+                        RowButton(onClick = { browserInteractor.openPages(urls) }) {
+                            FaFileArrowUp()
+                            Text("Open all")
+                        }
                     }
                 },
                 onEditRequest = { onChangeEditMode(true) }
             )
         } else {
             BookmarkMultiEditor(
-                target = MultiBookmarkSource.Url(selectedBookmarkUrls),
+                target = MultiBookmarkSource(selectedBookmarkSources),
                 modifier = modifier,
                 onNavigateBack = { onChangeEditMode(false) }
             )

@@ -5,9 +5,7 @@ import com.juul.indexeddb.Key
 import data.database.core.DatabaseHolder
 import data.database.schema.extractObject
 import data.database.util.DatabaseBookmarkScope
-import entity.Bookmark
-import entity.BookmarkSearchConfig
-import entity.BookmarkType
+import entity.*
 import entity.error.UnsupportedTabException
 import entity.sort.BookmarkSort
 import kotlinx.coroutines.flow.Flow
@@ -24,15 +22,30 @@ class BookmarkRepository(
         return tab.url?.let { loadBookmark(it) } ?: createNewBookmark(tab)
     }
 
-    private fun createNewBookmark(tab: Tab): Bookmark {
-        console.log("Bookmark for ${tab.url} not found, creating new item")
-        return Bookmark(
-            url = tab.url ?: throw UnsupportedTabException(),
-            title = tab.title ?: "",
-            favicon = tab.favIconUrl,
+    private fun createNewBookmark(browserTab: BrowserTab) = createNewBookmark(
+        browserTab.url, browserTab.title, browserTab.favIcon
+    )
+
+    private fun createNewBookmark(tab: Tab): Bookmark = createNewBookmark(
+        url = tab.url ?: throw UnsupportedTabException(),
+        title = tab.title ?: "",
+        favicon = tab.favIconUrl,
+    )
+
+    private fun createNewBookmark(url: String, title: String, favicon: String?) =
+        Bookmark(
+            url = url,
+            title = title,
+            favicon = favicon,
             type = BookmarkType.BACKLOG,
-            creationDate = null,
+            creationDate = null
         )
+
+    suspend fun loadBookmark(source: BookmarkSource) = when (source) {
+        is BookmarkSource.CurrentTab -> loadBookmarkForActiveTab()
+        is BookmarkSource.SelectedBookmark -> source.bookmark
+        is BookmarkSource.Url -> loadBookmark(source.url) ?: throw IllegalStateException("Bookmark Not Found")
+        is BookmarkSource.Tab -> loadBookmark(source.browserTab.url) ?: createNewBookmark(source.browserTab)
     }
 
     suspend fun deleteBookmark(url: String) {

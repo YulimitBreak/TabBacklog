@@ -6,14 +6,14 @@ import androidx.compose.runtime.setValue
 import common.DateUtils
 import data.BookmarkRepository
 import entity.Bookmark
+import entity.BookmarkSource
 import entity.BookmarkType
-import entity.SingleBookmarkSource
 import entity.core.Loadable
 import entity.core.load
 import kotlinx.coroutines.CoroutineScope
 
 class BookmarkSummaryModel(
-    private val target: SingleBookmarkSource,
+    private val source: BookmarkSource,
     private val scope: CoroutineScope,
     private val bookmarkRepository: BookmarkRepository,
 ) {
@@ -31,12 +31,7 @@ class BookmarkSummaryModel(
 
     init {
         scope.loadBookmark {
-            when (target) {
-                is SingleBookmarkSource.CurrentTab -> bookmarkRepository.loadBookmarkForActiveTab()
-                is SingleBookmarkSource.SelectedBookmark -> target.bookmark
-                is SingleBookmarkSource.Url -> bookmarkRepository.loadBookmark(target.url)
-                    ?: throw IllegalStateException("Bookmark Not Found")
-            }
+            bookmarkRepository.loadBookmark(source = source)
         }
     }
 

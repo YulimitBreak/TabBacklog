@@ -15,8 +15,8 @@ import com.varabyte.kobweb.silk.components.icons.fa.FaTrash
 import com.varabyte.kobweb.silk.components.icons.fa.IconStyle
 import com.varabyte.kobweb.silk.components.text.SpanText
 import di.AppModule
+import entity.BookmarkSource
 import entity.BookmarkType
-import entity.SingleBookmarkSource
 import org.jetbrains.compose.web.css.minus
 import org.jetbrains.compose.web.css.percent
 import org.jetbrains.compose.web.css.px
@@ -32,7 +32,7 @@ import ui.common.bookmark.BookmarkTypeLibraryButton
 
 @Composable
 fun BookmarkSummary(
-    target: SingleBookmarkSource,
+    target: BookmarkSource,
     onEditRequest: () -> Unit,
     firstButton: @Composable () -> Unit = {},
     modifier: Modifier = Modifier

@@ -3,6 +3,7 @@ package ui.page.collection
 import androidx.compose.runtime.*
 import com.varabyte.kobweb.compose.ui.Modifier
 import com.varabyte.kobweb.compose.ui.modifiers.width
+import entity.BookmarkSource
 import org.jetbrains.compose.web.css.px
 import ui.common.bookmark.CombinedBookmarkView
 import ui.manager.ManagerLayout
@@ -11,22 +12,22 @@ import ui.page.bookmarklist.BookmarkList
 @Composable
 fun CollectionView(modifier: Modifier = Modifier) {
 
-    var selectedBookmarkUrls by remember { mutableStateOf(emptySet<String>()) }
+    var selectedBookmarkSources by remember { mutableStateOf(emptySet<BookmarkSource>()) }
     var editMode by remember { mutableStateOf(false) }
 
     ManagerLayout(modifier,
         searchBlock = { m ->
             BookmarkList(
                 modifier = m,
-                onBookmarkSelect = {
+                onBookmarkSelect = { urls ->
                     editMode = false
-                    selectedBookmarkUrls = it
+                    selectedBookmarkSources = urls.mapTo(mutableSetOf()) { BookmarkSource.Url(it) }
                 }
             )
         },
         editBlock = { m ->
             CombinedBookmarkView(
-                selectedBookmarkUrls,
+                selectedBookmarkSources,
                 editMode,
                 m.width(400.px),
                 onChangeEditMode = { editMode = it }

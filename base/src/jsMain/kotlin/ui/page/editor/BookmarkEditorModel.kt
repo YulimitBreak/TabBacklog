@@ -6,9 +6,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import common.safeCast
 import data.BookmarkRepository
+import entity.BookmarkSource
 import entity.BookmarkType
 import entity.EditedBookmark
-import entity.SingleBookmarkSource
 import entity.core.Loadable
 import entity.core.load
 import kotlinx.coroutines.CoroutineScope
@@ -18,7 +18,7 @@ import ui.page.tagedit.TagEditEvent
 import ui.page.tagedit.apply
 
 class BookmarkEditorModel(
-    private val target: SingleBookmarkSource,
+    private val source: BookmarkSource,
     private val scope: CoroutineScope,
     private val bookmarkRepository: BookmarkRepository,
     onNavigateBackState: State<OnNavigateBack>,
@@ -45,14 +45,7 @@ class BookmarkEditorModel(
         scope.load(
             setter = { bookmark = it },
         ) {
-            when (target) {
-                SingleBookmarkSource.CurrentTab -> bookmarkRepository.loadBookmarkForActiveTab()
-                is SingleBookmarkSource.SelectedBookmark -> target.bookmark
-                is SingleBookmarkSource.Url -> bookmarkRepository.loadBookmark(target.url)
-                    ?: throw IllegalStateException("Bookmark Not Found")
-            }.let {
-                EditedBookmark(it)
-            }
+            EditedBookmark(bookmarkRepository.loadBookmark(source))
         }
 
     }
@@ -80,7 +73,7 @@ class BookmarkEditorModel(
     fun deleteBookmark() {
         scope.launch {
             val url = bookmark.value?.base?.url
-                ?: target.safeCast<SingleBookmarkSource.Url>()?.url
+                ?: source.safeCast<BookmarkSource.Url>()?.url
                 ?: kotlin.run {
                     console.warn("Deleting bookmark in unloaded state")
                     return@launch

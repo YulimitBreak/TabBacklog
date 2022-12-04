@@ -7,6 +7,7 @@ import com.varabyte.kobweb.compose.css.OverflowWrap
 import com.varabyte.kobweb.compose.css.WhiteSpace
 import com.varabyte.kobweb.compose.foundation.layout.Row
 import com.varabyte.kobweb.compose.foundation.layout.Spacer
+import com.varabyte.kobweb.compose.ui.Alignment
 import com.varabyte.kobweb.compose.ui.Modifier
 import com.varabyte.kobweb.compose.ui.modifiers.*
 import common.styleProperty
@@ -29,7 +30,8 @@ fun TabTableItemView(tab: BrowserTab, modifier: Modifier = Modifier) {
         modifier = modifier.flexWrap(FlexWrap.Nowrap).gap(4.px),
         elementScope = {
             observeSize { width, _ -> rowWidth = width }
-        }
+        },
+        verticalAlignment = Alignment.CenterVertically
     ) {
         Favicon(tab.favIcon, 16.px)
 
