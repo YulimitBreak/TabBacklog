@@ -4,10 +4,18 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import common.produce
+import common.receive
 import data.BookmarkRepository
 import data.BrowserInteractor
 import entity.BrowserTab
+import entity.core.Loadable
+import entity.core.load
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.channels.ReceiveChannel
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.launch
 import ui.common.delegate.MultiSelectDelegate
 
@@ -20,6 +28,8 @@ class TabListModel(
 
     private val onLinkSelect by onTabSelectState
 
+    private var tabsChannel: ReceiveChannel<BrowserTab> = Channel()
+
     private var listState by mutableStateOf(ListState(emptyList(), isLoading = false, reachedEnd = false))
     val tabs get() = listState.list
     val isLoading get() = listState.isLoading
@@ -30,23 +40,53 @@ class TabListModel(
     val multiSelectMode: Boolean get() = multiSelectDelegate.multiSelectMode
     val selectedTabs get() = multiSelectDelegate.selectedIds
 
+    var selectedWindow: Int? by mutableStateOf(null)
+        private set
+    var openedWindows by mutableStateOf<Loadable<List<Int>>>(Loadable.Loading())
+        private set
+
+    init {
+        coroutineScope.load(::openedWindows::set) {
+            browserInteractor.getWindowIds()
+        }
+        coroutineScope.launch {
+            selectWindow(browserInteractor.getCurrentWindowId() ?: return@launch)
+        }
+    }
+
+    fun selectWindow(windowId: Int?) {
+        if (selectedWindow == windowId) return
+        selectedWindow = windowId
+        if (windowId != null) {
+            tabsChannel.cancel()
+            tabsChannel = readTabs(windowId)
+            listState = ListState(emptyList(), isLoading = false, reachedEnd = false)
+            requestMore()
+        }
+    }
+
+    private fun readTabs(windowId: Int): ReceiveChannel<BrowserTab> = flow {
+        browserInteractor.getWindowTabs(windowId).forEach { emit(it) }
+    }.mapNotNull { tab ->
+        val url = tab.url ?: return@mapNotNull null
+        BrowserTab(
+            tab.id ?: return@mapNotNull null,
+            url,
+            tab.favIconUrl,
+            tab.title ?: "",
+            bookmarkRepository.loadBookmark(url)
+        )
+    }.produce(coroutineScope)
+
     fun requestMore() {
-        // TODO pagination
         coroutineScope.launch {
             listState = listState.copy(isLoading = true)
-            browserInteractor.getWindowTabs(browserInteractor.getCurrentWindowId() ?: return@launch)
-                .mapNotNull { tab ->
-                    val url = tab.url ?: return@mapNotNull null
-                    BrowserTab(
-                        tab.id ?: return@mapNotNull null,
-                        url,
-                        tab.favIconUrl,
-                        tab.title ?: "",
-                        bookmarkRepository.loadBookmark(url)
-                    )
-                }.let { tabs ->
-                    listState = listState.copy(list = tabs, isLoading = false, reachedEnd = true)
-                }
+            val newTabs = tabsChannel.receive(TAB_PAGE_SIZE)
+            listState = listState.copy(
+                list = (listState.list + newTabs).distinct(),
+                isLoading = false,
+                reachedEnd = newTabs.size < TAB_PAGE_SIZE
+            )
         }
     }
 
@@ -63,5 +103,9 @@ class TabListModel(
 
     fun interface OnTabSelect {
         operator fun invoke(linkUrls: Set<BrowserTab>)
+    }
+
+    companion object {
+        const val TAB_PAGE_SIZE = 10
     }
 }

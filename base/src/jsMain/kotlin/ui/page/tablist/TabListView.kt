@@ -15,9 +15,13 @@ import org.jetbrains.compose.web.css.LineStyle
 import org.jetbrains.compose.web.css.minus
 import org.jetbrains.compose.web.css.percent
 import org.jetbrains.compose.web.css.px
+import org.jetbrains.compose.web.dom.Text
+import ui.common.basecomponent.LoadableView
 import ui.common.basecomponent.LoadingTable
+import ui.common.basecomponent.RowButton
 import ui.common.basecomponent.Toggle
 import ui.styles.Palette
+import ui.styles.Variants
 import ui.styles.primaryColors
 
 @Composable
@@ -33,7 +37,28 @@ fun TabListView(
     }
 
     Column(modifier) {
-        // TODO search layout
+        // TODO sort layout
+
+        LoadableView(
+            model.openedWindows,
+            Modifier.padding(leftRight = 16.px, topBottom = 8.px).width(100.percent - 32.px)
+        ) { windows, m ->
+            Row(m.gap(8.px)) {
+                windows.forEachIndexed { index, windowId ->
+                    key(windowId) {
+                        RowButton(
+                            onClick = { model.selectWindow(windowId) },
+                            modifier = Modifier.thenIf(
+                                model.selectedWindow == windowId,
+                                Variants.Button.SelectedUnclickablePrimary.toModifier()
+                            )
+                        ) {
+                            Text("Window ${index + 1}")
+                        }
+                    }
+                }
+            }
+        }
 
         LoadingTable(
             model.tabs,

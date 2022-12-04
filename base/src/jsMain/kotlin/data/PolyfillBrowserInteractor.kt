@@ -65,8 +65,10 @@ class PolyfillBrowserInteractor : BrowserInteractor {
     override suspend fun getWindowIds(): List<Int> =
         browser.windows.getAll(QueryOptions {
             populate = false
-            windowTypes = arrayOf(WindowType.normal)
-        }).await().mapNotNull { it.id }
+        }).await()
+            // Filtering instead of using it in query because WindowType mapping is broken
+            .filter { WindowType.valueOf(it.type?.toString() ?: return@filter false) == WindowType.normal }
+            .mapNotNull { it.id }
 
     override suspend fun getWindowTabs(windowId: Int): List<Tab> =
         browser.tabs.query(

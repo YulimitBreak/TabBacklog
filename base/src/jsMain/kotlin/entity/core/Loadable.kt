@@ -44,28 +44,26 @@ fun <T> CoroutineScope.load(
     onSuccess: (T) -> Unit = {},
     debounceTime: Long = 0,
     loader: suspend () -> T
-) {
-    launch {
-        var debounceJob: Job? = null
-        if (debounceTime == 0L) {
+): Job = launch {
+    var debounceJob: Job? = null
+    if (debounceTime == 0L) {
+        setter(Loadable.Loading())
+    } else {
+        debounceJob = launch {
+            delay(debounceTime)
             setter(Loadable.Loading())
-        } else {
-            debounceJob = launch {
-                delay(debounceTime)
-                setter(Loadable.Loading())
-            }
         }
-        try {
-            val result = loader()
-            debounceJob?.cancel()
-            setter(Loadable.Success(result))
-            onSuccess(result)
-        } catch (e: Exception) {
-            if (e is CancellationException) throw e
-            console.error(e)
-            e.printStackTrace()
-            debounceJob?.cancel()
-            setter(Loadable.Error(e))
-        }
+    }
+    try {
+        val result = loader()
+        debounceJob?.cancel()
+        setter(Loadable.Success(result))
+        onSuccess(result)
+    } catch (e: Exception) {
+        if (e is CancellationException) throw e
+        console.error(e)
+        e.printStackTrace()
+        debounceJob?.cancel()
+        setter(Loadable.Error(e))
     }
 }
