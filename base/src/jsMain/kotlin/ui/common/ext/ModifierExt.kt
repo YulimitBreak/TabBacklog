@@ -9,9 +9,9 @@ import com.varabyte.kobweb.compose.ui.modifiers.overflowWrap
 import common.styleProperty
 import org.jetbrains.compose.web.css.DisplayStyle
 
-fun Modifier.clampLines(count: Int) = Modifier
+fun Modifier.clampLines(count: Int) = this
     .display(DisplayStyle("-webkit-box"))
-    .styleProperty("-webkit-line-clamp", 1)
+    .styleProperty("-webkit-line-clamp", count)
     .styleProperty("-webkit-box-orient", "vertical")
     .overflowWrap(OverflowWrap.Anywhere).overflow(Overflow.Hidden)
     .styleProperty("text-overflow", "ellipsis")
