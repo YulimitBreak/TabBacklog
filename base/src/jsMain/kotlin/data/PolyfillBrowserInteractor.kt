@@ -27,17 +27,24 @@ class PolyfillBrowserInteractor : BrowserInteractor {
         })
     }
 
-    override fun openPage(url: String) {
+    override fun openPage(url: String, active: Boolean) {
         browser.tabs.create(CreateCreateProperties {
             this.url = url
-            this.active = true
+            this.active = active
         })
     }
 
     override fun openPages(urls: List<String>) {
         val confirm = window.confirm("You're going to open ${urls.size} tabs")
         if (confirm) {
-            urls.forEach { openPage(it) }
+            urls.forEach { openPage(it, false) }
+        }
+    }
+
+    override fun closeTabs(tabIds: Collection<Int>) {
+        val confirm = tabIds.size < 2 || window.confirm("You're going to close ${tabIds.size} tabs")
+        if (confirm) {
+            browser.tabs.remove(tabIds.toTypedArray())
         }
     }
 

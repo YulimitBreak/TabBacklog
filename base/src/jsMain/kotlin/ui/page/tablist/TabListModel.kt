@@ -99,6 +99,10 @@ class TabListModel(
         onLinkSelect(multiSelectDelegate.selectedItems)
     }
 
+    fun closeSelectedTabs() {
+        browserInteractor.closeTabs(multiSelectDelegate.selectedIds)
+    }
+
     private data class ListState(val list: List<BrowserTab>, val isLoading: Boolean, val reachedEnd: Boolean)
 
     fun interface OnTabSelect {

@@ -14,12 +14,16 @@ class TestBrowserInteractor : BrowserInteractor {
         console.log("Request to open manager")
     }
 
-    override fun openPage(url: String) {
+    override fun openPage(url: String, active: Boolean) {
         console.log("Request to open page $url")
     }
 
     override fun openPages(urls: List<String>) {
         console.log("Request to open pages $urls")
+    }
+
+    override fun closeTabs(tabIds: Collection<Int>) {
+        console.log("Request to close tabs $tabIds")
     }
 
     private val updateFlow = MutableSharedFlow<String>()

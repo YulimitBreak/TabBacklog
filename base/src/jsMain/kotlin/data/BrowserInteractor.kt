@@ -9,9 +9,11 @@ interface BrowserInteractor {
 
     suspend fun getCurrentTab(): Tab
     fun openManager()
-    fun openPage(url: String)
+    fun openPage(url: String, active: Boolean = true)
 
     fun openPages(urls: List<String>)
+
+    fun closeTabs(tabIds: Collection<Int>)
 
     suspend fun sendUpdateMessage(url: String)
 

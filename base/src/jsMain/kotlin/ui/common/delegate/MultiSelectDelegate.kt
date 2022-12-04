@@ -19,6 +19,17 @@ class MultiSelectDelegate<Data, Id : Any>(private val idGetter: (Data) -> Id) {
 
     private var lastClickedId: Id? = null
 
+    fun clearSelection() {
+        selectedIds = emptySet()
+        selectedItems = emptySet()
+        lastClickedId = null
+    }
+
+    fun updateData(newData: List<Data>) {
+        val newIds = newData.associateBy(idGetter)
+        selectedIds = selectedIds.filter { it in newIds.keys }.toSet()
+        selectedItems = selectedIds.mapNotNull { newIds[it] }.toSet()
+    }
 
     fun selectItem(
         source: List<Data>,

@@ -4,10 +4,12 @@ import androidx.compose.runtime.*
 import com.varabyte.kobweb.compose.css.UserSelect
 import com.varabyte.kobweb.compose.foundation.layout.Column
 import com.varabyte.kobweb.compose.foundation.layout.Row
+import com.varabyte.kobweb.compose.foundation.layout.Spacer
 import com.varabyte.kobweb.compose.ui.Modifier
 import com.varabyte.kobweb.compose.ui.graphics.toCssColor
 import com.varabyte.kobweb.compose.ui.modifiers.*
 import com.varabyte.kobweb.compose.ui.thenIf
+import com.varabyte.kobweb.silk.components.icons.fa.FaXmark
 import com.varabyte.kobweb.silk.components.text.SpanText
 import di.AppModule
 import entity.BrowserTab
@@ -85,6 +87,13 @@ fun TabListView(
         Row(modifier = Modifier.width(100.percent - 32.px).padding(leftRight = 16.px, topBottom = 4.px).gap(8.px)) {
             Toggle(model.multiSelectMode, "Multi-select mode", onToggle = { model.toggleMultiSelectMode(it) })
             SpanText("or use Ctrl and Shift keys while selecting")
+            Spacer()
+            if (model.selectedTabs.isNotEmpty()) {
+                RowButton(onClick = { model.closeSelectedTabs() }) {
+                    FaXmark()
+                    SpanText("Close")
+                }
+            }
         }
     }
 }
