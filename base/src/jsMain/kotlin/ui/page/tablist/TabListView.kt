@@ -38,7 +38,7 @@ fun TabListView(
         LoadingTable(
             model.tabs,
             model.isLoading,
-            Modifier.margin(leftRight = 16.px, topBottom = 16.px).width(100.percent - 32.px)
+            Modifier.margin(leftRight = 16.px).width(100.percent - 32.px)
                 .minHeight(20.percent)
                 .flexGrow(1)
                 .border(1.px, LineStyle.Solid, Palette.Local.current.onBackground.toCssColor()),
