@@ -1,4 +1,4 @@
-package ui.page.collection
+package ui.common.bookmark
 
 import androidx.compose.runtime.Composable
 import com.varabyte.kobweb.compose.ui.Modifier
@@ -14,7 +14,7 @@ import ui.page.summary.BookmarkMultiSummary
 import ui.page.summary.BookmarkSummary
 
 @Composable
-fun CollectionEditView(
+fun CombinedBookmarkView(
     selectedBookmarkUrls: Set<String>,
     editMode: Boolean,
     modifier: Modifier = Modifier,

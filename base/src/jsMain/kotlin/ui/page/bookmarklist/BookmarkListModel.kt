@@ -170,8 +170,8 @@ class BookmarkListModel(
             config.compiledSort
         ).drop(skipCount).produce(coroutineScope)
 
-    fun updateMultiSelectMode(toggledOn: Boolean) {
-        multiSelectMode = toggledOn
+    fun toggleMultiSelectMode(enabled: Boolean) {
+        multiSelectMode = enabled
     }
 
     data class BookmarkListState(val list: List<Bookmark>, val isLoading: Boolean, val reachedEnd: Boolean)

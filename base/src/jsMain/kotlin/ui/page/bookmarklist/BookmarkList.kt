@@ -1,7 +1,6 @@
 package ui.page.bookmarklist
 
 import androidx.compose.runtime.*
-import com.varabyte.kobweb.compose.css.Overflow
 import com.varabyte.kobweb.compose.css.UserSelect
 import com.varabyte.kobweb.compose.foundation.layout.Column
 import com.varabyte.kobweb.compose.foundation.layout.Row
@@ -32,7 +31,7 @@ fun BookmarkList(modifier: Modifier = Modifier, onBookmarkSelect: (urls: Set<Str
         appModule.createBookmarkListModel(scope, onBookmarkSelectState)
     }
 
-    Column(modifier.overflow(Overflow.Hidden)) {
+    Column(modifier) {
         BookmarkSearchView(
             model.searchConfig,
             onConfigChange = {
@@ -71,7 +70,7 @@ fun BookmarkList(modifier: Modifier = Modifier, onBookmarkSelect: (urls: Set<Str
         }
 
         Row(modifier = Modifier.width(100.percent - 32.px).padding(leftRight = 16.px, topBottom = 4.px).gap(8.px)) {
-            Toggle(model.multiSelectMode, "Multi-select mode", onToggle = { model.updateMultiSelectMode(it) })
+            Toggle(model.multiSelectMode, "Multi-select mode", onToggle = { model.toggleMultiSelectMode(it) })
             SpanText("or use Ctrl and Shift keys while selecting")
         }
     }

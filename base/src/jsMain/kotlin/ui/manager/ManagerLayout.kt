@@ -28,6 +28,7 @@ fun ManagerLayout(
                     .margin(topBottom = 32.px)
                     .height(100.percent - 64.px)
                     .borderRadius(8.px)
+                    .overflow(Overflow.Hidden)
                     .boxShadow(
                         offsetX = 0.px,
                         offsetY = 5.px,
@@ -44,7 +45,6 @@ fun ManagerLayout(
                 Modifier
                     .borderRadius(8.px)
                     .padding(16.px)
-                    .width(400.px)
                     .boxShadow(
                         offsetX = 0.px,
                         offsetY = 5.px,

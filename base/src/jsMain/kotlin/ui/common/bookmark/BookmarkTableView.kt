@@ -18,13 +18,13 @@ import com.varabyte.kobweb.silk.components.style.toModifier
 import com.varabyte.kobweb.silk.components.text.SpanText
 import common.DateUtils
 import common.isAfterToday
-import common.js.ResizeObserver
 import common.styleProperty
 import entity.Bookmark
 import entity.BookmarkType
 import kotlinx.datetime.LocalDate
 import org.jetbrains.compose.web.css.*
 import ui.common.basecomponent.DivText
+import ui.common.ext.observeSize
 import ui.styles.brand.DeadlineTimerIcon
 import ui.styles.brand.ExpirationTimerIcon
 import ui.styles.brand.ReminderTimerIcon
@@ -48,14 +48,8 @@ fun BookmarkTableView(
             Row(
                 Modifier.width(100.percent).flexWrap(FlexWrap.Nowrap).gap(4.px),
                 elementScope = {
-                    DisposableEffect(this) {
-                        val resizeObserver = ResizeObserver {
-                            rowWidth = scopeElement.clientWidth
-                        }
-                        resizeObserver.observe(scopeElement)
-                        onDispose {
-                            resizeObserver.disconnect()
-                        }
+                    observeSize { width, _ ->
+                        rowWidth = width
                     }
                 },
                 verticalAlignment = Alignment.CenterVertically

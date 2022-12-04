@@ -11,6 +11,7 @@ import org.jetbrains.compose.web.css.px
 import org.jetbrains.compose.web.css.vh
 import ui.common.DefaultLocalProvider
 import ui.page.collection.CollectionView
+import ui.page.tabmanager.TabManagerView
 import ui.styles.Palette
 
 @Composable
@@ -30,7 +31,7 @@ fun Manager() {
                     CollectionView(Modifier.fillMaxSize())
 
                 ManagerNavigationPage.TODO -> {}
-                ManagerNavigationPage.TABS -> {}
+                ManagerNavigationPage.TABS -> TabManagerView(Modifier.fillMaxSize())
                 ManagerNavigationPage.TAG_LIST -> {}
                 ManagerNavigationPage.AUTO_TAG -> {}
             }

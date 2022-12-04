@@ -2,6 +2,9 @@ package ui.page.collection
 
 import androidx.compose.runtime.*
 import com.varabyte.kobweb.compose.ui.Modifier
+import com.varabyte.kobweb.compose.ui.modifiers.width
+import org.jetbrains.compose.web.css.px
+import ui.common.bookmark.CombinedBookmarkView
 import ui.manager.ManagerLayout
 import ui.page.bookmarklist.BookmarkList
 
@@ -22,10 +25,10 @@ fun CollectionView(modifier: Modifier = Modifier) {
             )
         },
         editBlock = { m ->
-            CollectionEditView(
+            CombinedBookmarkView(
                 selectedBookmarkUrls,
                 editMode,
-                m,
+                m.width(400.px),
                 onChangeEditMode = { editMode = it }
             )
         }

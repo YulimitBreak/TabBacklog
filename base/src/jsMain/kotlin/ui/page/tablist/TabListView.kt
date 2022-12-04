@@ -1,0 +1,63 @@
+package ui.page.tablist
+
+import androidx.compose.runtime.*
+import com.varabyte.kobweb.compose.css.UserSelect
+import com.varabyte.kobweb.compose.foundation.layout.Column
+import com.varabyte.kobweb.compose.foundation.layout.Row
+import com.varabyte.kobweb.compose.ui.Modifier
+import com.varabyte.kobweb.compose.ui.graphics.toCssColor
+import com.varabyte.kobweb.compose.ui.modifiers.*
+import com.varabyte.kobweb.compose.ui.thenIf
+import com.varabyte.kobweb.silk.components.text.SpanText
+import di.AppModule
+import org.jetbrains.compose.web.css.LineStyle
+import org.jetbrains.compose.web.css.minus
+import org.jetbrains.compose.web.css.percent
+import org.jetbrains.compose.web.css.px
+import ui.common.basecomponent.LoadingTable
+import ui.common.basecomponent.Toggle
+import ui.styles.Palette
+import ui.styles.primaryColors
+
+@Composable
+fun TabListView(
+    modifier: Modifier = Modifier,
+    onLinkSelect: (urls: Set<String>) -> Unit
+) {
+    val appModule = AppModule.Local.current
+    val scope = rememberCoroutineScope()
+    val onLinkSelectState = rememberUpdatedState(TabListModel.OnLinkSelect(onLinkSelect))
+    val model: TabListModel = remember() {
+        appModule.createTabListModel(scope, onLinkSelectState)
+    }
+
+    Column(modifier) {
+        // TODO search layout
+
+        LoadingTable(
+            model.tabs,
+            model.isLoading,
+            Modifier.margin(leftRight = 16.px, topBottom = 16.px).width(100.percent - 32.px)
+                .minHeight(20.percent)
+                .flexGrow(1)
+                .border(1.px, LineStyle.Solid, Palette.Local.current.onBackground.toCssColor()),
+            onLoadMore = {
+                model.requestMore()
+            }.takeIf { !model.reachedEnd }
+        ) { tab ->
+            key(tab.tabId) {
+                TabTableView(
+                    tab,
+                    Modifier.padding(topBottom = 4.px, leftRight = 8.px).width(100.percent - 16.px)
+                        .thenIf(model.selectedTabs.contains(tab.tabId), Modifier.primaryColors())
+                        .userSelect(UserSelect.None)
+                )
+            }
+        }
+
+        Row(modifier = Modifier.width(100.percent - 32.px).padding(leftRight = 16.px, topBottom = 4.px).gap(8.px)) {
+            Toggle(model.multiSelectMode, "Multi-select mode", onToggle = { model.toggleMultiSelectMode(it) })
+            SpanText("or use Ctrl and Shift keys while selecting")
+        }
+    }
+}

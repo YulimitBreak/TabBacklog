@@ -13,6 +13,7 @@ import ui.page.editor.BookmarkEditorModel
 import ui.page.editor.BookmarkMultiEditorModel
 import ui.page.summary.BookmarkMultiSummaryModel
 import ui.page.summary.BookmarkSummaryModel
+import ui.page.tablist.TabListModel
 import ui.page.tagedit.TagEditModel
 import ui.popup.PopupBaseModel
 
@@ -60,6 +61,12 @@ class AppModule(
         coroutineScope: CoroutineScope,
         onBookmarkSelect: State<BookmarkListModel.OnBookmarkSelect>
     ): BookmarkListModel
+
+    @Create
+    fun createTabListModel(
+        coroutineScope: CoroutineScope,
+        onLinkSelect: State<TabListModel.OnLinkSelect>
+    ): TabListModel
 
     companion object {
         val Local = staticCompositionLocalOf<AppModule> {
