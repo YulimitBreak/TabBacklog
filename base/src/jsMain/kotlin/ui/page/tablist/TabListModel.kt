@@ -66,7 +66,9 @@ class TabListModel(
     }
 
     private fun updateList(update: (List<BrowserTab>) -> List<BrowserTab>) {
-        listState = listState.copy(list = update(listState.list))
+        val result = update(listState.list)
+        listState = listState.copy(list = result)
+        multiSelectDelegate.updateData(result)
     }
 
     private fun handleWindowUpdate(update: WindowUpdate) {
@@ -140,6 +142,7 @@ class TabListModel(
         if (selectedWindow == windowId) return
         selectedWindow = windowId
         if (windowId != null) {
+            multiSelectDelegate.clearSelection()
             tabsChannel.cancel()
             tabsChannel = readTabs(windowId)
             listState = ListState(emptyList(), isLoading = false, reachedEnd = false)
