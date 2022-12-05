@@ -11,7 +11,7 @@ interface DbField {
     val name: String
 
     sealed class Index {
-        object PrimaryKey : Index()
+        data class PrimaryKey(val indexed: Boolean = false) : Index()
         object Autoincrement : Index()
         data class Field(val unique: Boolean = false) : Index()
         data class Composite(val reference: List<DbField>, val unique: Boolean = false) : Index() {
@@ -23,6 +23,7 @@ interface DbField {
 interface EntityDbField<T> : DbField {
     val backingField: ((T) -> dynamic)?
 }
+
 fun <T> saveAsString(getter: (T) -> Any?): (T) -> dynamic = { getter(it)?.toString() }
 
 value class DbSchema<Field : DbField>(val fields: List<Field>) {
@@ -40,10 +41,12 @@ value class DbSchema<Field : DbField>(val fields: List<Field>) {
             val firstKey = primaryKeys.first().name
             val otherKeys = primaryKeys.drop(1).map { it.name }.toTypedArray()
             val store = database.createObjectStore(storeName, KeyPath(firstKey, *otherKeys))
-            if (otherKeys.isNotEmpty()) {
-                primaryKeys.forEach { field ->
-                    store.createIndex(field.name, KeyPath(field.name), false)
-                }
+
+            primaryKeys.filter {
+                val index = it.index
+                index is DbField.Index.PrimaryKey && index.indexed
+            }.forEach { field ->
+                store.createIndex(field.name, KeyPath(field.name), false)
             }
             store
         }

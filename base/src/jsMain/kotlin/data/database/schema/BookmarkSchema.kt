@@ -14,7 +14,7 @@ enum class BookmarkSchema(
     override val backingField: ((Bookmark) -> dynamic)? = null,
     override val index: Index? = null,
 ) : EntityDbField<Bookmark> {
-    Url(Bookmark::url, Index.PrimaryKey),
+    Url(Bookmark::url, Index.PrimaryKey()),
     Title(Bookmark::title, Index.Field()),
     Favicon(Bookmark::favicon),
     Type(saveAsString(Bookmark::type), Index.Field()),
