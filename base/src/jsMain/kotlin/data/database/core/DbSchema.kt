@@ -26,9 +26,21 @@ interface EntityDbField<T> : DbField {
 
 fun <T> saveAsString(getter: (T) -> Any?): (T) -> dynamic = { getter(it)?.toString() }
 
-value class DbSchema<Field : DbField>(val fields: List<Field>) {
+value class DbSchema<Field : DbField>(val fields: List<Field>) : IndexSchema {
 
-    val storeName: String get() = fields.first().storeName
+    override val storeName: String get() = fields.first().storeName
+
+    override val indices: Set<String>
+        get() = fields.mapNotNull { f ->
+            fun Field.indexName(isUnique: Boolean) = if (isUnique) "!$name" else name
+            when (val index = f.index) {
+                null, DbField.Index.Autoincrement -> null
+                is DbField.Index.Composite -> f.indexName(index.unique)
+                is DbField.Index.Field -> f.indexName(index.unique)
+                is DbField.Index.PrimaryKey -> f.takeIf { index.indexed }?.indexName(false)
+            }
+        }.toSet()
+
 
     fun VersionChangeTransaction.createObjectStore(database: Database) {
         val autoincrement = fields.map { it.index }.filterIsInstance<DbField.Index.Autoincrement>().singleOrNull()
@@ -46,6 +58,8 @@ value class DbSchema<Field : DbField>(val fields: List<Field>) {
                 val index = it.index
                 index is DbField.Index.PrimaryKey && index.indexed
             }.forEach { field ->
+                // Primary keys are deliberately treated as non-unique for simplicity in cases where primary key
+                // is composite
                 store.createIndex(field.name, KeyPath(field.name), false)
             }
             store
