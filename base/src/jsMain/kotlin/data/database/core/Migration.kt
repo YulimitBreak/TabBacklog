@@ -2,8 +2,8 @@ package data.database.core
 
 import com.juul.indexeddb.VersionChangeTransaction
 
+// Always assume that migration happens from previous version, YAGNI anything more complex
 data class Migration(
-    val prev: Set<Int>,
     val requiresIndexUpdate: Boolean = false,
     val migrate: suspend MigrationScope.() -> Unit
 )
