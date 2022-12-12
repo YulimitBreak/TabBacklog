@@ -1,9 +1,14 @@
 package di
 
-import data.*
+import data.BookmarkRepository
+import data.BrowserInteractor
+import data.PolyfillBrowserInteractor
+import data.TabsRepository
+import data.TagRepository
 import data.database.core.AppDatabaseHolder
 import data.database.core.DatabaseHolder
 import data.database.core.DbSchema
+import data.database.schema.AppMigrationManager
 import data.database.schema.BookmarkSchema
 import data.database.schema.TagCountSchema
 import data.database.schema.TagSchema
@@ -21,7 +26,8 @@ class RepositoryModule {
                 DbSchema<BookmarkSchema>(),
                 DbSchema<TagSchema>(),
                 DbSchema<TagCountSchema>(),
-            )
+            ),
+            AppMigrationManager(),
         )
     }
 

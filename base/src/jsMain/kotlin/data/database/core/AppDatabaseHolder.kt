@@ -13,12 +13,8 @@ class AppDatabaseHolder(
     private val databaseName: String,
     private val version: Int,
     private val schema: List<DbSchema<*>>,
+    private val migrationManager: MigrationManager,
 ) : DatabaseHolder {
-
-    companion object {
-        // Only for development
-        const val FORCE_RECREATE: Boolean = true
-    }
 
     private var database: Database? = null
 
@@ -60,35 +56,13 @@ class AppDatabaseHolder(
         }
     }
 
-    private fun VersionChangeTransaction.migrate(database: Database, oldVersion: Int, newVersion: Int) {
+    private suspend fun VersionChangeTransaction.migrate(database: Database, oldVersion: Int, newVersion: Int) {
         console.log("Migrate $oldVersion -> $newVersion")
-        if (FORCE_RECREATE && newVersion != oldVersion && oldVersion != 0) {
-            console.log("ForceRecreate caused destructive migration")
-            migrateDestructively(database)
-        } else if (oldVersion == 0 && newVersion != 0) {
-            console.log("Database not found, initializing")
+        if (oldVersion == 0 && newVersion != 0) {
             initialize(database)
         } else {
-            for (versionFrom in oldVersion until newVersion) {
-                console.log("Migrating from $versionFrom to $versionFrom")
-                val success = upgradeTo(versionFrom + 1, database)
-                if (!success) {
-                    console.log("Failure to migrate")
-                    migrateDestructively(database)
-                    return
-                }
-            }
+            migrationManager.migrate(this, database, oldVersion, newVersion)
         }
-    }
-
-    private fun VersionChangeTransaction.migrateDestructively(database: Database) {
-        console.log("Starting destructive migration")
-        schema.forEach {
-            // FIXME doesn't work if store doesn't exist
-            console.log("Deleting object store ${it.storeName}")
-            database.deleteObjectStore(it.storeName)
-        }
-        initialize(database)
     }
 
     private fun VersionChangeTransaction.initialize(database: Database) {
@@ -98,10 +72,5 @@ class AppDatabaseHolder(
                 createObjectStore(database)
             }
         }
-    }
-
-    // TODO better versioning system for 1.0
-    private fun VersionChangeTransaction.upgradeTo(newVersion: Int, database: Database): Boolean {
-        return false
     }
 }
