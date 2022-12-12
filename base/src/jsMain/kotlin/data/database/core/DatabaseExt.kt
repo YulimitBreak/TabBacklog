@@ -1,7 +1,15 @@
 package data.database.core
 
-import com.juul.indexeddb.*
-import kotlinx.coroutines.flow.*
+import com.juul.indexeddb.Cursor
+import com.juul.indexeddb.CursorStart
+import com.juul.indexeddb.CursorWithValue
+import com.juul.indexeddb.Database
+import com.juul.indexeddb.Key
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.take
+import kotlinx.coroutines.flow.toList
 
 fun <T> Database.paginate(
     store: String,
@@ -17,7 +25,12 @@ fun <T> Database.paginate(
             objectStore(store).let {
                 if (indexName != null) it.index(indexName) else it
             }
-                .openCursor(query, cursorDirection, if (offset > 0) CursorStart.Advance(offset) else null)
+                .openCursor(
+                    query,
+                    cursorDirection,
+                    if (offset > 0) CursorStart.Advance(offset) else null,
+                    autoContinue = true
+                )
                 .map { extractor(it) }
                 .take(pageSize)
                 .toList()

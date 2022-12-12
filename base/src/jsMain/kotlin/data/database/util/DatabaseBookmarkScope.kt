@@ -42,7 +42,7 @@ interface DatabaseBookmarkScope {
     suspend fun WriteTransaction.deleteExpiredBookmarks() {
 
         val deletedTagUrls = mutableListOf<String>()
-        objectStore(bookmarkSchema.storeName).index(BookmarkSchema.ExpirationDate.name).openCursor()
+        objectStore(bookmarkSchema.storeName).index(BookmarkSchema.ExpirationDate.name).openCursor(autoContinue = true)
             .takeWhile { cursor ->
                 val date = bookmarkSchema.extract<String>(cursor.value, BookmarkSchema.ExpirationDate).toLocalDate()
                 date.toEpochDays() < DateUtils.today.toEpochDays()
@@ -59,12 +59,13 @@ interface DatabaseBookmarkScope {
 
     suspend fun WriteTransaction.deleteTags(url: String, updateTagsCount: Boolean) {
         val updatedTags = mutableListOf<String>()
-        objectStore(tagsSchema.storeName).index(TagSchema.Url.name).openCursor(Key(url)).collect { tagCursor ->
-            if (updateTagsCount) {
-                updatedTags.add(tagsSchema.extract(tagCursor.value, TagSchema.Tag))
+        objectStore(tagsSchema.storeName).index(TagSchema.Url.name).openCursor(Key(url), autoContinue = true)
+            .collect { tagCursor ->
+                if (updateTagsCount) {
+                    updatedTags.add(tagsSchema.extract(tagCursor.value, TagSchema.Tag))
+                }
+                tagCursor.delete()
             }
-            tagCursor.delete()
-        }
         updatedTags.forEach { tag ->
             updateTagCount(tag)
         }
@@ -88,12 +89,12 @@ interface DatabaseBookmarkScope {
 
     suspend fun Transaction.getTags(url: String, withSorting: Boolean): List<String> {
         val tagStore = objectStore(tagsSchema.storeName)
-        val tagCountStore = objectStore(tagCountSchema.storeName)
+        val tagCountStore = if (withSorting) objectStore(tagCountSchema.storeName) else null
 
         return tagStore.index(TagSchema.Url.name).getAll(Key(url)).map { entity ->
             tagsSchema.extract<String>(entity, TagSchema.Tag)
         }.let { list ->
-            if (withSorting) {
+            if (withSorting && tagCountStore != null) {
                 list.map { tag ->
                     tag to tagCountSchema.extract<Int>(tagCountStore.get(Key(tag)), TagCountSchema.Count)
                 }

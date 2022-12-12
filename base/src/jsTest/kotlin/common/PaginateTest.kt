@@ -25,7 +25,7 @@ import kotlin.test.Test
 class PaginateTest {
 
     private enum class Schema(override val index: DbField.Index?) : DbField {
-        ID(DbField.Index.PrimaryKey),
+        ID(DbField.Index.PrimaryKey()),
         STRING(DbField.Index.Field())
         ;
 

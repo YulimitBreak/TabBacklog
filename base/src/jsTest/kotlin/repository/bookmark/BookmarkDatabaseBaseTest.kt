@@ -50,19 +50,28 @@ open class BookmarkDatabaseBaseTest : DatabaseBookmarkScope {
         } else bookmark
     }
 
+
     internal suspend fun TestScope.openDatabase(
         populateCount: Int = 40,
-        populationArb: Arb<Bookmark> = bookmarkArb
+        populationArb: Arb<Bookmark> = bookmarkArb,
+        closeOnCleanup: Boolean = true,
+    ): TestDatabaseHolder = openDatabase(populateData = populationArb.take(populateCount).toList(), closeOnCleanup)
+
+    internal suspend fun TestScope.openDatabase(
+        populateData: Iterable<Bookmark>,
+        closeOnCleanup: Boolean = true
     ): TestDatabaseHolder {
         val holder = TestDatabaseHolder(
             "test_database",
             listOf(bookmarkSchema, tagsSchema, tagCountSchema)
         )
-        onCleanup {
-            holder.deleteDatabase()
+        if (closeOnCleanup) {
+            onCleanup {
+                holder.deleteDatabase()
+            }
         }
         holder.database().writeTransaction(bookmarkSchema.storeName, tagsSchema.storeName, tagCountSchema.storeName) {
-            populationArb.take(populateCount).forEach { bookmark ->
+            populateData.forEach { bookmark ->
                 saveBookmarkTransaction(bookmark, withTags = true)
             }
         }

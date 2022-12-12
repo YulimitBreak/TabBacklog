@@ -6,7 +6,13 @@ import com.juul.indexeddb.deleteDatabase
 import core.onCleanup
 import core.runTest
 import core.timeLimit
-import data.database.core.*
+import data.database.core.AppDatabaseHolder
+import data.database.core.DbField
+import data.database.core.DbSchema
+import data.database.core.EntityDbField
+import data.database.core.MigrationManager
+import data.database.core.generate
+import data.database.core.saveAsString
 import io.kotest.assertions.throwables.shouldThrowAny
 import io.kotest.assertions.withClue
 import io.kotest.matchers.shouldBe
@@ -29,6 +35,10 @@ class AppDatabaseHolderTest {
 
     private data class Entity(val id: Int, val title: String, val date: LocalDate?)
 
+    private val emptyMigrationManager = object : MigrationManager() {
+        override val migrations: Map<Int, Migration> = emptyMap()
+    }
+
     // If needed, add tests for:
     // * composite index
     // * autoincrement
@@ -37,7 +47,7 @@ class AppDatabaseHolderTest {
         override val index: DbField.Index,
         override val backingField: ((Entity) -> dynamic)? = null
     ) : EntityDbField<Entity> {
-        ID(DbField.Index.PrimaryKey, Entity::id),
+        ID(DbField.Index.PrimaryKey(), Entity::id),
         TITLE(DbField.Index.Field(), Entity::title),
         DATE(DbField.Index.Field(), saveAsString(Entity::date)),
         ;
@@ -51,7 +61,8 @@ class AppDatabaseHolderTest {
         val holder = AppDatabaseHolder(
             "test_database",
             1,
-            listOf(schema)
+            listOf(schema),
+            emptyMigrationManager,
         )
         val database = holder.database()
         onCleanup {
@@ -94,7 +105,8 @@ class AppDatabaseHolderTest {
         val holder = AppDatabaseHolder(
             "test_database",
             1,
-            listOf(schema)
+            listOf(schema),
+            emptyMigrationManager,
         )
         var database1: Database? = null
         var database2: Database? = null
@@ -123,7 +135,8 @@ class AppDatabaseHolderTest {
         val holder = AppDatabaseHolder(
             "test_database",
             1,
-            listOf(schema)
+            listOf(schema),
+            emptyMigrationManager,
         )
         val database = holder.database()
         onCleanup {

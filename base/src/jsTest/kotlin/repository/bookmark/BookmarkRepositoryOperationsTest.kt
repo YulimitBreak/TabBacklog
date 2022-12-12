@@ -8,6 +8,7 @@ import data.database.schema.TagSchema
 import data.database.schema.extractObject
 import io.kotest.assertions.withClue
 import io.kotest.inspectors.forAll
+import io.kotest.matchers.collections.shouldBeSameSizeAs
 import io.kotest.matchers.collections.shouldBeSortedWith
 import io.kotest.matchers.ints.shouldBeExactly
 import io.kotest.matchers.maps.shouldNotHaveKey
@@ -16,6 +17,7 @@ import io.kotest.matchers.shouldNotHave
 import io.kotest.property.Arb
 import io.kotest.property.arbitrary.element
 import io.kotest.property.arbitrary.int
+import io.kotest.property.arbitrary.list
 import io.kotest.property.arbitrary.map
 import io.kotest.property.arbitrary.single
 import io.kotest.property.checkAll
@@ -275,6 +277,70 @@ class BookmarkRepositoryOperationsTest : BookmarkRepositoryBaseTest() {
         checkAll(timeLimit, bookmarkArb) { bookmark ->
             val result = repository.loadBookmark(bookmark.url)
             result.shouldBeNull()
+        }
+    }
+
+    @Test
+    fun getAllBookmarks() = runTest {
+        checkAll(timeLimit, Arb.list(bookmarkArb)) { source ->
+            val holder = openDatabase(source, closeOnCleanup = false)
+            val repository = repository(holder)
+
+            val result = repository.getAllBookmarks()
+            holder.deleteDatabase()
+
+            result shouldBeSameSizeAs source
+            result.sortedBy { it.url }.zip(source.sortedBy { it.url }).forAll { (result, source) ->
+                result shouldBeSame source
+            }
+        }
+    }
+
+    @Test
+    fun saveAllBookmarks_addNew() = runTest {
+        val holder = openDatabase()
+        val repository = repository(holder)
+        checkAll(timeLimit, Arb.list(bookmarkArb)) { added ->
+            repository.saveAllBookmarks(added)
+
+            val result = holder.database().transaction(bookmarkSchema.storeName, tagsSchema.storeName) {
+                added.mapNotNull {
+                    loadBookmark(it.url, withTags = true, withTagSorting = false)
+                }
+            }
+
+            result shouldBeSameSizeAs added
+            result.sortedBy { it.url }.zip(added.sortedBy { it.url }).forAll { (result, added) ->
+                result shouldBeSame added
+            }
+        }
+    }
+
+    @Test
+    fun saveAllBookmarks_updateExisting() = runTest {
+        val holder = openDatabase(populateCount = 50)
+        val repository = repository(holder)
+        checkAll(timeLimit, Arb.list(bookmarkArb, 1..20)) { newValues ->
+            val randomOriginalUrls = holder.database().transaction(bookmarkSchema.storeName) {
+                objectStore(bookmarkSchema.storeName).getAll().asList().shuffled().take(newValues.size)
+                    .map { bookmarkSchema.extractObject(it).url }
+            }
+            val updated = randomOriginalUrls.zip(newValues) { originalUrl, newValue ->
+                newValue.copy(url = originalUrl)
+            }
+
+            repository.saveAllBookmarks(updated)
+
+            val result = holder.database().transaction(bookmarkSchema.storeName, tagsSchema.storeName) {
+                randomOriginalUrls.mapNotNull {
+                    loadBookmark(it, withTags = true, withTagSorting = false)
+                }
+            }
+
+            result shouldBeSameSizeAs updated
+            result.sortedBy { it.url }.zip(updated.sortedBy { it.url }).forAll { (result, updated) ->
+                result shouldBeSame updated
+            }
         }
     }
 }
