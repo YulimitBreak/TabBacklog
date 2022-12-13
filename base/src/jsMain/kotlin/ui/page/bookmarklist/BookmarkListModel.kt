@@ -93,6 +93,12 @@ class BookmarkListModel(
         browserInteractor.openPage(bookmark.url)
     }
 
+    fun exportBookmarks() {
+        coroutineScope.launch {
+            bookmarkRepository.getAllBookmarks().let { browserInteractor.exportBookmarks(it) }
+        }
+    }
+
     private var cachedSearch: CachedSearch? = null
 
     fun onSearchConfigChange(event: BookmarkSearchViewEvent) {

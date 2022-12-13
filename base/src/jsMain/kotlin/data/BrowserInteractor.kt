@@ -4,6 +4,7 @@ import androidx.compose.runtime.compositionLocalOf
 import browser.tabs.Tab
 import data.event.TabUpdate
 import data.event.WindowUpdate
+import entity.Bookmark
 import entity.error.CompositionLocalError
 import kotlinx.coroutines.flow.Flow
 
@@ -34,6 +35,8 @@ interface BrowserInteractor {
     suspend fun getWindowTabs(windowId: Int): List<Tab>
 
     suspend fun getCurrentWindowId(): Int?
+
+    suspend fun exportBookmarks(bookmarks: List<Bookmark>)
 
     companion object {
         val Local = compositionLocalOf<BrowserInteractor> {

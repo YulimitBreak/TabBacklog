@@ -4,6 +4,7 @@ import browser.tabs.Tab
 import data.BrowserInteractor
 import data.event.TabUpdate
 import data.event.WindowUpdate
+import entity.Bookmark
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.flow
@@ -55,5 +56,8 @@ class TestBrowserInteractor : BrowserInteractor {
 
     override suspend fun getCurrentWindowId(): Int? {
         return null
+    }
+
+    override suspend fun exportBookmarks(bookmarks: List<Bookmark>) {
     }
 }

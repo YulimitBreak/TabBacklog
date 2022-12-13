@@ -1,13 +1,25 @@
 package ui.page.bookmarklist
 
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.key
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
 import com.varabyte.kobweb.compose.css.UserSelect
 import com.varabyte.kobweb.compose.foundation.layout.Column
 import com.varabyte.kobweb.compose.foundation.layout.Row
 import com.varabyte.kobweb.compose.ui.Modifier
 import com.varabyte.kobweb.compose.ui.attrsModifier
 import com.varabyte.kobweb.compose.ui.graphics.toCssColor
-import com.varabyte.kobweb.compose.ui.modifiers.*
+import com.varabyte.kobweb.compose.ui.modifiers.border
+import com.varabyte.kobweb.compose.ui.modifiers.flexGrow
+import com.varabyte.kobweb.compose.ui.modifiers.gap
+import com.varabyte.kobweb.compose.ui.modifiers.margin
+import com.varabyte.kobweb.compose.ui.modifiers.minHeight
+import com.varabyte.kobweb.compose.ui.modifiers.padding
+import com.varabyte.kobweb.compose.ui.modifiers.title
+import com.varabyte.kobweb.compose.ui.modifiers.userSelect
+import com.varabyte.kobweb.compose.ui.modifiers.width
 import com.varabyte.kobweb.compose.ui.thenIf
 import com.varabyte.kobweb.silk.components.text.SpanText
 import di.AppModule
@@ -15,7 +27,9 @@ import org.jetbrains.compose.web.css.LineStyle
 import org.jetbrains.compose.web.css.minus
 import org.jetbrains.compose.web.css.percent
 import org.jetbrains.compose.web.css.px
+import ui.common.basecomponent.DivText
 import ui.common.basecomponent.LoadingTable
+import ui.common.basecomponent.RowButton
 import ui.common.basecomponent.Toggle
 import ui.common.bookmark.BookmarkTableView
 import ui.styles.Palette
@@ -32,6 +46,9 @@ fun BookmarkList(modifier: Modifier = Modifier, onBookmarkSelect: (urls: Set<Str
     }
 
     Column(modifier) {
+        RowButton(onClick = { model.exportBookmarks() }) {
+            DivText("Export test")
+        }
         BookmarkSearchView(
             model.searchConfig,
             onConfigChange = {

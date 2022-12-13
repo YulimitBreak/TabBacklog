@@ -1,5 +1,6 @@
 package data
 
+import browser.downloads.DownloadOptions
 import browser.tabs.AttachInfoProperty
 import browser.tabs.ChangeInfoProperty
 import browser.tabs.CreateCreateProperties
@@ -10,8 +11,11 @@ import browser.tabs.Tab
 import browser.windows.QueryOptions
 import browser.windows.Window
 import browser.windows.WindowType
+import common.DateUtils
+import data.entity.toJsonEntity
 import data.event.TabUpdate
 import data.event.WindowUpdate
+import entity.Bookmark
 import kotlinx.browser.window
 import kotlinx.coroutines.await
 import kotlinx.coroutines.channels.awaitClose
@@ -20,6 +24,9 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.merge
 import org.w3c.dom.BroadcastChannel
+import org.w3c.dom.url.URL
+import org.w3c.files.Blob
+import org.w3c.files.BlobPropertyBag
 
 class PolyfillBrowserInteractor : BrowserInteractor {
 
@@ -157,4 +164,15 @@ class PolyfillBrowserInteractor : BrowserInteractor {
 
     override suspend fun getCurrentWindowId(): Int? =
         browser.windows.getCurrent().await().id
+
+    override suspend fun exportBookmarks(bookmarks: List<Bookmark>) {
+        val json = JSON.stringify(bookmarks.map { it.toJsonEntity() })
+        val url = URL.createObjectURL(Blob(arrayOf(json), BlobPropertyBag(type = "application/json")))
+        browser.downloads.download(
+            DownloadOptions {
+                this.url = url
+                filename = "bl_backup_" + DateUtils.Formatter.YmdhsDash(DateUtils.now) + ".json"
+            }
+        ).await()
+    }
 }
