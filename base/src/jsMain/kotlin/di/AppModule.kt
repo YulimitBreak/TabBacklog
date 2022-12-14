@@ -11,6 +11,7 @@ import kotlinx.coroutines.CoroutineScope
 import ui.page.bookmarklist.BookmarkListModel
 import ui.page.editor.BookmarkEditorModel
 import ui.page.editor.BookmarkMultiEditorModel
+import ui.page.export.ExportDialogModel
 import ui.page.summary.BookmarkMultiSummaryModel
 import ui.page.summary.BookmarkSummaryModel
 import ui.page.tablist.TabListModel
@@ -61,6 +62,12 @@ class AppModule(
         coroutineScope: CoroutineScope,
         onBookmarkSelect: State<BookmarkListModel.OnBookmarkSelect>
     ): BookmarkListModel
+
+    @Create
+    fun createExportDialogModel(
+        coroutineScope: CoroutineScope,
+        onDismiss: State<ExportDialogModel.OnDismiss>,
+    ): ExportDialogModel
 
     @Create
     fun createTabListModel(

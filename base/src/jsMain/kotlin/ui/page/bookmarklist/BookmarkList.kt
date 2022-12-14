@@ -9,19 +9,15 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import com.varabyte.kobweb.compose.css.UserSelect
-import com.varabyte.kobweb.compose.foundation.layout.Box
 import com.varabyte.kobweb.compose.foundation.layout.Column
 import com.varabyte.kobweb.compose.foundation.layout.Row
 import com.varabyte.kobweb.compose.foundation.layout.Spacer
 import com.varabyte.kobweb.compose.ui.Modifier
 import com.varabyte.kobweb.compose.ui.attrsModifier
-import com.varabyte.kobweb.compose.ui.graphics.Colors
 import com.varabyte.kobweb.compose.ui.graphics.toCssColor
-import com.varabyte.kobweb.compose.ui.modifiers.backgroundColor
 import com.varabyte.kobweb.compose.ui.modifiers.border
 import com.varabyte.kobweb.compose.ui.modifiers.flexGrow
 import com.varabyte.kobweb.compose.ui.modifiers.gap
-import com.varabyte.kobweb.compose.ui.modifiers.height
 import com.varabyte.kobweb.compose.ui.modifiers.margin
 import com.varabyte.kobweb.compose.ui.modifiers.minHeight
 import com.varabyte.kobweb.compose.ui.modifiers.padding
@@ -36,14 +32,14 @@ import org.jetbrains.compose.web.css.minus
 import org.jetbrains.compose.web.css.percent
 import org.jetbrains.compose.web.css.px
 import org.jetbrains.compose.web.dom.Text
-import ui.common.basecomponent.BlobFileInput
-import ui.common.basecomponent.DivText
 import ui.common.basecomponent.LoadingTable
 import ui.common.basecomponent.ModalDialog
 import ui.common.basecomponent.RowButton
 import ui.common.basecomponent.Toggle
 import ui.common.bookmark.BookmarkTableView
+import ui.page.export.ExportDialogView
 import ui.styles.Palette
+import ui.styles.backgroundColors
 import ui.styles.primaryColors
 
 @Composable
@@ -56,24 +52,12 @@ fun BookmarkList(modifier: Modifier = Modifier, onBookmarkSelect: (urls: Set<Str
         appModule.createBookmarkListModel(scope, onBookmarkSelectState)
     }
 
-    var dialogVisible by remember { mutableStateOf(false) }
+    var exportDialogVisible by remember { mutableStateOf(false) }
 
-    ModalDialog(dialogVisible, onDismiss = { dialogVisible = false }) {
-
-        Box(Modifier.backgroundColor(Colors.White).width(50.percent).height(50.percent)) {
-            Row {
-                RowButton(onClick = { model.exportBookmarks() }) {
-                    DivText("Export test")
-                }
-                BlobFileInput("file_input", "application/json",
-                    onFileInput = { model.importBookmarks(it) }
-                ) { onClick ->
-                    RowButton(onClick = onClick) {
-                        DivText("Import test")
-                    }
-                }
-            }
-        }
+    ModalDialog(exportDialogVisible, onDismiss = { exportDialogVisible = false }) {
+        ExportDialogView(
+            modifier = Modifier.backgroundColors().padding(32.px),
+            onDismiss = { exportDialogVisible = false })
     }
 
     Column(modifier) {
@@ -118,7 +102,7 @@ fun BookmarkList(modifier: Modifier = Modifier, onBookmarkSelect: (urls: Set<Str
             Toggle(model.multiSelectMode, "Multi-select mode", onToggle = { model.toggleMultiSelectMode(it) })
             SpanText("or use Ctrl and Shift keys while selecting")
             Spacer()
-            RowButton(onClick = { dialogVisible = true }) {
+            RowButton(onClick = { exportDialogVisible = true }) {
                 Text("Import/Export")
             }
         }
