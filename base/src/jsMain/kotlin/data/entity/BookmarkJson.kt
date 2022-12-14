@@ -23,7 +23,7 @@ external interface BookmarkJson {
 fun Bookmark.toJsonEntity() = (js("{}") as BookmarkJson).also { j ->
     j.url = url
     j.title = title
-    j.favicon = favicon
+    j.favicon = favicon?.takeIf { it.length < 256 }
     j.type = type.toString()
     j.creationDate = creationDate?.toString()
     j.remindDate = remindDate?.toString()
