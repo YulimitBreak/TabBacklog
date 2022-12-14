@@ -23,5 +23,6 @@ data class Bookmark(
         searchString.isNullOrBlank() ||
                 title.contains(searchString, ignoreCase = true) ||
                 comment.contains(searchString, ignoreCase = true) ||
-                url.contains(searchString, ignoreCase = true)
+                url.contains(searchString, ignoreCase = true) ||
+                tags.any { it.contains(searchString, ignoreCase = true) }
 }
