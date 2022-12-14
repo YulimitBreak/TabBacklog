@@ -23,15 +23,11 @@ import com.varabyte.kobweb.compose.ui.modifiers.width
 import com.varabyte.kobweb.compose.ui.thenIf
 import com.varabyte.kobweb.silk.components.text.SpanText
 import di.AppModule
-import kotlinx.browser.document
-import org.jetbrains.compose.web.attributes.InputType
-import org.jetbrains.compose.web.attributes.accept
 import org.jetbrains.compose.web.css.LineStyle
 import org.jetbrains.compose.web.css.minus
 import org.jetbrains.compose.web.css.percent
 import org.jetbrains.compose.web.css.px
-import org.jetbrains.compose.web.dom.Input
-import org.w3c.files.Blob
+import ui.common.basecomponent.BlobFileInput
 import ui.common.basecomponent.DivText
 import ui.common.basecomponent.LoadingTable
 import ui.common.basecomponent.RowButton
@@ -55,13 +51,11 @@ fun BookmarkList(modifier: Modifier = Modifier, onBookmarkSelect: (urls: Set<Str
             RowButton(onClick = { model.exportBookmarks() }) {
                 DivText("Export test")
             }
-            Input(type = InputType.File) {
-                id("import_input")
-                accept("application/json")
-                onInput { event ->
-                    if (event.value.isNotBlank()) {
-                        model.importBookmarks(document.getElementById("import_input").asDynamic().files[0] as Blob)
-                    }
+            BlobFileInput("file_input", "application/json",
+                onFileInput = { model.importBookmarks(it) }
+            ) { onClick ->
+                RowButton(onClick = onClick) {
+                    DivText("Import test")
                 }
             }
         }
