@@ -8,6 +8,7 @@ import entity.Bookmark
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.flow
+import org.w3c.files.Blob
 
 class TestBrowserInteractor : BrowserInteractor {
     override suspend fun getCurrentTab(): Tab {
@@ -59,5 +60,9 @@ class TestBrowserInteractor : BrowserInteractor {
     }
 
     override suspend fun exportBookmarks(bookmarks: List<Bookmark>) {
+    }
+
+    override suspend fun importBookmarks(file: Blob): List<Bookmark> {
+        return emptyList()
     }
 }

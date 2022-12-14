@@ -151,6 +151,7 @@ class BookmarkRepository(
                     updateTagCount(tag)
                 }
             }
+        urls.forEach { browserInteractor.sendBookmarkUpdateMessage(it) }
     }
 
     fun readBookmarks(search: BookmarkSearchConfig, sort: BookmarkSort): Flow<Bookmark> =

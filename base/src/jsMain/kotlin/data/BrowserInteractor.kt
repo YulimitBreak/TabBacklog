@@ -7,6 +7,7 @@ import data.event.WindowUpdate
 import entity.Bookmark
 import entity.error.CompositionLocalError
 import kotlinx.coroutines.flow.Flow
+import org.w3c.files.Blob
 
 interface BrowserInteractor {
 
@@ -37,6 +38,8 @@ interface BrowserInteractor {
     suspend fun getCurrentWindowId(): Int?
 
     suspend fun exportBookmarks(bookmarks: List<Bookmark>)
+
+    suspend fun importBookmarks(file: Blob): List<Bookmark>
 
     companion object {
         val Local = compositionLocalOf<BrowserInteractor> {

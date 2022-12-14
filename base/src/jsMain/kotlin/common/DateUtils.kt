@@ -47,7 +47,8 @@ object DateUtils {
                     (date.year % 100).toString().padStart(2, padChar = '0')
 
         fun YmdhsDash(time: LocalDateTime) =
-            time.date.toString() + "-" + time.hour.toString() + "-" + time.minute.toString() + "-" + time.second.toString()
+            time.date.toString() + "-" + time.hour.toString().padStart(2, padChar = '0') + "-" + time.minute.toString()
+                .padStart(2, padChar = '0') + "-" + time.second.toString().padStart(2, padChar = '0')
 
     }
 }

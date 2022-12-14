@@ -14,7 +14,7 @@ external interface BookmarkJson {
     var remindDate: String?
     var deadlineDate: String?
     var expirationDate: String?
-    var tags: List<String>?
+    var tags: Array<String>?
     var favorite: Boolean?
     var comment: String?
 }
@@ -30,7 +30,7 @@ fun Bookmark.toJsonEntity() = (js("{}") as BookmarkJson).also { j ->
     j.deadlineDate = deadline?.toString()
     j.expirationDate = expirationDate?.toString()
     // Not convertible back, used because emptyList is an object that doesn't map to []
-    j.tags = tags.takeIf { it.isNotEmpty() } ?: js("[]").unsafeCast<List<String>>()
+    j.tags = tags.toTypedArray()
     j.favorite = favorite
     j.comment = comment
 }
@@ -53,7 +53,7 @@ fun BookmarkJson.toBookmark() = Bookmark(
     remindDate?.let(LocalDate::parse),
     deadlineDate?.let(LocalDate::parse),
     expirationDate?.let(LocalDate::parse),
-    tags ?: emptyList(),
+    tags?.toList() ?: emptyList(),
     favorite ?: false,
     comment ?: ""
 )

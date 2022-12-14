@@ -17,6 +17,7 @@ import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.launch
+import org.w3c.files.Blob
 import ui.common.delegate.MultiSelectDelegate
 import ui.page.tagedit.apply
 
@@ -96,6 +97,13 @@ class BookmarkListModel(
     fun exportBookmarks() {
         coroutineScope.launch {
             bookmarkRepository.getAllBookmarks().let { browserInteractor.exportBookmarks(it) }
+        }
+    }
+
+    fun importBookmarks(file: Blob) {
+        coroutineScope.launch {
+            val bookmarks = browserInteractor.importBookmarks(file)
+            bookmarkRepository.saveAllBookmarks(bookmarks)
         }
     }
 

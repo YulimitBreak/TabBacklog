@@ -12,6 +12,8 @@ import browser.windows.QueryOptions
 import browser.windows.Window
 import browser.windows.WindowType
 import common.DateUtils
+import data.entity.BookmarkJson
+import data.entity.toBookmark
 import data.entity.toJsonEntity
 import data.event.TabUpdate
 import data.event.WindowUpdate
@@ -23,10 +25,14 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.merge
+import kotlinx.coroutines.suspendCancellableCoroutine
 import org.w3c.dom.BroadcastChannel
 import org.w3c.dom.url.URL
 import org.w3c.files.Blob
 import org.w3c.files.BlobPropertyBag
+import org.w3c.files.FileReader
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
 
 class PolyfillBrowserInteractor : BrowserInteractor {
 
@@ -166,7 +172,7 @@ class PolyfillBrowserInteractor : BrowserInteractor {
         browser.windows.getCurrent().await().id
 
     override suspend fun exportBookmarks(bookmarks: List<Bookmark>) {
-        val json = JSON.stringify(bookmarks.map { it.toJsonEntity() })
+        val json = if (bookmarks.isNotEmpty()) JSON.stringify(bookmarks.map { it.toJsonEntity() }) else "[]"
         val url = URL.createObjectURL(Blob(arrayOf(json), BlobPropertyBag(type = "application/json")))
         browser.downloads.download(
             DownloadOptions {
@@ -174,5 +180,36 @@ class PolyfillBrowserInteractor : BrowserInteractor {
                 filename = "bl_backup_" + DateUtils.Formatter.YmdhsDash(DateUtils.now) + ".json"
             }
         ).await()
+    }
+
+    override suspend fun importBookmarks(file: Blob): List<Bookmark> {
+        val fr = FileReader()
+        val data = suspendCancellableCoroutine<String> { cont ->
+            fr.onloadend = {
+                cont.resume(fr.result as? String? ?: "[]")
+            }
+            fr.onerror = {
+                console.log(fr.error)
+                cont.resumeWithException(RuntimeException(fr.error.toString()))
+            }
+            fr.readAsText(file)
+            cont.invokeOnCancellation {
+                fr.onloadend = null
+                fr.onerror = null
+                fr.abort()
+            }
+        }
+        return try {
+            JSON.parse<Array<BookmarkJson>>(data).mapNotNull {
+                try {
+                    it.toBookmark()
+                } catch (_: Exception) {
+                    null
+                }
+            }
+        } catch (e: Exception) {
+            console.error("Error while parsing input json", e)
+            emptyList()
+        }
     }
 }
